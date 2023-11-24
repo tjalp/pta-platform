@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -16,6 +17,8 @@ var ptas = []pta{
 }
 
 func main() {
+	fmt.Println("Starting PTA Platform")
+
 	router := gin.Default()
 	router.GET("/getPTAs", getPTAs)
 
