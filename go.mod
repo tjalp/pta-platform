@@ -1,4 +1,4 @@
-module tjalp/pta-platform
+module github.com/tjalp/pta-platform
 
 go 1.21
 
