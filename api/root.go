@@ -3,8 +3,10 @@ package api
 import (
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 type PtaData struct {
@@ -17,7 +19,7 @@ type PtaData struct {
 
 var data = []PtaData{
 	{
-		Id:     "1",
+		Id:     uuid.NewString(),
 		Name:   "aardrijkskunde",
 		Level:  "6 VWO",
 		Cohort: "2021 - 2024",
@@ -43,11 +45,36 @@ func StartServer() {
 	fmt.Println("Starting PTA Platform")
 
 	router := gin.Default()
-	router.GET("/getPtaData", getPtaData)
+	router.GET("/pta/get", getPta)
+
+	router.POST("/pta/create", createPta)
 
 	router.Run("localhost:8080")
 }
 
-func getPtaData(c *gin.Context) {
+func getPta(c *gin.Context) {
 	c.JSON(http.StatusOK, data)
+}
+
+func createPta(c *gin.Context) {
+	name := strings.TrimSpace(c.PostForm("name"))
+	level := strings.TrimSpace(c.PostForm("level"))
+	cohort := strings.TrimSpace(c.PostForm("cohort"))
+
+	if name == "" {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "'name' cannot be empty"})
+		return
+	}
+
+	pta := PtaData{
+		Id:     uuid.NewString(),
+		Name:   name,
+		Level:  level,
+		Cohort: cohort,
+		Tests:  []Test{},
+	}
+
+	data = append(data, pta)
+
+	c.JSON(http.StatusCreated, pta)
 }
