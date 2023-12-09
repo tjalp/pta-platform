@@ -2,6 +2,7 @@ package database
 
 type Database interface {
 	Start()
+	Terminate()
 	SavePta(PtaData)
 	LoadPta(id string) *PtaData
 	DeletePta(id string) bool

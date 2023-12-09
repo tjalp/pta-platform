@@ -15,7 +15,7 @@ var data database.Database
 func StartServer() {
 	fmt.Println("Starting PTA Platform")
 
-	data = database.MemoryDatabase{}
+	data = database.SqlDatabase{}
 	data.Start()
 
 	router := gin.Default()

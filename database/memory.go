@@ -35,6 +35,8 @@ func (e MemoryDatabase) Start() {
 	fmt.Println("Starting Memory database")
 }
 
+func (e MemoryDatabase) Terminate() {}
+
 func (e MemoryDatabase) SavePta(pta PtaData) {
 	ptaData = append(ptaData, pta)
 }
