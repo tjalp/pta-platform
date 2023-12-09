@@ -1,7 +1,7 @@
 package main
 
-import "github.com/tjalp/pta-platform/api"
+import "github.com/tjalp/pta-platform/router"
 
 func main() {
-	api.StartServer()
+	router.StartServer()
 }
