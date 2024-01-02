@@ -31,8 +31,9 @@ var ptaData = []PtaData{
 	},
 }
 
-func (e MemoryDatabase) Start() {
+func (e MemoryDatabase) Start() error {
 	fmt.Println("Starting Memory database")
+	return nil
 }
 
 func (e MemoryDatabase) Terminate() {}

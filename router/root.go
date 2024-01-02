@@ -2,6 +2,7 @@ package router
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"strings"
 
@@ -16,14 +17,23 @@ func StartServer() {
 	fmt.Println("Starting PTA Platform")
 
 	data = database.SqlDatabase{}
-	data.Start()
+	err := data.Start()
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+
+	gin.SetMode(gin.ReleaseMode)
 
 	router := gin.Default()
 	router.GET("/pta/:id", getPta)
 	router.DELETE("/pta/:id", deletePta)
 	router.POST("/pta/create", createPta)
 
-	router.Run("0.0.0.0:8080")
+	err = router.Run()
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 func getPta(c *gin.Context) {

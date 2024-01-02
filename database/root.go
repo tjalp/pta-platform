@@ -1,7 +1,7 @@
 package database
 
 type Database interface {
-	Start()
+	Start() error
 	Terminate()
 	SavePta(PtaData)
 	LoadPta(id string) *PtaData
