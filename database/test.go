@@ -11,5 +11,5 @@ type Test struct {
 	Time          int    `json:"time"`
 	Retakable     bool   `json:"retakable"`
 	Weight        int    `json:"weight"`
-	Tools         string `json:"tools"`
+	Tools         []int  `json:"tools"`
 }

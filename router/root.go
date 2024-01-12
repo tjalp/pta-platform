@@ -16,7 +16,7 @@ var data database.Database
 func StartServer() {
 	fmt.Println("Starting PTA Platform")
 
-	data = database.SqlDatabase{}
+	data = database.MemoryDatabase{}
 	err := data.Start()
 	if err != nil {
 		log.Fatal(err)

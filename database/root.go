@@ -9,9 +9,10 @@ type Database interface {
 }
 
 type PtaData struct {
-	Id     string `json:"id"`
-	Name   string `json:"name"`
-	Level  string `json:"level"`
-	Cohort string `json:"cohort"`
-	Tests  []Test `json:"tests"`
+	Id     string   `json:"id"`
+	Name   string   `json:"name"`
+	Level  string   `json:"level"`
+	Cohort string   `json:"cohort"`
+	Tools  []string `json:"tools"`
+	Tests  []Test   `json:"tests"`
 }

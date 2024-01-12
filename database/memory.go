@@ -13,6 +13,12 @@ var ptaData = []PtaData{
 		Name:   "aardrijkskunde",
 		Level:  "6 VWO",
 		Cohort: "2021 - 2024",
+		Tools: []string{
+			"pen (blauw of zwart), potlood, geodriehoek/lineaal",
+			"rekenmachine (niet grafisch)",
+			"De Grote Bosatlas 55e druk",
+			"aanvullend katern bij GB 55e druk",
+		},
 		Tests: []Test{
 			{
 				Id:            601,
@@ -25,7 +31,7 @@ var ptaData = []PtaData{
 				Time:          100,
 				Retakable:     true,
 				Weight:        15,
-				Tools:         "1 t/m 4",
+				Tools:         []int{0, 1, 2, 3},
 			},
 		},
 	},
