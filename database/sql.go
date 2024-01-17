@@ -1,18 +1,16 @@
 package database
 
 import (
-	"context"
-	"database/sql"
+	"encoding/json"
 	"fmt"
 	"github.com/go-sql-driver/mysql"
-	"time"
-
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/jmoiron/sqlx"
 )
 
 type SqlDatabase struct{}
 
-var db *sql.DB
+var db *sqlx.DB
 
 func (s SqlDatabase) Start() error {
 	cfg := mysql.Config{
@@ -25,30 +23,55 @@ func (s SqlDatabase) Start() error {
 	} // TODO credentials
 	fmt.Println("Opening SQL connection...")
 	var err error
-	db, err = sql.Open("mysql", cfg.FormatDSN())
+	db, err = sqlx.Connect("mysql", cfg.FormatDSN())
 	if err != nil {
 		return err
 	}
-	db.SetConnMaxLifetime(time.Minute * 3)
-	db.SetMaxOpenConns(10)
-	db.SetMaxIdleConns(10)
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-	if err := db.PingContext(ctx); err != nil {
-		return err
-	}
+	//db.SetConnMaxLifetime(time.Minute * 3)
+	//db.SetMaxOpenConns(10)
+	//db.SetMaxIdleConns(10)
+	//err = db.Ping()
+	//if err != nil {
+	//	return err
+	//}
 
 	fmt.Println("Successfully opened SQL connection")
 
-	stmt, err := db.Prepare(`CREATE TABLE IF NOT EXISTS ptas (
-		id UUID PRIMARY KEY,
+	//stmt, err := db.Prepare(`CREATE TABLE IF NOT EXISTS ptas (
+	//	id UUID NOT NULL PRIMARY KEY,
+	//	name TEXT,
+	//	level TEXT,
+	//	cohort TEXT,
+	//	tools JSON,
+	//	tests JSON
+	//);`)
+	//defer stmt.Close()
+	//_, err = stmt.Exec()
+	//if err != nil {
+	//	return err
+	//}
+
+	// idk
+	_, err = db.Exec(`CREATE TABLE IF NOT EXISTS ptas (
+		id UUID NOT NULL PRIMARY KEY,
 		name TEXT,
 		level TEXT,
 		cohort TEXT,
-		tools TEXT
+		tools INT,
+		tests INT,
+		FOREIGN KEY (tools) REFERENCES tools(id),
+		FOREIGN KEY (tests) REFERENCES tests(id)
 	);`)
-	defer stmt.Close()
-	_, err = stmt.Exec()
+
+	if err != nil {
+		return err
+	}
+
+	_, err = db.Exec(`CREATE TABLE IF NOT EXISTS tools (
+    	id INT AUTO_INCREMENT PRIMARY KEY,
+    	tool TEXT
+	)`)
+
 	if err != nil {
 		return err
 	}
@@ -63,14 +86,17 @@ func (s SqlDatabase) Terminate() {
 }
 
 func (s SqlDatabase) SavePta(data PtaData) {
-	stmt, err := db.Prepare("REPLACE INTO `ptas` (id, name, level, cohort) VALUES (?, ?, ?, ?)")
+	stmt, err := db.Prepare("REPLACE INTO `ptas` (id, name, level, cohort, tools, tests) VALUES (?, ?, ?, ?, ?, ?)")
 	defer stmt.Close()
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
-	stmt.Exec(data.Id, data.Name, data.Level, data.Cohort)
+	jsonTools, _ := json.Marshal(data.Tools)
+	jsonTests, _ := json.Marshal(data.Tests)
+
+	stmt.Exec(data.Id, data.Name, data.Level, data.Cohort, jsonTools, jsonTests)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -80,15 +106,8 @@ func (s SqlDatabase) SavePta(data PtaData) {
 func (s SqlDatabase) LoadPta(id string) *PtaData {
 	var pta PtaData
 
-	stmt, err := db.Prepare("SELECT id, name, level, cohort FROM ptas WHERE id=?")
-	defer stmt.Close()
-	if err != nil {
-		fmt.Println(err)
-		return nil
-	}
+	err := db.Get(&pta, "SELECT * FROM `ptas` WHERE id=? LIMIT 1", id)
 
-	row := stmt.QueryRow(id)
-	err = row.Scan(&pta.Id, &pta.Name, &pta.Level, &pta.Cohort)
 	if err != nil {
 		fmt.Println(err)
 		return nil
