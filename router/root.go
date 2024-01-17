@@ -2,13 +2,10 @@ package router
 
 import (
 	"fmt"
-	"log"
-	"net/http"
-	"strings"
-
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/tjalp/pta-platform/database"
+	"net/http"
 )
 
 var data database.Database
@@ -16,10 +13,10 @@ var data database.Database
 func StartServer() {
 	fmt.Println("Starting PTA Platform")
 
-	data = database.MemoryDatabase{}
+	data = database.SqlDatabase{}
 	err := data.Start()
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 		return
 	}
 
@@ -29,10 +26,11 @@ func StartServer() {
 	router.GET("/pta/:id", getPta)
 	router.DELETE("/pta/:id", deletePta)
 	router.POST("/pta/create", createPta)
+	router.PUT("/pta/:id", editPta)
 
 	err = router.Run()
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 }
 
@@ -50,22 +48,20 @@ func getPta(c *gin.Context) {
 }
 
 func createPta(c *gin.Context) {
-	name := strings.TrimSpace(c.PostForm("name"))
-	level := strings.TrimSpace(c.PostForm("level"))
-	cohort := strings.TrimSpace(c.PostForm("cohort"))
+	var pta database.PtaData
 
-	if name == "" {
+	if err := c.Bind(&pta); err != nil {
+		panic(err)
+		return
+	}
+
+	if pta.Name == "" {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "'name' cannot be empty"})
 		return
 	}
 
-	pta := database.PtaData{
-		Id:     uuid.NewString(),
-		Name:   name,
-		Level:  level,
-		Cohort: cohort,
-		Tests:  []database.Test{},
-	}
+	pta = database.PtaData{}
+	pta.Id = uuid.NewString()
 
 	data.SavePta(pta)
 
@@ -83,4 +79,24 @@ func deletePta(c *gin.Context) {
 	}
 
 	c.Status(http.StatusOK)
+}
+
+func editPta(c *gin.Context) {
+	id := c.Param("id")
+
+	pta := data.LoadPta(id)
+
+	if pta == nil {
+		createPta(c)
+		return
+	}
+
+	if err := c.Bind(&pta); err != nil {
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+
+	data.SavePta(*pta)
+
+	c.Status(http.StatusNoContent)
 }

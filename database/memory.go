@@ -29,7 +29,7 @@ var ptaData = []PtaData{
 				Type:          "schriftelijk",
 				ResultType:    "cijfer",
 				Time:          100,
-				Retakable:     true,
+				Resitable:     true,
 				Weight:        15,
 				Tools:         []int{0, 1, 2, 3},
 			},
