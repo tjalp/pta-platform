@@ -13,8 +13,9 @@ var data database.Database
 func StartServer() {
 	fmt.Println("Starting PTA Platform")
 
-	data = database.SqlDatabase{}
+	data = database.MongoDatabase{}
 	err := data.Start()
+	defer data.Terminate()
 	if err != nil {
 		panic(err)
 		return
@@ -60,7 +61,6 @@ func createPta(c *gin.Context) {
 		return
 	}
 
-	pta = database.PtaData{}
 	pta.Id = uuid.NewString()
 
 	data.SavePta(pta)

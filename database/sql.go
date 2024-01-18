@@ -10,7 +10,7 @@ import (
 
 type SqlDatabase struct{}
 
-var db *sqlx.DB
+var sqldb *sqlx.DB
 
 func (s SqlDatabase) Start() error {
 	cfg := mysql.Config{
@@ -23,21 +23,21 @@ func (s SqlDatabase) Start() error {
 	} // TODO credentials
 	fmt.Println("Opening SQL connection...")
 	var err error
-	db, err = sqlx.Connect("mysql", cfg.FormatDSN())
+	sqldb, err = sqlx.Connect("mysql", cfg.FormatDSN())
 	if err != nil {
 		return err
 	}
-	//db.SetConnMaxLifetime(time.Minute * 3)
-	//db.SetMaxOpenConns(10)
-	//db.SetMaxIdleConns(10)
-	//err = db.Ping()
+	//sqldb.SetConnMaxLifetime(time.Minute * 3)
+	//sqldb.SetMaxOpenConns(10)
+	//sqldb.SetMaxIdleConns(10)
+	//err = sqldb.Ping()
 	//if err != nil {
 	//	return err
 	//}
 
 	fmt.Println("Successfully opened SQL connection")
 
-	//stmt, err := db.Prepare(`CREATE TABLE IF NOT EXISTS ptas (
+	//stmt, err := sqldb.Prepare(`CREATE TABLE IF NOT EXISTS ptas (
 	//	id UUID NOT NULL PRIMARY KEY,
 	//	name TEXT,
 	//	level TEXT,
@@ -52,7 +52,7 @@ func (s SqlDatabase) Start() error {
 	//}
 
 	// idk
-	_, err = db.Exec(`CREATE TABLE IF NOT EXISTS ptas (
+	_, err = sqldb.Exec(`CREATE TABLE IF NOT EXISTS ptas (
 		id UUID NOT NULL PRIMARY KEY,
 		name TEXT,
 		level TEXT,
@@ -67,7 +67,7 @@ func (s SqlDatabase) Start() error {
 		return err
 	}
 
-	_, err = db.Exec(`CREATE TABLE IF NOT EXISTS tools (
+	_, err = sqldb.Exec(`CREATE TABLE IF NOT EXISTS tools (
     	id INT AUTO_INCREMENT PRIMARY KEY,
     	tool TEXT
 	)`)
@@ -80,13 +80,13 @@ func (s SqlDatabase) Start() error {
 }
 
 func (s SqlDatabase) Terminate() {
-	if err := db.Close(); err != nil {
+	if err := sqldb.Close(); err != nil {
 		fmt.Println(err)
 	}
 }
 
 func (s SqlDatabase) SavePta(data PtaData) {
-	stmt, err := db.Prepare("REPLACE INTO `ptas` (id, name, level, cohort, tools, tests) VALUES (?, ?, ?, ?, ?, ?)")
+	stmt, err := sqldb.Prepare("REPLACE INTO `ptas` (id, name, level, cohort, tools, tests) VALUES (?, ?, ?, ?, ?, ?)")
 	defer stmt.Close()
 	if err != nil {
 		fmt.Println(err)
@@ -106,7 +106,7 @@ func (s SqlDatabase) SavePta(data PtaData) {
 func (s SqlDatabase) LoadPta(id string) *PtaData {
 	var pta PtaData
 
-	err := db.Get(&pta, "SELECT * FROM `ptas` WHERE id=? LIMIT 1", id)
+	err := sqldb.Get(&pta, "SELECT * FROM `ptas` WHERE id=? LIMIT 1", id)
 
 	if err != nil {
 		fmt.Println(err)
@@ -117,7 +117,7 @@ func (s SqlDatabase) LoadPta(id string) *PtaData {
 }
 
 func (s SqlDatabase) DeletePta(id string) bool {
-	stmt, err := db.Prepare("DELETE FROM ptas WHERE id=?")
+	stmt, err := sqldb.Prepare("DELETE FROM ptas WHERE id=?")
 	defer stmt.Close()
 	if err != nil {
 		fmt.Println(err)
