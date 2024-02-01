@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PTA Platform - Invulscherm</title>
+  <style>
+    body {
+      background-color: #2ecc71; /* Donkergroene achtergrond */
+      color: #ffffff; /* Witte tekst */
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    #form-container {
+      background-color: #27ae60; /* Groene container */
+      padding: 40px;
+      border-radius: 8px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+      width: 400px;
+      text-align: center;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px;
+      margin: 12px 0;
+      box-sizing: border-box;
+      border: 1px solid #219d47; /* Donkergroene rand rond invoervelden */
+      border-radius: 4px;
+    }
+
+    button {
+      background-color: #219d47; /* Donkergroene knop */
+      color: #ffffff;
+      padding: 14px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    button:hover {
+      background-color: #1a8341; /* Donkergroene knop bij hover */
+    }
+  </style>
+</head>
+<body>
+
+  <div id="form-container">
+    <h2>Invulscherm</h2>
+    <form action="verwerkgegevens.php" method="post">
+      <h1>Login with Google</h1>
+    <button onclick="loginWithGoogle()">Login with Google</button>
+
+    <script>
+        function loginWithGoogle() {
+            window.location.href = '/auth/google';
+        }
+    </script>
+    </form>
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="nl">
+  <link rel="stylesheet" type="text/css" href="index.css">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.3.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+  <title>PTA Veranderen</title>
+</head>
+<body>
+
+  <h1>PTA Veranderen</h1>
+
+    <h2>Procent Eindcijfer</h2>
+    <label for="percentage">Percentage:</label>
+    <input type="text" id="percentage" name="percentage">
+
+
+    <h2>Hulpmiddelen</h2>
+    <label for="tools">Hulpmiddelen:</label>
+    <div class="velden">
+      <div class="additional-fields" id="toolsFieldsContainer">
+        <div>
+        <label for="tool1">Veld 1:</label>
+        <input type="text" id="tool1" name="tools">
+        </div>
+        <!-- Hier worden de extra velden toegevoegd -->
+      </div>
+    </div>
+    <button type="button" onclick="addAdditionalField('toolsFieldsContainer')">Voeg Veld Toe</button>
+  <button type="button" onclick="updateToolsCheckboxes()">Update de Hulpmiddelen bij toetsen</button>
+  <button type="button" onclick="verwijderVeld('toolsFieldsContainer')">Verwijder Veld</button>
+    <h2>Toetsen</h2>
+  <div class="velden">	
+    <form id="toetsen"  onsubmit="toetsOpslaan(event)">
+      <div>
+          <label for="testNumber">Toetsnummer:</label>
+          <input type="text" id="testNumber" name="testNumber">
+      </div>
+      <div>
+          <label for="year">Jaar & periode:</label>
+          <input type="text" id="year" name="year">
+      </div>
+      <div>
+          <label for="weekNumber">Weeknummer:</label>
+          <input type="number" id="weekNumber" name="weekNumber" max="52">
+      </div>
+      <div>
+          <label for="subdomain">Subdomein:</label>
+          <input type="text" id="subdomain" name="subdomain">
+      </div>
+      <div>    
+          <label for="description">Stofomschrijving:</label>
+          <textarea id="description" name="description"></textarea>
+      </div>
+      <div>    
+          <label for="examType">Afnamevorm:</label>
+        <select id="examType" name="examType">
+          <option value="leeg"></option>
+          <option value="schriftelijk">Schriftelijk</option>
+          <option value="mondeling">Mondeling</option>
+          <option value="anders">Anders</option>
+          <option value="digitaal">Digitaal</option>
+          <option value="praktisch">Praktisch</option>
+        </select>
+      </div>
+      <div>    
+          <label for="grade">Beoordeling:</label>
+          <select id="grade" name="grade">
+            <option value="leeg"></option>
+            <option value="cijfer">Cijfer</option>
+            <option value="O/V/G">O/V/G</option>
+            <option value="anders">Anders</option>
+          </select>
+      </div>
+      <div>
+          <label for="time">Tijd:</label>
+          <input type="text" id="time" name="time">
+      </div>
+      <div>  
+          <label for="resit">Herkansbaar:</label>
+        <select id="resit" name="resit">
+          <option value="leeg"></option>
+          <option value="ja">Ja</option>
+          <option value="nee">Nee</option>
+        </select>
+      </div>
+      <div>    
+          <label for="weight">Weging:</label>
+          <input type="number" id="weight" name="weight">
+      </div>
+      <div>
+        <div>
+            <label for="tools">Hulpmiddelen:</label>
+            <div id="toolsCheckboxes"></div>
+        </div>
+
+      </div>
+  </div>
+      <input type="submit" id="toetsOpslaanKnop" value="toets(en) opslaan">
+      </form>
+  </div>
+  <button type="button" onclick="cloneForm('toetsen')">Voeg toets toe</button>
+  <button type="button" onclick="verwijderToets()">Verwijder Toets</button>
+    <h2>Toelichting bij anders</h2>
+    <div class="velden">
+
+
+      <div class="additional-fields" id="explanationFieldsContainer">
+        <div>
+          <label for="excplanation">Veld 1:</label>
+          <input type="text" id="explanation" name="explanation">
+        </div>
+        <!-- Hier worden de extra velden toegevoegd -->
+      </div>
+    </div>
+
+    <button type="button" onclick="addAdditionalField('explanationFieldsContainer')">Voeg Veld Toe</button>
+  <button type="button" onclick="verwijderVeld('explanationFieldsContainer')">Verwijder Veld</button>
+
+
+  <h2>Pdf</h2>
+  <button type="button" onclick="allesOpslaan()">Alles inleveren</button>
+  <button type="button" onclick="generatePDF()">Genereer PDF</button>
+  <button tupe="button" onclick="dataOphalenVoorPDF()">Test knop</button>
+  <script>
+    function addAdditionalField(containerId) {
+      var container = document.getElementById(containerId);
+      var newFieldNumber = container.children.length + 1;
+
+      // Create a div to contain the label and input
+      var fieldContainer = document.createElement('div');
+
+      var label = document.createElement('label');
+      label.setAttribute('for', containerId + '_field' + newFieldNumber);
+      label.textContent = 'Veld ' + newFieldNumber + ':';
+
+      var input = document.createElement('input');
+      input.setAttribute('type', 'text');
+      input.setAttribute('id', containerId + '_field' + newFieldNumber);
+      input.setAttribute('name', containerId + '_field' + newFieldNumber);
+
+      // Append label and input to the field container
+      fieldContainer.appendChild(label);
+      fieldContainer.appendChild(input);
+
+      // Append the field container to the main container
+      container.appendChild(fieldContainer);
+    }
+
+    function showFormData(containerId) {
+      var formData = document.getElementById(containerId).elements;
+      var formDataString = '';
+
+      for (var i = 0; i < formData.length; i++) {
+        formDataString += formData[i].name + ': ' + formData[i].value + '\n';
+      }
+
+      document.getElementById(containerId + 'FormData').textContent = formDataString;
+    }
+
+    function cloneForm(containerId) {
+      var originalForm = document.getElementById(containerId);
+
+      if (!originalForm) {
+        console.error("Origineel formulier niet gevonden");
+        return;
+      }
+
+      var clonedForm = originalForm.cloneNode(true);
+
+      // Creëer een unieke identifier voor de nieuwe kloon
+      var cloneCount = document.getElementsByClassName('clonedForm').length + 1;
+      var newId = containerId + '_clone' + cloneCount;
+      clonedForm.id = newId;
+      clonedForm.className = 'clonedForm';
+
+      // Update IDs voor elementen in de gekloonde formulier, maar laat de name attributen ongewijzigd
+      var elements = clonedForm.elements;
+      for (var i = 0; i < elements.length; i++) {
+        var el = elements[i];
+
+        if (el.id) el.id = el.id + '_clone' + cloneCount;
+
+        // Clear de waarden
+        if (el.type === 'text' || el.type === 'number' || el.tagName === 'TEXTAREA') {
+          el.value = '';
+        }
+        if (el.type === 'checkbox') {
+          el.checked = false;
+        }
+        if (el.type === 'select-one') {
+          el.selectedIndex = 0;
+        }
+      }
+
+      // Voeg de gekloonde formulier toe
+      originalForm.parentNode.insertBefore(clonedForm, originalForm.nextSibling);
+    }
+
+
+  
+    function toetsOpslaan(event) {
+      event.preventDefault(); // Voorkomt dat de pagina herlaadt
+
+      // Vind alle formulieren inclusief gekloonde
+      var alleFormulieren = document.querySelectorAll('form[id^="toetsen"]');
+      var alleToetsData = [];
+
+      alleFormulieren.forEach(function(form) {
+        var formData = new FormData(form);
+        var toetsData = {};
+
+        for (var [key, value] of formData.entries()) {
+            // Verwijder '_cloneX' uit de key naam om overeen te komen met de oorspronkelijke veldnamen
+            var cleanKey = key.replace(/_clone\d+$/, '');
+            toetsData[cleanKey] = value;
+
+            // Controleer of weekNumber niet groter is dan 52
+            if (cleanKey === 'weekNumber' && parseInt(value) > 52) {
+                alert('Fout: Weeknummer mag niet groter zijn dan 52.');
+                return;
+            }
+        }
+
+        alleToetsData.push(toetsData);
+      });
+        console.log(alleToetsData)
+      // Controleer of er een fout is opgetreden tijdens de data verzameling
+      if (alleToetsData.some(data => data.hasOwnProperty('weekNumber') && parseInt(data.weekNumber) > 52)) {
+          return; // Stop de functie als er een fout is gedetecteerd
+      }
+
+      // Stuur alleToetsData naar de server
+      fetch('/test', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(alleToetsData)
+      })
+      .then(response => response.json())
+      .then(data => alert('Data succesvol verstuurd!'))
+      .catch((error) => {
+          console.error('Fout bij het versturen van de aanvraag:', error);
+      });
+    }
+
+
+
+    function updateToolsCheckboxes() {
+      var alleFormulieren = document.querySelectorAll('form[id^="toetsen"]');
+      var toolsData = [];
+
+      alleFormulieren.forEach(function(formulier) {
+        var checkboxesContainer = formulier.querySelector('#toolsCheckboxes');
+        if (!checkboxesContainer) {
+          console.error('toolsCheckboxes container niet gevonden in formulier');
+          return;
+        }
+
+        checkboxesContainer.innerHTML = '';
+
+        var toolsContainer = document.getElementById('toolsFieldsContainer');
+        for (var i = 0; i < toolsContainer.children.length; i++) {
+          var invoerElement = toolsContainer.children[i].querySelector('input');
+          var toolNaam = invoerElement ? invoerElement.value : 'Hulpmiddel ' + (i + 1);
+
+          var checkbox = document.createElement('input');
+          checkbox.setAttribute('type', 'checkbox');
+          checkbox.setAttribute('name', 'toolCheckbox' + (i + 1));
+          checkbox.setAttribute('id', 'toolCheckbox' + (i + 1));
+
+          var label = document.createElement('label');
+          label.setAttribute('for', 'toolCheckbox' + (i + 1));
+          label.textContent = toolNaam;
+
+          checkboxesContainer.appendChild(checkbox);
+          checkboxesContainer.appendChild(label);
+          checkboxesContainer.appendChild(document.createElement('br'));
+
+          toolsData.push({ naam: toolNaam });
+        }
+      });
+
+      verstuurToolsData(toolsData);
+    }
+
+
+    function verwijderVeld(containerId) {
+      var container = document.getElementById(containerId);
+      if (container.children.length > 1) { // Controleert of er meer dan één veld is
+        container.removeChild(container.lastChild);
+      } else {
+        alert('Er kunnen niet meer velden verwijderd worden.');
+      }
+    }
+    function verwijderToets() {
+      var toetsen = document.getElementsByClassName('clonedForm');
+      if (toetsen.length === 0) {
+        alert('Er zijn geen toetsen om te verwijderen.');
+      } else {
+        var bevestiging = confirm('Weet je zeker dat je de laatste toets wilt verwijderen?');
+        if (bevestiging) {
+          var laatsteToets = toetsen[toetsen.length - 1];
+          laatsteToets.parentNode.removeChild(laatsteToets);
+        }
+      }
+    }
+
+    function verstuurToolsData(toolsData) {
+      fetch('/verstuur-tools', { // Verander '/verstuur-tools' naar je eigen server endpoint
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ hulpmiddelen: toolsData })
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Netwerkrespons was niet ok');
+        }
+        return response.json();
+      })
+      .then(data => {
+        console.log('Succesvol verstuurd:', data);
+        // Voeg hier eventuele extra logica toe die moet gebeuren nadat de data succesvol is verstuurd
+      })
+      .catch(error => {
+        console.error('Fout bij het versturen:', error);
+      });
+    }
+
+      function generatePDF() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF({
+            orientation: 'l',
+            unit: 'mm',
+            format: [400, 250]
+        });
+  
+        // Voeg het percentage toe bovenaan de PDF
+        const percentage = document.getElementById('percentage').value;
+        doc.setFontSize(12);
+        doc.text('Percentage: ' + percentage, 10, 10);
+
+        // Eerste tabel: informatie over de toetsen
+        const testTableColumn = [
+            "Toetsnummer", 
+            "Jaar en periode", 
+            "Weeknummer", 
+            "Subdomein", 
+            "Stofomschrijving", 
+            "Afnamevorm", 
+            "Beoordeling", 
+            "Tijd", 
+            "Herkansbaar", 
+            "Weging", 
+            "Hulpmiddelen"
+        ];
+        const testTableRows = [];
+
+        const alleFormulieren = document.querySelectorAll('form[id^="toetsen"], form[class^="clonedForm"]');
+
+        alleFormulieren.forEach(form => {
+            let toetsData = [];
+
+            // Verzamel waarden van inputvelden
+            ["testNumber", "year", "weekNumber", "subdomain", "description", "examType", "grade", "time", "resit", "weight"].forEach(name => {
+                const inputElement = form.querySelector(`[name="${name}"]`);
+                toetsData.push(inputElement ? inputElement.value : "");
+            });
+
+            // Verzamel de hulpmiddelennummers
+            const hulpmiddelenNummers = Array.from(form.querySelectorAll('[name^="toolCheckbox"]'))
+                .filter(checkbox => checkbox.checked)
+                .map(checkbox => checkbox.name.replace('toolCheckbox', ''))
+                .join(", ");
+            toetsData.push(hulpmiddelenNummers);
+
+            testTableRows.push(toetsData);
+        });
+
+      doc.autoTable(testTableColumn, testTableRows, {
+              startY: 20,
+              styles: {
+                  lineColor: [0, 0, 0],  // Zwart
+                  lineWidth: 0.1
+              },
+              headStyles: {
+                  fillColor: [220, 220, 220],  // Lichtgrijs voor de kopjes
+                  textColor: [0, 0, 0],  // Zwart
+                  halign: 'center'  // Centreren van kopjes
+              },
+              bodyStyles: {
+                  fillColor: [255, 255, 255],  // Wit
+                  textColor: [0, 0, 0]  // Zwart
+              }
+          });
+
+        const startYForNextTable = doc.previousAutoTable.finalY + 10;
+
+          // Tweede tabel: informatie over de hulpmiddelen
+          const toolsTableColumn = ["Hulpmiddelnummer", "Hulpmiddelnaam"];
+          const toolsTableRows = [];
+
+          const toolsFieldsContainer = document.getElementById('toolsFieldsContainer');
+          Array.from(toolsFieldsContainer.children).forEach((child, index) => {
+              const toolName = child.querySelector('input').value;
+              toolsTableRows.push([index + 1, toolName]);
+          });
+
+          // Bepaal de breedte van de PDF en zet de breedte van de hulpmiddelen tabel op de helft
+          const pageWidth = doc.internal.pageSize.width;
+          const halfPageWidth = pageWidth / 4;
+
+          // Voeg de tweede tabel toe aan de PDF
+          doc.autoTable(toolsTableColumn, toolsTableRows, {
+              startY: startYForNextTable,
+              tableWidth: halfPageWidth,
+              styles: {
+                  lineColor: [0, 0, 0],
+                  lineWidth: 0.1
+              },
+              headStyles: {
+                  fillColor: [220, 220, 220],
+                  textColor: [0, 0, 0],
+                  halign: 'center'
+              },
+              bodyStyles: {
+                  fillColor: [255, 255, 255],
+                  textColor: [0, 0, 0]
+              }
+          });
+      
+              // Derde tabel: Uitleg bij Anders
+              const explanationTableColumn = ["Veldnummer", "Uitleg"];
+              const explanationTableRows = [];
+      
+              const explanationFieldsContainer = document.getElementById('explanationFieldsContainer');
+              Array.from(explanationFieldsContainer.children).forEach((child, index) => {
+                  const explanation = child.querySelector('input').value;
+                  explanationTableRows.push([index + 1, explanation]);
+              });
+    
+      
+              // Voeg de derde tabel toe aan de PDF rechts van de hulpmiddelen tabel
+              doc.autoTable(explanationTableColumn, explanationTableRows, {
+                  startY: startYForNextTable,
+                  tableWidth: halfPageWidth, // Gebruik dezelfde breedte als de hulpmiddelen tabel
+                  margin: { left: halfPageWidth + 20 }, // Zet de tabel rechts van de hulpmiddelen tabel
+                  styles: {
+                      lineColor: [0, 0, 0],
+                      lineWidth: 0.1
+                  },
+                  headStyles: {
+                      fillColor: [220, 220, 220],
+                      textColor: [0, 0, 0],
+                      halign: 'center'
+                  },
+                  bodyStyles: {
+                      fillColor: [255, 255, 255],
+                      textColor: [0, 0, 0]
+                  }
+              });
+      
+              // Sla de PDF op
+              doc.save('ToetsenEnHulpmiddelenOverzicht.pdf');
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+  </script>
+<script src="dataDingen.js"></script>
+</body>
+</html>

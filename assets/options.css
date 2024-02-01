@@ -1,0 +1,33 @@
+body {
+    background-color: #2ecc71; /* Donkergroene achtergrond */
+    color: #ffffff; /* Witte tekst */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+  }
+
+  #options-container {
+    background-color: #27ae60; /* Groene container */
+    padding: 40px;
+    border-radius: 8px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    width: 400px;
+    text-align: center;
+  }
+
+  button {
+    background-color: #219d47; /* Donkergroene knop */
+    color: #ffffff;
+    padding: 14px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin: 10px;
+  }
+
+  button:hover {
+    background-color: #1a8341; /* Donkergroene knop bij hover */
+  }

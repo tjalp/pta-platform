@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/tjalp/pta-platform/database"
+	"github.com/tjalp/pta-platform/export/pdf"
 	"net/http"
 )
 
@@ -24,10 +25,12 @@ func StartServer() {
 	gin.SetMode(gin.ReleaseMode)
 
 	router := gin.Default()
-	router.GET("/pta/:id", getPta)
-	router.DELETE("/pta/:id", deletePta)
-	router.POST("/pta/create", createPta)
-	router.PUT("/pta/:id", editPta)
+	router.
+		GET("/pta/:id", getPta).
+		DELETE("/pta/:id", deletePta).
+		POST("/pta/create", createPta).
+		PUT("/pta/:id", editPta).
+		GET("/pta/:id/export", exportPta)
 
 	err = router.Run()
 	if err != nil {
@@ -99,4 +102,23 @@ func editPta(c *gin.Context) {
 	data.SavePta(*pta)
 
 	c.Status(http.StatusNoContent)
+}
+
+func exportPta(c *gin.Context) {
+	id := c.Param("id")
+
+	pta := data.LoadPta(id)
+
+	if pta == nil {
+		c.AbortWithStatus(http.StatusNotFound)
+		return
+	}
+
+	err := pdf.Exporter{}.Export(c, *pta)
+	if err != nil {
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+
+	c.JSON(http.StatusOK, pta)
 }
