@@ -9,7 +9,7 @@ type Test struct {
 	Type          string `json:"type"`
 	ResultType    string `json:"result_type"`
 	Time          int    `json:"time"`
-	Resitable     bool   `json:"retakable"`
+	Resitable     bool   `json:"resitable"`
 	Weight        int    `json:"weight"`
 	Tools         []int  `json:"tools"`
 }

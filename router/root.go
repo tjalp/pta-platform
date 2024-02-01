@@ -2,6 +2,7 @@ package router
 
 import (
 	"fmt"
+	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/tjalp/pta-platform/database"
@@ -25,7 +26,11 @@ func StartServer() {
 	gin.SetMode(gin.ReleaseMode)
 
 	router := gin.Default()
-	router.
+	router.Use(static.ServeRoot("/", "./assets"))
+	router.NoRoute(func(c *gin.Context) {
+		c.File("./assets/404.html")
+	})
+	router.Group("/api").
 		GET("/pta/:id", getPta).
 		DELETE("/pta/:id", deletePta).
 		POST("/pta/create", createPta).
