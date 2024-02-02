@@ -7,7 +7,8 @@
   <title>PTA Platform - Mogelijkheden</title>
 </head>
 <body>
-
+  <input type="text" maxlength="3" id="Afkorting-docent">
+  <button type="button" onclick="ptaVanDocentKrijgen()">Ik wil de pta's die ik kan aanpassen zien</button>
   <div id="options-container">
     <h2>Mogelijkheden</h2>
     <button onclick="redirectToOption('ptamaken.html')">Optie 1</button>
@@ -20,6 +21,23 @@
     function redirectToOption(optionPage) {
       window.location.href = optionPage;
     }
+
+    function ptaVanDocentKrijgen(){
+      IdDocent = document.getElementById('Afkorting-docent').value
+      console.log(IdDocent)
+      fetch({
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(IdDocent)
+      })
+    .then(response => response.json())
+    .then(data => alert('Data succesvol verstuurd!'))
+    .catch((error) => {
+        console.error('Fout bij het versturen van de aanvraag:', error);
+      });
+      }
   </script>
 
 </body>
