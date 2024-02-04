@@ -77,3 +77,26 @@ func (s MongoDatabase) DeletePta(id string) bool {
 	}
 	return true
 }
+
+func (s MongoDatabase) SearchPta(params map[string][]string) []PtaData {
+	collection := mongodb.Collection("ptas")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	filter := bson.D{}
+	for k, v := range params {
+		filter = append(filter, bson.E{Key: k, Value: v[0]})
+	}
+
+	cursor, err := collection.Find(ctx, filter)
+	if err != nil {
+		panic(err)
+	}
+	defer cursor.Close(ctx)
+	var result []PtaData
+	err = cursor.All(ctx, &result)
+	if err != nil {
+		panic(err)
+	}
+	return result
+}

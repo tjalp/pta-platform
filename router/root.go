@@ -35,7 +35,8 @@ func StartServer() {
 		DELETE("/pta/:id", deletePta).
 		POST("/pta/create", createPta).
 		PUT("/pta/:id", editPta).
-		GET("/pta/:id/export", exportPta)
+		GET("/pta/:id/export", exportPta).
+		GET("/pta/search", searchPta)
 
 	err = router.Run()
 	if err != nil {
@@ -126,4 +127,17 @@ func exportPta(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, pta)
+}
+
+func searchPta(c *gin.Context) {
+	params := c.Request.URL.Query()
+
+	result := data.SearchPta(params)
+
+	if result == nil {
+		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": "not found"})
+		return
+	}
+
+	c.JSON(http.StatusOK, result)
 }

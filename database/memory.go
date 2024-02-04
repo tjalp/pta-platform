@@ -2,6 +2,7 @@ package database
 
 import (
 	"fmt"
+	"reflect"
 	"slices"
 )
 
@@ -68,4 +69,40 @@ func (e MemoryDatabase) DeletePta(id string) bool {
 	slices.Delete(ptaData, idx, idx+1)
 
 	return true
+}
+
+func (e MemoryDatabase) SearchPta(query map[string][]string) []PtaData {
+	var results []PtaData
+
+	for _, item := range ptaData {
+		if itemMatchesQuery(item, query) {
+			results = append(results, item)
+		}
+	}
+
+	return results
+}
+
+func itemMatchesQuery(pta PtaData, query map[string][]string) bool {
+	for key, values := range query {
+		field := reflect.ValueOf(pta).FieldByName(key)
+		if !field.IsValid() {
+			// Field not found in struct
+			return false
+		}
+		fieldValue := fmt.Sprintf("%v", field.Interface())
+		if !contains(values, fieldValue) {
+			return false
+		}
+	}
+	return true
+}
+
+func contains(arr []string, val string) bool {
+	for _, item := range arr {
+		if item == val {
+			return true
+		}
+	}
+	return false
 }
