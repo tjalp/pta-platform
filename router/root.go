@@ -132,6 +132,11 @@ func exportPta(c *gin.Context) {
 func searchPta(c *gin.Context) {
 	params := c.Request.URL.Query()
 
+	if params == nil || len(params) == 0 {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "no search parameters provided"})
+		return
+	}
+
 	result := data.SearchPta(params)
 
 	if result == nil {
