@@ -11,7 +11,7 @@
 </head>
 <body>
 
-  <h1>PTA Veranderen</h1>
+  <h1 id="name">PTA Veranderen</h1>
 
     <h2>Procent Eindcijfer</h2>
     <label for="percentage">Percentage:</label>
@@ -22,10 +22,10 @@
     <label for="tools">Hulpmiddelen:</label>
     <div class="velden">
       <div class="additional-fields" id="toolsFieldsContainer">
-        <div>
-        <label for="tool1">Veld 1:</label>
-        <input type="text" id="tool1" name="tools">
-        </div>
+<!--        <div>-->
+<!--        <label for="tool1">Veld 1:</label>-->
+<!--        <input type="text" id="tool1" name="tools">-->
+<!--        </div>-->
         <!-- Hier worden de extra velden toegevoegd -->
       </div>
     </div>
@@ -33,31 +33,32 @@
   <button type="button" onclick="updateToolsCheckboxes()">Update de Hulpmiddelen bij toetsen</button>
   <button type="button" onclick="verwijderVeld('toolsFieldsContainer')">Verwijder Veld</button>
     <h2>Toetsen</h2>
-  <div class="velden">	
-    <form id="toetsen"  onsubmit="toetsOpslaan(event)">
+  <div class="velden" id="toetsVelden">
+      <template id="toetsTemplate">
+    <form id="toetsen">
       <div>
-          <label for="testNumber">Toetsnummer:</label>
-          <input type="text" id="testNumber" name="testNumber">
+          <label for="id">Toetsnummer:</label>
+          <input type="text" id="id" name="id" required="required">
       </div>
       <div>
-          <label for="year">Jaar & periode:</label>
-          <input type="text" id="year" name="year">
+          <label for="year_and_period">Jaar & periode:</label>
+          <input type="text" id="year_and_period" name="year_and_period" required="required">
       </div>
       <div>
-          <label for="weekNumber">Weeknummer:</label>
-          <input type="number" id="weekNumber" name="weekNumber" max="52">
+          <label for="week">Weeknummer:</label>
+          <input type="text" id="week" name="week" max="52" required="required">
       </div>
       <div>
           <label for="subdomain">Subdomein:</label>
-          <input type="text" id="subdomain" name="subdomain">
+          <input type="text" id="subdomain" name="subdomain" required="required">
       </div>
-      <div>    
+      <div>
           <label for="description">Stofomschrijving:</label>
-          <textarea id="description" name="description"></textarea>
+          <textarea id="description" name="description" required="required"></textarea>
       </div>
-      <div>    
-          <label for="examType">Afnamevorm:</label>
-        <select id="examType" name="examType">
+      <div>
+          <label for="type">Afnamevorm:</label>
+        <select id="type" name="type" required="required">
           <option value="leeg"></option>
           <option value="schriftelijk">Schriftelijk</option>
           <option value="mondeling">Mondeling</option>
@@ -66,9 +67,9 @@
           <option value="praktisch">Praktisch</option>
         </select>
       </div>
-      <div>    
-          <label for="grade">Beoordeling:</label>
-          <select id="grade" name="grade">
+      <div>
+          <label for="result_type">Beoordeling:</label>
+          <select id="result_type" name="result_type" required="required">
             <option value="leeg"></option>
             <option value="cijfer">Cijfer</option>
             <option value="O/V/G">O/V/G</option>
@@ -77,32 +78,34 @@
       </div>
       <div>
           <label for="time">Tijd:</label>
-          <input type="text" id="time" name="time">
+          <input type="text" id="time" name="time" required="required">
       </div>
-      <div>  
-          <label for="resit">Herkansbaar:</label>
-        <select id="resit" name="resit">
+      <div>
+          <label for="resitable">Herkansbaar:</label>
+        <select id="resitable" name="resitable" required="required">
           <option value="leeg"></option>
-          <option value="ja">Ja</option>
-          <option value="nee">Nee</option>
+          <option value="true">Ja</option>
+          <option value="false">Nee</option>
         </select>
       </div>
-      <div>    
+      <div>
           <label for="weight">Weging:</label>
-          <input type="number" id="weight" name="weight">
+          <input type="number" id="weight" name="weight" required="required">
       </div>
       <div>
         <div>
             <label for="tools">Hulpmiddelen:</label>
-            <div id="toolsCheckboxes"></div>
+            <div id="tools"></div>
         </div>
 
       </div>
+    </form>
+      </template>
   </div>
-      <input type="submit" id="toetsOpslaanKnop" value="toets(en) opslaan">
-      </form>
-  </div>
-  <button type="button" onclick="cloneForm('toetsen')">Voeg toets toe</button>
+  <div>
+      <input type="button" id="toetsOpslaanKnop" value="toets(en) opslaan" onclick="toetsOpslaan()">
+    </div>
+  <button type="button" onclick="cloneForm('toetsTemplate')">Voeg toets toe</button>
   <button type="button" onclick="verwijderToets()">Verwijder Toets</button>
     <h2>Toelichting bij anders</h2>
     <div class="velden">
@@ -110,7 +113,7 @@
 
       <div class="additional-fields" id="explanationFieldsContainer">
         <div>
-          <label for="excplanation">Veld 1:</label>
+          <label for="explanation">Veld 1:</label>
           <input type="text" id="explanation" name="explanation">
         </div>
         <!-- Hier worden de extra velden toegevoegd -->
@@ -126,7 +129,48 @@
   <button type="button" onclick="generatePDF()">Genereer PDF</button>
   <button tupe="button" onclick="dataOphalenVoorPDF()">Test knop</button>
   <script>
-    function addAdditionalField(containerId) {
+      const urlParams = new URLSearchParams(window.location.search);
+      const ptaId = urlParams.get('id');
+      var ptaData = {};
+
+      function loadPtaData() {
+        fetch(`/api/pta/${ptaId}`)
+          .then(response => {
+            if (!response.ok) {
+              throw new Error('Netwerkrespons was niet ok');
+            }
+            return response.json();
+          })
+          .then(data => {
+              ptaData = data;
+              updateFields();
+          })
+          .catch(error => {
+            console.error('Fout bij het laden:', error);
+          });
+      }
+
+      function updateFields() {
+          document.getElementById("name").textContent = `PTA Veranderen (${ptaData.name})`;
+
+          for (const key in ptaData.tests) {
+              if (ptaData.tests.hasOwnProperty(key)) {
+                  const test = ptaData.tests[key];
+                  cloneForm('toetsTemplate', test);
+              }
+          }
+
+          for (const key in ptaData.tools) {
+                if (ptaData.tools.hasOwnProperty(key)) {
+                    const tool = ptaData.tools[key];
+                    addAdditionalField('toolsFieldsContainer', tool);
+                }
+          }
+
+          updateToolsCheckboxes(false);
+      }
+
+    function addAdditionalField(containerId, value) {
       var container = document.getElementById(containerId);
       var newFieldNumber = container.children.length + 1;
 
@@ -141,6 +185,7 @@
       input.setAttribute('type', 'text');
       input.setAttribute('id', containerId + '_field' + newFieldNumber);
       input.setAttribute('name', containerId + '_field' + newFieldNumber);
+      input.value = value == null ? "" : value;
 
       // Append label and input to the field container
       fieldContainer.appendChild(label);
@@ -161,24 +206,25 @@
       document.getElementById(containerId + 'FormData').textContent = formDataString;
     }
 
-    function cloneForm(containerId) {
-      var originalForm = document.getElementById(containerId);
+    function cloneForm(containerId, data = null) {
+        const originalForm = document.getElementById(containerId);
 
-      if (!originalForm) {
-        console.error("Origineel formulier niet gevonden");
+        if (!originalForm) {
+        console.error("Origineel formulier niet gevonden: " + containerId);
         return;
       }
 
-      var clonedForm = originalForm.cloneNode(true);
+      var clonedForm = originalForm.content.cloneNode(true);
+        console.log(clonedForm)
 
       // Creëer een unieke identifier voor de nieuwe kloon
       var cloneCount = document.getElementsByClassName('clonedForm').length + 1;
       var newId = containerId + '_clone' + cloneCount;
-      clonedForm.id = newId;
-      clonedForm.className = 'clonedForm';
+      clonedForm.children[0].id = newId;
+      clonedForm.children[0].className = 'clonedForm';
 
       // Update IDs voor elementen in de gekloonde formulier, maar laat de name attributen ongewijzigd
-      var elements = clonedForm.elements;
+      var elements = clonedForm.children[0].elements;
       for (var i = 0; i < elements.length; i++) {
         var el = elements[i];
 
@@ -186,27 +232,47 @@
 
         // Clear de waarden
         if (el.type === 'text' || el.type === 'number' || el.tagName === 'TEXTAREA') {
-          el.value = '';
+          el.value = data == null ? '' : data[el.name] || '';
         }
         if (el.type === 'checkbox') {
           el.checked = false;
+
+            if (data != null) {
+                console.log(data.tools)
+                for (const value of data.tools.values()) {
+                    if (value === parseInt(el.name.replace('toolCheckbox', '')) - 1) {
+                        el.checked = true;
+                        break;
+                    }
+                }
+            }
         }
         if (el.type === 'select-one') {
           el.selectedIndex = 0;
+
+          if (data != null) {
+            for (var j = 0; j < el.options.length; j++) {
+              if (el.options[j].value === data[el.name]) {
+                el.selectedIndex = j;
+                break;
+              }
+            }
+          }
         }
       }
 
       // Voeg de gekloonde formulier toe
-      originalForm.parentNode.insertBefore(clonedForm, originalForm.nextSibling);
+        document.getElementById("toetsVelden").appendChild(clonedForm)
+      // originalForm.parentNode.insertBefore(clonedForm, originalForm.nextSibling);
     }
 
 
   
-    function toetsOpslaan(event) {
-      event.preventDefault(); // Voorkomt dat de pagina herlaadt
+    function toetsOpslaan() {
+      // event.preventDefault(); // Voorkomt dat de pagina herlaadt
 
       // Vind alle formulieren inclusief gekloonde
-      var alleFormulieren = document.querySelectorAll('form[id^="toetsen"]');
+      var alleFormulieren = document.querySelectorAll('form[id^="toetsTemplate"]');
       var alleToetsData = [];
 
       alleFormulieren.forEach(function(form) {
@@ -216,32 +282,52 @@
         for (var [key, value] of formData.entries()) {
             // Verwijder '_cloneX' uit de key naam om overeen te komen met de oorspronkelijke veldnamen
             var cleanKey = key.replace(/_clone\d+$/, '');
-            toetsData[cleanKey] = value;
 
             // Controleer of weekNumber niet groter is dan 52
-            if (cleanKey === 'weekNumber' && parseInt(value) > 52) {
+            if (cleanKey === 'week' && parseInt(value) > 52) {
                 alert('Fout: Weeknummer mag niet groter zijn dan 52.');
                 return;
             }
+
+            if ((cleanKey === 'id' || cleanKey === 'time' || cleanKey === 'weight') && !isNaN(parseInt(value))) {
+                toetsData[cleanKey] = parseInt(value);
+                continue;
+            }
+
+            if (cleanKey === 'resitable') {
+                toetsData[cleanKey] = value === 'true';
+                continue;
+            }
+
+            if (cleanKey.startsWith("toolCheckbox")) {
+                const array = toetsData["tools"] || [];
+                array.push(parseInt(cleanKey.replace('toolCheckbox', '')) - 1);
+                toetsData["tools"] = array;
+                continue;
+            }
+
+            toetsData[cleanKey] = value;
         }
 
         alleToetsData.push(toetsData);
       });
         console.log(alleToetsData)
       // Controleer of er een fout is opgetreden tijdens de data verzameling
-      if (alleToetsData.some(data => data.hasOwnProperty('weekNumber') && parseInt(data.weekNumber) > 52)) {
+      if (alleToetsData.some(data => data.hasOwnProperty('week') && parseInt(data.week) > 52)) {
           return; // Stop de functie als er een fout is gedetecteerd
       }
 
+      var tests = {"tests": alleToetsData};
+      console.log(JSON.stringify(tests));
+
       // Stuur alleToetsData naar de server
-      fetch('/test', {
-          method: 'POST',
+      fetch(`/api/pta/${ptaId}`, {
+          method: 'PUT',
           headers: {
               'Content-Type': 'application/json',
           },
-          body: JSON.stringify(alleToetsData)
+          body: JSON.stringify(tests)
       })
-      .then(response => response.json())
       .then(data => alert('Data succesvol verstuurd!'))
       .catch((error) => {
           console.error('Fout bij het versturen van de aanvraag:', error);
@@ -250,14 +336,14 @@
 
 
 
-    function updateToolsCheckboxes() {
-      var alleFormulieren = document.querySelectorAll('form[id^="toetsen"]');
+    function updateToolsCheckboxes(sendRequest = true) {
+      var alleFormulieren = document.querySelectorAll('form[id^="toetsTemplate"]');
       var toolsData = [];
 
       alleFormulieren.forEach(function(formulier) {
-        var checkboxesContainer = formulier.querySelector('#toolsCheckboxes');
+        var checkboxesContainer = formulier.querySelector('#tools');
         if (!checkboxesContainer) {
-          console.error('toolsCheckboxes container niet gevonden in formulier');
+          console.error('tools container niet gevonden in formulier');
           return;
         }
 
@@ -281,11 +367,11 @@
           checkboxesContainer.appendChild(label);
           checkboxesContainer.appendChild(document.createElement('br'));
 
-          toolsData.push({ naam: toolNaam });
+          toolsData.push(toolNaam);
         }
       });
 
-      verstuurToolsData(toolsData);
+      if (sendRequest) verstuurToolsData(toolsData);
     }
 
 
@@ -311,12 +397,12 @@
     }
 
     function verstuurToolsData(toolsData) {
-      fetch('/verstuur-tools', { // Verander '/verstuur-tools' naar je eigen server endpoint
-        method: 'POST',
+      fetch(`/api/pta/${ptaId}`, { // Verander '/verstuur-tools' naar je eigen server endpoint
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ hulpmiddelen: toolsData })
+        body: JSON.stringify({ tools: toolsData })
       })
       .then(response => {
         if (!response.ok) {
@@ -362,13 +448,13 @@
         ];
         const testTableRows = [];
 
-        const alleFormulieren = document.querySelectorAll('form[id^="toetsen"], form[class^="clonedForm"]');
+        const alleFormulieren = document.querySelectorAll('form[id^="toetsVelden"], form[class^="clonedForm"]');
 
         alleFormulieren.forEach(form => {
             let toetsData = [];
 
             // Verzamel waarden van inputvelden
-            ["testNumber", "year", "weekNumber", "subdomain", "description", "examType", "grade", "time", "resit", "weight"].forEach(name => {
+            ["testNumber", "year_and_period", "week", "subdomain", "description", "type", "result_type", "time", "resitable", "weight"].forEach(name => {
                 const inputElement = form.querySelector(`[name="${name}"]`);
                 toetsData.push(inputElement ? inputElement.value : "");
             });
@@ -469,6 +555,8 @@
               // Sla de PDF op
               doc.save('ToetsenEnHulpmiddelenOverzicht.pdf');
     }
+
+    loadPtaData();
 
 
 

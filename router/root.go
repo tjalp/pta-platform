@@ -8,6 +8,7 @@ import (
 	"github.com/tjalp/pta-platform/database"
 	"github.com/tjalp/pta-platform/export/pdf"
 	"net/http"
+	"strings"
 )
 
 var data database.Database
@@ -26,8 +27,13 @@ func StartServer() {
 	gin.SetMode(gin.ReleaseMode)
 
 	router := gin.Default()
-	router.Use(static.ServeRoot("/", "./assets"))
+	router.Use(static.Serve("/", static.LocalFile("assets", false)))
+	//router.Use(static.ServeRoot("/", "./assets"))
 	router.NoRoute(func(c *gin.Context) {
+		if strings.HasPrefix(c.Request.URL.Path, "/api") {
+			c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": "endpoint not found"})
+			return
+		}
 		c.File("./assets/404.html")
 	})
 	router.Group("/api").

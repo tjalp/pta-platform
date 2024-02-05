@@ -33,7 +33,7 @@ function allesOpslaan() {
 
     console.log(dataStruct); // Voor testdoeleinden
 
-    fetch('/totaalPta' ,{
+    fetch('/api/totaalPta' ,{
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
