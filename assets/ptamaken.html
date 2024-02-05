@@ -127,7 +127,7 @@
   <h2>Pdf</h2>
   <button type="button" onclick="allesOpslaan()">Alles inleveren</button>
   <button type="button" onclick="generatePDF()">Genereer PDF</button>
-  <button tupe="button" onclick="dataOphalenVoorPDF()">Test knop</button>
+  <button type="button" onclick="dataOphalenVoorPDF()">Test knop</button>
   <script>
       const urlParams = new URLSearchParams(window.location.search);
       const ptaId = urlParams.get('id');
@@ -338,7 +338,14 @@
 
     function updateToolsCheckboxes(sendRequest = true) {
       var alleFormulieren = document.querySelectorAll('form[id^="toetsTemplate"]');
+      var toolsFieldsContainer = document.getElementById('toolsFieldsContainer');
       var toolsData = [];
+
+      for (var key in toolsFieldsContainer.children) {
+        if (toolsFieldsContainer.children.hasOwnProperty(key)) {
+          toolsData.push(toolsFieldsContainer.children[key].querySelector('input').value);
+        }
+      }
 
       alleFormulieren.forEach(function(formulier) {
         var checkboxesContainer = formulier.querySelector('#tools');
@@ -367,7 +374,7 @@
           checkboxesContainer.appendChild(label);
           checkboxesContainer.appendChild(document.createElement('br'));
 
-          toolsData.push(toolNaam);
+          // toolsData.push(toolNaam);
         }
       });
 
