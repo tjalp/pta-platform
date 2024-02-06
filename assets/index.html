@@ -47,16 +47,45 @@
     button:hover {
       background-color: #1a8341; /* Donkergroene knop bij hover */
     }
+
+    .button {
+      background-color: #219d47; /* Donkergroene knop */
+      color: #ffffff;
+      padding: 14px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 10px;
+      text-decoration: none;
+    }
+
+    .button:hover {
+        background-color: #1a8341; /* Donkergroene knop bij hover */
+    }
   </style>
 </head>
 <body>
 
   <div id="login-container">
     <h2>Welkom bij PTA Platform</h2>
-    <h1>Login with Google</h1>
-    <button onclick="loginWithGoogle()">Login with Google</button>
+    <h1>Login</h1>
+    <a href="options.html" class="button">Login</a>
+<!--    <form id="login-form">-->
+<!--      <label for="teacher-id">Afkorting</label><input name="teacher-id" type="text" placeholder="Docent afkorting" id="teacher-id">-->
+<!--      <button type="submit">Login</button>-->
+<!--    </form>-->
+
+<!--    <button onclick="loginWithGoogle()">Login with Google</button>-->
   </div>
   <script>
+    // document.getElementById('login-form').addEventListener('submit', login);
+
+    function login(event) {
+      event.preventDefault()
+      window.location.href = '/options.html';
+      return false;
+    }
+
     function loginWithGoogle() {
         window.location.href = '/auth/google';
     }

@@ -11,29 +11,54 @@
   <button type="button" onclick="ptaVanDocentKrijgen()">Ik wil de pta's die ik kan aanpassen zien</button>
   <div id="options-container">
     <h2>Mogelijkheden</h2>
-    <button onclick="redirectToOption('ptamaken.html')">Optie 1</button>
-    <button onclick="redirectToOption('ptamaken.html')">Optie 2</button>
-    <button onclick="redirectToOption('ptamaken.html')">Optie 3</button>
     <!-- Voeg hier meer knoppen toe voor andere opties -->
   </div>
 
   <script>
+    const optionsElement = document.getElementById('options-container')
+
     function redirectToOption(optionPage) {
       window.location.href = optionPage;
     }
 
     function ptaVanDocentKrijgen(){
-      IdDocent = document.getElementById('Afkorting-docent').value
-      console.log(IdDocent)
-      fetch({
-        method: 'POST',
+      const docentId = document.getElementById('Afkorting-docent').value;
+      console.log(docentId)
+      fetch(`/api/pta/search?responsible=${docentId}`, {
+        method: 'GET',
         headers: {
             'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(IdDocent)
+        }
       })
-    .then(response => response.json())
-    .then(data => alert('Data succesvol verstuurd!'))
+    .then(response => {
+      if (!response.ok) return
+      return response.json()
+    })
+    .then(data => {
+      console.log(JSON.stringify(data));
+
+      for (let child of Array.from(optionsElement.children)) {
+        if (child.nodeName === 'A') {
+          optionsElement.removeChild(child);
+        }
+      }
+
+      if (data === undefined || data === null || data.length === 0) {
+        alert('Geen PTA\'s gevonden');
+        return
+      }
+
+      for (let pta of data) {
+        const button = document.createElement('a');
+        button.textContent = pta.name;
+        button.setAttribute('href', `ptamaken.html?id=${pta.id}`)
+        button.setAttribute('class', 'button');
+        // button.onclick = () => redirectToOption(`ptamaken.html?id=${pta.id}`);
+        optionsElement.appendChild(button);
+      }
+
+      // alert('Data succesvol verstuurd!')
+    })
     .catch((error) => {
         console.error('Fout bij het versturen van de aanvraag:', error);
       });
