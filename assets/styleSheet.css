@@ -1,0 +1,345 @@
+html {
+    height: 100%;
+    width: 100%;
+  }
+  
+  /* Color Scheme */
+:root {
+    --primary-color: #27ae60; /* Blue */
+    --secondary-color: #2ecc71; /* Green */
+    --text-color: #333; /* Dark Gray */
+  }
+  
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 20px;
+    background-color: #ecf0f1; /* Light Gray */
+  }
+  
+  h1 {
+    text-align: center;
+    color: var(--primary-color);
+  }
+  
+  h2 {
+    margin-top: 20px;
+    color: var(--primary-color);
+  }
+  
+  label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--text-color);
+  }
+  
+  input {
+    margin-bottom: 16px;
+    padding: 8px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  button {
+    background-color: var(--secondary-color);
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+  
+  button:hover {
+    background-color: #27ae60; /* Darker Green on hover */
+  }
+  
+  .form-container {
+    margin-top: 20px;
+    border: 1px solid var(--primary-color);
+    border-radius: 5px;
+    padding: 15px;
+    background-color: #f8f8f8;
+  }
+  
+  /* Additional styling for the cloned forms */
+  .clonedForm {
+    margin-top: 20px;
+    border: 1px solid var(--primary-color);
+    border-radius: 5px;
+    padding: 15px;
+    background-color: #f8f8f8;
+  }
+  
+  input, textarea {
+    margin-bottom: 16px;
+    padding: 10px;
+    width: 100%;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    transition: border-color 0.3s ease;
+  }
+  
+  input:focus, textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+  }
+  
+  /* Additional styling for the cloned forms */
+  .clonedForm {
+    margin-top: 20px;
+    border: 1px solid var(--primary-color);
+    border-radius: 5px;
+    padding: 15px;
+    background-color: #f8f8f8;
+  }
+  
+  #toetsen{
+    margin-top: 20px;
+    border: 1px solid var(--primary-color);
+    border-radius: 5px;
+    padding: 15px;
+    background-color: #f8f8f8;
+  }
+  
+  #toetsen{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-items: stretch;
+    align-content: stretch;
+  }
+  
+  /* Additional styling for the cloned forms */
+  .clonedForm {
+    margin-top: 20px;
+    border: 1px solid var(--primary-color);
+    border-radius: 5px;
+    padding: 15px;
+    background-color: #f8f8f8;
+  }
+  
+  .velden {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-items: stretch;
+    align-content: stretch;
+    padding: 10px;
+  }
+  
+  /* Added padding to the children of .velden */
+  .velden label,
+  .velden input,
+  .velden button {
+    padding: 8px; /* Adjust padding as needed */
+  }
+  
+  /* Additional styling for the cloned forms */
+  .clonedForm {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      justify-content: flex-start;
+      align-items: stretch;
+      align-content: stretch;
+  }
+  
+  .velden form{
+    margin-top: 20px;
+    border: 1px solid var(--primary-color);
+    border-radius: 5px;
+    padding: 15px;
+    background-color: #f8f8f8;
+  }
+
+  body {
+    background-color: #2ecc71; /* Donkergroene achtergrond */
+    color: #ffffff; /* Witte tekst */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+  }
+
+  #options-container {
+    background-color: #27ae60; /* Groene container */
+    padding: 40px;
+    border-radius: 8px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    width: 400px;
+    text-align: center;
+  }
+
+  button {
+    background-color: #219d47; /* Donkergroene knop */
+    color: #ffffff;
+    padding: 14px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin: 10px;
+  }
+
+  button:hover {
+    background-color: #1a8341; /* Donkergroene knop bij hover */
+  }
+
+.button {
+    background-color: #219d47; /* Donkergroene knop */
+    color: #ffffff;
+    padding: 14px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+    text-decoration: none;
+}
+
+.button:hover {
+    background-color: #1a8341; /* Donkergroene knop bij hover */
+}
+
+/* dashboard.css */
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f5f5f5; /* Lichtgrijze achtergrond */
+    color: #333; /* Donkergrijze tekst */
+    text-align: center;
+    margin: 0;
+    padding: 20px;
+  }
+  
+  h1 {
+    color: #3498db; /* Blauwe tekst */
+  }
+  
+  select {
+    padding: 10px;
+    font-size: 16px;
+    margin-bottom: 20px;
+  }
+  
+  h2 {
+    color: #2ecc71; /* Donkergroene tekst */
+  }
+  
+  button {
+    background-color: #3498db; /* Blauwe knop */
+    color: #ffffff; /* Witte tekst */
+    padding: 10px 20px;
+    font-size: 14px;
+    margin: 5px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  button:hover {
+    background-color: #2980b9; /* Donkerblauwe knop bij hover */
+  }
+
+  body {
+    background-color: #2ecc71; /* Donkergroene achtergrond */
+    color: #ffffff; /* Witte tekst */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+  }
+
+  #login-container, #options-container {
+    background-color: #27ae60; /* Groene container */
+    padding: 40px;
+    border-radius: 8px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    width: 400px;
+    text-align: center;
+  }
+
+  input {
+    width: 100%;
+    padding: 14px;
+    margin: 12px 0;
+    box-sizing: border-box;
+    border: 1px solid #219d47; /* Donkergroene rand rond invoervelden */
+    border-radius: 4px;
+  }
+
+  button {
+    background-color: #219d47; /* Donkergroene knop */
+    color: #ffffff;
+    padding: 14px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+  }
+
+  button:hover {
+    background-color: #1a8341; /* Donkergroene knop bij hover */
+  }
+
+  .button {
+    background-color: #219d47; /* Donkergroene knop */
+    color: #ffffff;
+    padding: 14px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+    text-decoration: none;
+  }
+
+  .button:hover {
+      background-color: #1a8341; /* Donkergroene knop bij hover */
+  }
+
+  body {
+    background-color: #2ecc71; /* Donkergroene achtergrond */
+    color: #ffffff; /* Witte tekst */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+  }
+
+  #form-container {
+    background-color: #27ae60; /* Groene container */
+    padding: 40px;
+    border-radius: 8px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    width: 400px;
+    text-align: center;
+  }
+
+  input {
+    width: 100%;
+    padding: 14px;
+    margin: 12px 0;
+    box-sizing: border-box;
+    border: 1px solid #219d47; /* Donkergroene rand rond invoervelden */
+    border-radius: 4px;
+  }
+
+  button {
+    background-color: #219d47; /* Donkergroene knop */
+    color: #ffffff;
+    padding: 14px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+  }
+
+  button:hover {
+    background-color: #1a8341; /* Donkergroene knop bij hover */
+  }
