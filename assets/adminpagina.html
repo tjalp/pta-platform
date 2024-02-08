@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<!DOCTYPE html>
+<html lang="nl">
+  <link rel="stylesheet" type="text/css" href="">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PTA Platform - Adminpagina</title>
+</head>
+
+<body>
+    <form id="AanpassingenVoorDropdown" onsubmit="dataVersturen(event)">
+        <h2>Soorten toetsen</h2>
+        <div id="kloonbareVeld1">
+            <div>
+            <label for="toetsSoortVeld">Mogelijkheid 1:</label>
+            <input type ="text" class="adminveld" id="toetsSoortVeld">
+            </div>
+        </div>
+        <button type="button" onclick="voegExtraVeldToe('kloonbareVeld1')">voeg een extra veld toe</button>
+        <button type="button" onclick="verwijderVeld('kloonbareVeld1')">Haal een veld weg</button>
+
+        <h2>Tijdsmogelijkheden</h2>
+        <div id="kloonbareVeld2">
+            <div>
+            <label for="TijdsMogelijkhedenVeld">Mogelijkheid 1:</label>
+            <input type="text" class="adminveld" id="TijdsMogelijkhedenVeld">
+            </div>
+        </div>
+        <button type="button" onclick="voegExtraVeldToe('kloonbareVeld2')">voeg een extra veld toe</button>
+        <button type="button" onclick="verwijderVeld('kloonbareVeld2')">Haal een veld weg</button>
+
+        <input type="submit" class="button" value="lever de aanpassingen in">
+    </form>
+    <script>
+        function voegExtraVeldToe(containerId) {
+      var container = document.getElementById(containerId);
+      var newFieldNumber = container.children.length + 1;
+
+      // Create a div to contain the label and input
+      var fieldContainer = document.createElement('div');
+
+      var label = document.createElement('label');
+      label.setAttribute('for', containerId + '_field' + newFieldNumber);
+      label.textContent = 'Mogelijkheid ' + newFieldNumber + ':';
+
+      var input = document.createElement('input');
+      input.setAttribute('type', 'text');
+      input.setAttribute('id', containerId + '_field' + newFieldNumber);
+      input.setAttribute('name', containerId + '_field' + newFieldNumber);
+
+      // Append label and input to the field container
+      fieldContainer.appendChild(label);
+      fieldContainer.appendChild(input);
+
+      // Append the field container to the main container
+      container.appendChild(fieldContainer);
+    }
+
+    function dataVersturen(event){
+            event.preventDefault(); // Voorkomt dat het formulier echt wordt ingediend
+            
+            // Vind alle input velden binnen het formulier
+            var inputs = document.querySelectorAll('#AanpassingenVoorDropdown input[type="text"]');
+            var data = {};
+            inputs.forEach(function(input, index) {
+                data[input.name] = input.value; // Voeg de naam en waarde van elk veld toe aan het data object
+            });
+            console.log(data); // Log de verzamelde data naar de console
+
+            // Hier kan je de data versturen naar een server of iets anders doen met de data
+        }
+    </script>
+</body>
