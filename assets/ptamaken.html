@@ -15,7 +15,7 @@
 
     <h2>Procent Eindcijfer</h2>
     <label for="percentage">Percentage:</label>
-    <input type="text" id="percentage" name="percentage">
+    <input type="text" id="percentage" name="percentage" class="inputField">
 
 
     <h2>Hulpmiddelen</h2>
@@ -29,36 +29,36 @@
         <!-- Hier worden de extra velden toegevoegd -->
       </div>
     </div>
-    <button type="button" onclick="addAdditionalField('toolsFieldsContainer')">Voeg Veld Toe</button>
-  <button type="button" onclick="updateToolsCheckboxes()">Update de Hulpmiddelen bij toetsen</button>
-  <button type="button" onclick="verwijderVeld('toolsFieldsContainer')">Verwijder Veld</button>
+    <button type="button" onclick="addAdditionalField('toolsFieldsContainer')" class="inputField">Voeg Veld Toe</button>
+  <button type="button" onclick="updateToolsCheckboxes()" class="inputField">Update de Hulpmiddelen bij toetsen</button>
+  <button type="button" onclick="verwijderVeld('toolsFieldsContainer')" class="inputField">Verwijder Veld</button>
     <h2>Toetsen</h2>
   <div class="velden" id="toetsVelden">
       <template id="toetsTemplate">
     <form id="toetsen">
       <div>
           <label for="id">Toetsnummer:</label>
-          <input type="text" id="id" name="id" required="required">
+          <input type="text" id="id" name="id" required="required" class="inputField">
       </div>
       <div>
           <label for="year_and_period">Jaar & periode:</label>
-          <input type="text" id="year_and_period" name="year_and_period" required="required">
+          <input type="text" id="year_and_period" name="year_and_period" required="required" class="inputField">
       </div>
       <div>
           <label for="week">Weeknummer:</label>
-          <input type="text" id="week" name="week" max="52" required="required">
+          <input type="text" id="week" name="week" max="52" required="required" class="inputField">
       </div>
       <div>
           <label for="subdomain">Subdomein:</label>
-          <input type="text" id="subdomain" name="subdomain" required="required">
+          <input type="text" id="subdomain" name="subdomain" required="required" class="inputField">
       </div>
       <div>
           <label for="description">Stofomschrijving:</label>
-          <textarea id="description" name="description" required="required"></textarea>
+          <textarea id="description" name="description" required="required" class="inputField"></textarea>
       </div>
       <div>
           <label for="type">Afnamevorm:</label>
-        <select id="type" name="type" required="required">
+        <select id="type" name="type" required="required" class="inputField">
           <option value="leeg"></option>
           <option value="schriftelijk">Schriftelijk</option>
           <option value="mondeling">Mondeling</option>
@@ -69,7 +69,7 @@
       </div>
       <div>
           <label for="result_type">Beoordeling:</label>
-          <select id="result_type" name="result_type" required="required">
+          <select id="result_type" name="result_type" required="required" class="inputField">
             <option value="leeg"></option>
             <option value="cijfer">Cijfer</option>
             <option value="O/V/G">O/V/G</option>
@@ -78,11 +78,11 @@
       </div>
       <div>
           <label for="time">Tijd:</label>
-          <input type="text" id="time" name="time" required="required">
+          <input type="text" id="time" name="time" required="required" class="inputField">
       </div>
       <div>
           <label for="resitable">Herkansbaar:</label>
-        <select id="resitable" name="resitable" required="required">
+        <select id="resitable" name="resitable" required="required" class="inputField">
           <option value="leeg"></option>
           <option value="true">Ja</option>
           <option value="false">Nee</option>
@@ -90,7 +90,7 @@
       </div>
       <div>
           <label for="weight">Weging:</label>
-          <input type="number" id="weight" name="weight" required="required">
+          <input type="number" id="weight" name="weight" required="required" class="inputField">
       </div>
       <div>
         <div>
@@ -103,10 +103,10 @@
       </template>
   </div>
   <div>
-      <input type="button" id="toetsOpslaanKnop" value="toets(en) opslaan" onclick="toetsOpslaan()">
+      <input type="button" id="toetsOpslaanKnop" value="toets(en) opslaan" onclick="toetsOpslaan()" class="inputField">
     </div>
-  <button type="button" onclick="cloneForm('toetsTemplate')">Voeg toets toe</button>
-  <button type="button" onclick="verwijderToets()">Verwijder Toets</button>
+  <button type="button" onclick="cloneForm('toetsTemplate')" class="inputField">Voeg toets toe</button>
+  <button type="button" onclick="verwijderToets()" class="inputField">Verwijder Toets</button>
     <h2>Toelichting bij anders</h2>
     <div class="velden">
 
@@ -114,23 +114,23 @@
       <div class="additional-fields" id="explanationFieldsContainer">
         <div>
           <label for="explanation">Veld 1:</label>
-          <input type="text" id="explanation" name="explanation">
+          <input type="text" id="explanation" name="explanation" class="inputField">
         </div>
         <!-- Hier worden de extra velden toegevoegd -->
       </div>
     </div>
 
-    <button type="button" onclick="addAdditionalField('explanationFieldsContainer')">Voeg Veld Toe</button>
-  <button type="button" onclick="verwijderVeld('explanationFieldsContainer')">Verwijder Veld</button>
+    <button type="button" onclick="addAdditionalField('explanationFieldsContainer')" class="inputField">Voeg Veld Toe</button>
+  <button type="button" onclick="verwijderVeld('explanationFieldsContainer')" class="inputField">Verwijder Veld</button>
 
 
   <h2>Pdf</h2>
-  <button type="button" onclick="allesOpslaan()">Alles inleveren</button>
+  <button type="button" onclick="allesOpslaan()" class="inputField">Alles inleveren</button>
   <button type="button" onclick="generatePDF()">Genereer PDF</button>
-  <button type="button" onclick="dataOphalenVoorPDF()">Test knop</button>
   <script>
       const urlParams = new URLSearchParams(window.location.search);
       const ptaId = urlParams.get('id');
+      const teacherId = urlParams.get('teacherId');
       var ptaData = {};
 
       function loadPtaData() {
@@ -168,6 +168,10 @@
           }
 
           updateToolsCheckboxes(false);
+
+          for (let element of document.getElementsByClassName("inputField")) {
+              element.disabled = !isAuthenticated();
+          }
       }
 
     function addAdditionalField(containerId, value) {
@@ -185,6 +189,7 @@
       input.setAttribute('type', 'text');
       input.setAttribute('id', containerId + '_field' + newFieldNumber);
       input.setAttribute('name', containerId + '_field' + newFieldNumber);
+      input.setAttribute('disabled', (!isAuthenticated()).toString());
       input.value = value == null ? "" : value;
 
       // Append label and input to the field container
@@ -251,8 +256,8 @@
           el.selectedIndex = 0;
 
           if (data != null) {
-            for (var j = 0; j < el.options.length; j++) {
-              if (el.options[j].value === data[el.name]) {
+            for (let j = 0; j < el.options.length; j++) {
+              if (el.options[j].value === data[el.name].toString()) {
                 el.selectedIndex = j;
                 break;
               }
@@ -365,6 +370,7 @@
           checkbox.setAttribute('type', 'checkbox');
           checkbox.setAttribute('name', 'toolCheckbox' + (i + 1));
           checkbox.setAttribute('id', 'toolCheckbox' + (i + 1));
+          checkbox.setAttribute('disabled', (!isAuthenticated()).toString());
 
           var label = document.createElement('label');
           label.setAttribute('for', 'toolCheckbox' + (i + 1));
@@ -401,6 +407,10 @@
           laatsteToets.parentNode.removeChild(laatsteToets);
         }
       }
+    }
+
+    function isAuthenticated() {
+          return teacherId === ptaData.responsible;
     }
 
     function verstuurToolsData(toolsData) {

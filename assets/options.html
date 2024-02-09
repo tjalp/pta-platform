@@ -22,9 +22,10 @@
     }
 
     function ptaVanDocentKrijgen(){
-      const docentId = document.getElementById('Afkorting-docent').value;
+      const docentId = document.getElementById('Afkorting-docent').value.toString().toUpperCase();
       console.log(docentId)
-      fetch(`/api/pta/search?responsible=${docentId}`, {
+      // fetch(`/api/pta/search?responsible=${docentId}`, {
+      fetch('/api/pta/all', {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
@@ -51,8 +52,13 @@
       for (let pta of data) {
         const button = document.createElement('a');
         button.textContent = pta.name;
-        button.setAttribute('href', `ptamaken.html?id=${pta.id}`)
+        button.setAttribute('href', `ptamaken.html?id=${pta.id}&teacherId=${docentId}`)
         button.setAttribute('class', 'button');
+
+        if (pta.responsible === docentId) {
+          button.textContent += ' (Jouw PTA)';
+        }
+
         // button.onclick = () => redirectToOption(`ptamaken.html?id=${pta.id}`);
         optionsElement.appendChild(button);
       }
