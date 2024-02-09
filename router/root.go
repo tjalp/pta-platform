@@ -4,12 +4,10 @@ import (
 	"fmt"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/static"
-	"github.com/gin-gonic/autotls"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/tjalp/pta-platform/database"
 	"github.com/tjalp/pta-platform/export/pdf"
-	"log"
 	"net/http"
 	"strings"
 )
@@ -49,12 +47,10 @@ func StartServer() {
 		GET("/pta/search", func(c *gin.Context) { searchPta(c, false) }).
 		GET("/pta/all", func(c *gin.Context) { searchPta(c, true) })
 
-	log.Fatal(autotls.Run(router, "pta.tjalp.net"))
-
-	//err = router.Run()
-	//if err != nil {
-	//	panic(err)
-	//}
+	err = router.Run()
+	if err != nil {
+		panic(err)
+	}
 }
 
 func getPta(c *gin.Context) {
