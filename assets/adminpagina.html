@@ -9,6 +9,7 @@
 </head>
 
 <body>
+    <button type="button" onclick="PaginaTerug()">terug</button>
     <form id="AanpassingenVoorDropdown" onsubmit="dataVersturen(event)">
         <h2>Soorten toetsen</h2>
         <div id="kloonbareVeld1">
@@ -69,6 +70,10 @@
             console.log(data); // Log de verzamelde data naar de console
 
             // Hier kan je de data versturen naar een server of iets anders doen met de data
+        }
+
+        function PaginaTerug(){
+            window.location.href = 'options.html';
         }
     </script>
 </body>
