@@ -2,6 +2,7 @@ package router
 
 import (
 	"fmt"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -27,6 +28,7 @@ func StartServer() {
 	gin.SetMode(gin.ReleaseMode)
 
 	router := gin.Default()
+	router.Use(cors.Default())
 	router.Use(static.Serve("/", static.LocalFile("assets", false)))
 	//router.Use(static.ServeRoot("/", "./assets"))
 	router.NoRoute(func(c *gin.Context) {
@@ -42,7 +44,8 @@ func StartServer() {
 		POST("/pta/create", createPta).
 		PUT("/pta/:id", editPta).
 		GET("/pta/:id/export", exportPta).
-		GET("/pta/search", searchPta)
+		GET("/pta/search", func(c *gin.Context) { searchPta(c, false) }).
+		GET("/pta/all", func(c *gin.Context) { searchPta(c, true) })
 
 	err = router.Run()
 	if err != nil {
@@ -135,12 +138,14 @@ func exportPta(c *gin.Context) {
 	c.JSON(http.StatusOK, pta)
 }
 
-func searchPta(c *gin.Context) {
+func searchPta(c *gin.Context, allowNoParams bool) {
 	params := c.Request.URL.Query()
 
-	if params == nil || len(params) == 0 {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "no search parameters provided"})
-		return
+	if !allowNoParams {
+		if params == nil || len(params) == 0 {
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "no search parameters provided"})
+			return
+		}
 	}
 
 	result := data.SearchPta(params)
