@@ -1,77 +1,75 @@
 <!DOCTYPE html>
 <html lang="nl">
-  <link rel="stylesheet" type="text/css" href="options.css">
+<link rel="stylesheet" type="text/css" href="options.css">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PTA Platform - Mogelijkheden</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PTA Platform - Mogelijkheden</title>
 </head>
 <body>
-  <input type="text" maxlength="3" id="Afkorting-docent">
-  <button type="button" onclick="ptaVanDocentKrijgen()">Ik wil de pta's die ik kan aanpassen zien</button>
-  <div id="options-container">
+<input type="text" maxlength="3" id="Afkorting-docent">
+<button type="button" onclick="ptaVanDocentKrijgen()">Ik wil de pta's die ik kan aanpassen zien</button>
+<div id="options-container">
     <h2>Mogelijkheden</h2>
+    <h3 id="editable-pta">Jouw PTA's</h3>
+    <h3 id="other-pta">Andere</h3>
     <!-- Voeg hier meer knoppen toe voor andere opties -->
-  </div>
+</div>
 
-  <script>
+<script>
     const optionsElement = document.getElementById('options-container')
+    const editablePtaElement = document.getElementById('editable-pta')
+    const otherPtaElement = document.getElementById('other-pta')
 
     function redirectToOption(optionPage) {
-      window.location.href = optionPage;
+        window.location.href = optionPage;
     }
 
-    function ptaVanDocentKrijgen(){
-      const docentId = document.getElementById('Afkorting-docent').value.toString().toUpperCase();
-      console.log(docentId)
-      // fetch(`/api/pta/search?responsible=${docentId}`, {
-      fetch('/api/pta/all', {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-        }
-      })
-    .then(response => {
-      if (!response.ok) return
-      return response.json()
-    })
-    .then(data => {
-      console.log(JSON.stringify(data));
+    function ptaVanDocentKrijgen() {
+        const docentId = document.getElementById('Afkorting-docent').value.toString().toUpperCase();
+        // fetch(`/api/pta/search?responsible=${docentId}`, {
+        fetch('/api/pta/all', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        }).then(response => {
+            if (!response.ok) return
+            return response.json()
+        }).then(data => {
+            for (let child of optionsElement.querySelectorAll('button')) {
+                child.remove();
+            }
 
-      for (let child of Array.from(optionsElement.children)) {
-        if (child.nodeName === 'BUTTON') {
-          optionsElement.removeChild(child);
-        }
-      }
+            if (data === undefined || data === null || data.length === 0) {
+                alert('Geen PTA\'s gevonden');
+                return
+            }
 
-      if (data === undefined || data === null || data.length === 0) {
-        alert('Geen PTA\'s gevonden');
-        return
-      }
+            for (let pta of data) {
+                const button = document.createElement('button');
+                button.textContent = pta.name;
+                button.setAttribute('href', `ptamaken.html?id=${pta.id}&teacherId=${docentId}`)
+                // button.setAttribute('class', 'button');
 
-      for (let pta of data) {
-        const button = document.createElement('button');
-        button.textContent = pta.name;
-        button.setAttribute('href', `ptamaken.html?id=${pta.id}&teacherId=${docentId}`)
-        // button.setAttribute('class', 'button');
+                button.textContent += ` (id: ${pta.id})`;
 
-        if (pta.responsible === docentId) {
-          button.textContent += ' (Jouw PTA)';
-        }
+                button.onclick = () => redirectToOption(`ptamaken.html?id=${pta.id}&teacherId=${docentId}`);
+                // optionsElement.appendChild(button);
 
-        button.textContent += ` (id: ${pta.id})`;
+                if (pta.responsible === docentId) {
+                    editablePtaElement.appendChild(button);
+                } else {
+                    otherPtaElement.appendChild(button);
+                }
+            }
 
-        button.onclick = () => redirectToOption(`ptamaken.html?id=${pta.id}&teacherId=${docentId}`);
-        optionsElement.appendChild(button);
-      }
-
-      // alert('Data succesvol verstuurd!')
-    })
-    .catch((error) => {
-        console.error('Fout bij het versturen van de aanvraag:', error);
-      });
-      }
-  </script>
+            // alert('Data succesvol verstuurd!')
+        }).catch((error) => {
+            console.error('Fout bij het versturen van de aanvraag:', error);
+        });
+    }
+</script>
 
 </body>
 </html>
