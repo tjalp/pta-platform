@@ -7,6 +7,7 @@
     <title>PTA Platform - Mogelijkheden</title>
 </head>
 <body>
+<button onclick="createPta()">PTA Aanmaken</button>
 <input type="text" maxlength="3" id="Afkorting-docent">
 <button type="button" onclick="ptaVanDocentKrijgen()">Ik wil de pta's die ik kan aanpassen zien</button>
 <div id="options-container">
@@ -65,6 +66,44 @@
             }
 
             // alert('Data succesvol verstuurd!')
+        }).catch((error) => {
+            console.error('Fout bij het versturen van de aanvraag:', error);
+        });
+    }
+
+    function createPta() {
+        const name = window.prompt('Vul de naam van het PTA in');
+        const responsible = window.prompt('Vul de afkorting van de verantwoordelijke docent in').toUpperCase();
+
+        if (name === null || name === '') {
+            alert('Geen naam ingevuld');
+            return;
+        }
+
+        if (responsible === null || responsible === '') {
+            alert('Geen verantwoordelijke docent ingevuld');
+            return;
+        }
+
+        fetch('/api/pta/create', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                name: name,
+                responsible: responsible
+            })
+        }).then(response => {
+            if (!response.ok) return
+            return response.json()
+        }).then(data => {
+            if (data === undefined || data === null) {
+                alert('Geen PTA aangemaakt');
+                return
+            }
+
+            window.location.href = `ptamaken.html?id=${data.id}&teacherId=${data.responsible}`;
         }).catch((error) => {
             console.error('Fout bij het versturen van de aanvraag:', error);
         });
