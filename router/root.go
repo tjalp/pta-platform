@@ -79,7 +79,7 @@ func createPta(c *gin.Context) {
 		return
 	}
 
-	pta.Id = uuid.NewString()
+	pta.Id = uuid.NewString()[0:6]
 
 	data.SavePta(pta)
 

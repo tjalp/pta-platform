@@ -39,7 +39,7 @@
       console.log(JSON.stringify(data));
 
       for (let child of Array.from(optionsElement.children)) {
-        if (child.nodeName === 'A') {
+        if (child.nodeName === 'BUTTON') {
           optionsElement.removeChild(child);
         }
       }
@@ -50,16 +50,18 @@
       }
 
       for (let pta of data) {
-        const button = document.createElement('a');
+        const button = document.createElement('button');
         button.textContent = pta.name;
         button.setAttribute('href', `ptamaken.html?id=${pta.id}&teacherId=${docentId}`)
-        button.setAttribute('class', 'button');
+        // button.setAttribute('class', 'button');
 
         if (pta.responsible === docentId) {
           button.textContent += ' (Jouw PTA)';
         }
 
-        // button.onclick = () => redirectToOption(`ptamaken.html?id=${pta.id}`);
+        button.textContent += ` (id: ${pta.id})`;
+
+        button.onclick = () => redirectToOption(`ptamaken.html?id=${pta.id}&teacherId=${docentId}`);
         optionsElement.appendChild(button);
       }
 
