@@ -1,150 +1,155 @@
 /* Color Scheme */
 :root {
-  --primary-color: #27ae60; /* Blue */
-  --secondary-color: #2ecc71; /* Green */
-  --text-color: #333; /* Dark Gray */
+    --primary-color: #27ae60; /* Blue */
+    --secondary-color: #2ecc71; /* Green */
+    --text-color: #333; /* Dark Gray */
 }
 
 body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  margin: 20px;
-  background-color: #ecf0f1; /* Light Gray */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 20px;
+    background-color: #ecf0f1; /* Light Gray */
 }
 
 h1 {
-  text-align: center;
-  color: var(--primary-color);
+    text-align: center;
+    color: var(--primary-color);
 }
 
 h2 {
-  margin-top: 20px;
-  color: var(--primary-color);
+    margin-top: 20px;
+    color: var(--primary-color);
 }
 
 label {
-  display: block;
-  margin-bottom: 8px;
-  color: var(--text-color);
+    display: block;
+    margin-bottom: 8px;
+    color: var(--text-color);
 }
 
 input {
-  margin-bottom: 16px;
-  padding: 8px;
-  width: 100%;
-  box-sizing: border-box;
+    margin-bottom: 16px;
+    padding: 8px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 button {
-  background-color: var(--secondary-color);
-  color: #fff;
-  padding: 10px 20px;
-  border: none;
-  cursor: pointer;
-  border-radius: 5px;
+    background-color: var(--secondary-color);
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
 }
 
 button:hover {
-  background-color: #27ae60; /* Darker Green on hover */
+    background-color: #27ae60; /* Darker Green on hover */
+}
+
+button:disabled {
+    background-color: #bdc3c7; /* Light Gray */
+    cursor: default;
 }
 
 .form-container {
-  margin-top: 20px;
-  border: 1px solid var(--primary-color);
-  border-radius: 5px;
-  padding: 15px;
-  background-color: #f8f8f8;
+    margin-top: 20px;
+    border: 1px solid var(--primary-color);
+    border-radius: 5px;
+    padding: 15px;
+    background-color: #f8f8f8;
 }
 
 /* Additional styling for the cloned forms */
 .clonedForm {
-  margin-top: 20px;
-  border: 1px solid var(--primary-color);
-  border-radius: 5px;
-  padding: 15px;
-  background-color: #f8f8f8;
+    margin-top: 20px;
+    border: 1px solid var(--primary-color);
+    border-radius: 5px;
+    padding: 15px;
+    background-color: #f8f8f8;
 }
 
 input, textarea {
-  margin-bottom: 16px;
-  padding: 10px;
-  width: 100%;
-  box-sizing: border-box;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  transition: border-color 0.3s ease;
+    margin-bottom: 16px;
+    padding: 10px;
+    width: 100%;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    transition: border-color 0.3s ease;
 }
 
 input:focus, textarea:focus {
-  outline: none;
-  border-color: var(--primary-color);
+    outline: none;
+    border-color: var(--primary-color);
 }
 
 /* Additional styling for the cloned forms */
 .clonedForm {
-  margin-top: 20px;
-  border: 1px solid var(--primary-color);
-  border-radius: 5px;
-  padding: 15px;
-  background-color: #f8f8f8;
+    margin-top: 20px;
+    border: 1px solid var(--primary-color);
+    border-radius: 5px;
+    padding: 15px;
+    background-color: #f8f8f8;
 }
 
-#toetsen{
-  margin-top: 20px;
-  border: 1px solid var(--primary-color);
-  border-radius: 5px;
-  padding: 15px;
-  background-color: #f8f8f8;
+#toetsen {
+    margin-top: 20px;
+    border: 1px solid var(--primary-color);
+    border-radius: 5px;
+    padding: 15px;
+    background-color: #f8f8f8;
 }
 
-#toetsen{
-  display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
-  justify-content: flex-start;
-  align-items: stretch;
-  align-content: stretch;
+#toetsen {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-items: stretch;
+    align-content: stretch;
 }
 
 /* Additional styling for the cloned forms */
 .clonedForm {
-  margin-top: 20px;
-  border: 1px solid var(--primary-color);
-  border-radius: 5px;
-  padding: 15px;
-  background-color: #f8f8f8;
+    margin-top: 20px;
+    border: 1px solid var(--primary-color);
+    border-radius: 5px;
+    padding: 15px;
+    background-color: #f8f8f8;
 }
 
 .velden {
-  display: flex;
-  flex-direction: column;
-  flex-wrap: nowrap;
-  justify-content: flex-start;
-  align-items: stretch;
-  align-content: stretch;
-  padding: 10px;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-items: stretch;
+    align-content: stretch;
+    padding: 10px;
 }
 
 /* Added padding to the children of .velden */
 .velden label,
 .velden input,
 .velden button {
-  padding: 8px; /* Adjust padding as needed */
+    padding: 8px; /* Adjust padding as needed */
 }
 
 /* Additional styling for the cloned forms */
 .clonedForm {
-	display: flex;
-	flex-direction: row;
-	flex-wrap: nowrap;
-	justify-content: flex-start;
-	align-items: stretch;
-	align-content: stretch;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-items: stretch;
+    align-content: stretch;
 }
 
-.velden form{
-  margin-top: 20px;
-  border: 1px solid var(--primary-color);
-  border-radius: 5px;
-  padding: 15px;
-  background-color: #f8f8f8;
+.velden form {
+    margin-top: 20px;
+    border: 1px solid var(--primary-color);
+    border-radius: 5px;
+    padding: 15px;
+    background-color: #f8f8f8;
 }

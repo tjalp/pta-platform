@@ -61,7 +61,7 @@
             <div>
                 <label for="type">Afnamevorm:</label>
                 <select id="type" name="type" required="required" class="inputField">
-                    <option value="leeg"></option>
+                    <option hidden disabled selected value>-- selecteer een optie --</option>
                     <option value="schriftelijk">Schriftelijk</option>
                     <option value="mondeling">Mondeling</option>
                     <option value="anders">Anders</option>
@@ -72,7 +72,7 @@
             <div>
                 <label for="result_type">Beoordeling:</label>
                 <select id="result_type" name="result_type" required="required" class="inputField">
-                    <option value="leeg"></option>
+                    <option hidden disabled selected value>-- selecteer een optie --</option>
                     <option value="cijfer">Cijfer</option>
                     <option value="O/V/G">O/V/G</option>
                     <option value="anders">Anders</option>
@@ -85,7 +85,7 @@
             <div>
                 <label for="resitable">Herkansbaar:</label>
                 <select id="resitable" name="resitable" required="required" class="inputField">
-                    <option value="leeg"></option>
+                    <option hidden disabled selected value>-- selecteer een optie --</option>
                     <option value="true">Ja</option>
                     <option value="false">Nee</option>
                 </select>
@@ -286,7 +286,7 @@
             var formData = new FormData(form);
             var toetsData = {};
 
-            for (var [key, value] of formData.entries()) {
+            for (const [key, value] of formData.entries()) {
                 // Verwijder '_cloneX' uit de key naam om overeen te komen met de oorspronkelijke veldnamen
                 var cleanKey = key.replace(/_clone\d+$/, '');
 
