@@ -38,14 +38,21 @@ func StartServer() {
 		}
 		c.File("./assets/404.html")
 	})
-	router.Group("/api").
-		GET("/pta/:id", getPta).
-		DELETE("/pta/:id", deletePta).
-		POST("/pta/create", createPta).
-		PUT("/pta/:id", editPta).
-		GET("/pta/:id/export", exportPta).
-		GET("/pta/search", func(c *gin.Context) { searchPta(c, false) }).
-		GET("/pta/all", func(c *gin.Context) { searchPta(c, true) })
+	apiGroup := router.Group("/api")
+
+	apiGroup.Group("/pta").
+		GET("/:id", getPta).
+		DELETE("/:id", deletePta).
+		POST("/create", createPta).
+		PUT("/:id", editPta).
+		GET("/:id/export", exportPta).
+		GET("/search", func(c *gin.Context) { searchPta(c, false) }).
+		GET("/all", func(c *gin.Context) { searchPta(c, true) })
+
+	apiGroup.Group("/defaults").
+		GET("/tools", getTools).
+		POST("/tools", addTools).
+		PUT("/tools", setTools)
 
 	err = router.Run()
 	if err != nil {
@@ -156,4 +163,40 @@ func searchPta(c *gin.Context, allowNoParams bool) {
 	}
 
 	c.JSON(http.StatusOK, result)
+}
+
+func getTools(c *gin.Context) {
+	c.JSON(http.StatusOK, data.GetTools())
+}
+
+func addTools(c *gin.Context) {
+	var toolsToAdd []string
+
+	err := c.Bind(&toolsToAdd)
+
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+		return
+	}
+
+	tools := append(data.GetTools(), toolsToAdd...)
+
+	data.SetTools(tools)
+
+	c.JSON(http.StatusOK, tools)
+}
+
+func setTools(c *gin.Context) {
+	var tools []string
+
+	err := c.Bind(&tools)
+
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+		return
+	}
+
+	data.SetTools(tools)
+
+	c.JSON(http.StatusOK, tools)
 }
