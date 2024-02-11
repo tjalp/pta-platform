@@ -52,7 +52,10 @@ func StartServer() {
 	apiGroup.Group("/defaults").
 		GET("/tools", getTools).
 		POST("/tools", addTools).
-		PUT("/tools", setTools)
+		PUT("/tools", setTools).
+		GET("/subjects", getSubjects).
+		POST("/subjects", addSubjects).
+		PUT("/subjects", setSubjects)
 
 	err = router.Run()
 	if err != nil {
@@ -199,4 +202,40 @@ func setTools(c *gin.Context) {
 	data.SetTools(tools)
 
 	c.JSON(http.StatusOK, tools)
+}
+
+func getSubjects(c *gin.Context) {
+	c.JSON(http.StatusOK, data.GetSubjects())
+}
+
+func addSubjects(c *gin.Context) {
+	var subjectsToAdd []string
+
+	err := c.Bind(&subjectsToAdd)
+
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+		return
+	}
+
+	subjects := append(data.GetSubjects(), subjectsToAdd...)
+
+	data.SetSubjects(subjects)
+
+	c.JSON(http.StatusOK, subjects)
+}
+
+func setSubjects(c *gin.Context) {
+	var subjects []string
+
+	err := c.Bind(&subjects)
+
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+		return
+	}
+
+	data.SetSubjects(subjects)
+
+	c.JSON(http.StatusOK, subjects)
 }

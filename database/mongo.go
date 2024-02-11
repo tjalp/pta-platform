@@ -140,3 +140,43 @@ func (s MongoDatabase) SetTools(tools []string) {
 		panic(err)
 	}
 }
+
+func (s MongoDatabase) GetSubjects() []string {
+	collection := mongodb.Collection("subjects")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	cursor, err := collection.Find(ctx, bson.D{})
+	if err != nil {
+		panic(err)
+	}
+	defer cursor.Close(ctx)
+	var result []struct{ Name string }
+	err = cursor.All(ctx, &result)
+	if err != nil {
+		panic(err)
+	}
+	var subjects []string
+	for _, subject := range result {
+		subjects = append(subjects, subject.Name)
+	}
+	return subjects
+}
+
+func (s MongoDatabase) SetSubjects(subjects []string) {
+	collection := mongodb.Collection("subjects")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	_, err := collection.DeleteMany(ctx, bson.D{})
+	if err != nil {
+		panic(err)
+	}
+	var documents []interface{}
+	for _, subject := range subjects {
+		documents = append(documents, bson.D{{"name", subject}})
+	}
+	_, err = collection.InsertMany(ctx, documents)
+	if err != nil {
+		panic(err)
+	}
+}

@@ -9,6 +9,8 @@ type Database interface {
 	SearchPta(map[string][]string) []PtaData
 	GetTools() []string
 	SetTools([]string)
+	GetSubjects() []string
+	SetSubjects([]string)
 }
 
 type PtaData struct {
