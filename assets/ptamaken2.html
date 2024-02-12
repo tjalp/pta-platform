@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="nl">
-<link rel="stylesheet" type="text/css" href="ptamaken.css">
+<link rel="stylesheet" type="text/css" href="ptamaken2.css">
 
 <head>
     <meta charset="UTF-8">
@@ -11,20 +11,23 @@
 </head>
 <body>
     <header>
-        <nav>
+        <!-- <nav>
             <button type="button" onclick="paginaTerug()">Terug</button>
             <button onclick="copyPta()">Kopie maken</button>
             <button onclick="deletePta()">Verwijder PTA</button>
             <button type="button" onclick="allesOpslaan()" class="inputField">Alles inleveren</button>
             <button type="button" onclick="generatePDF()">Genereer PDF</button>
-        </nav>
+        </nav> -->
 
-        <h1 id="name">PTA Veranderen</h1>
+        <h1 id="name">PTA Platform</h1>
 
         <!-- <div id="controls">
         </div> -->
     </header>
 
+<div id="dynamicButtons">
+    <!-- Knoppen worden hier dynamisch toegevoegd -->
+</div>
 
 <div id="percentages">
     <h2>Procent Eindcijfer</h2>
@@ -167,6 +170,7 @@
 </div>
 <div class="modal-overlay" onclick="closeModalTools()"></div>
 
+<script src="ptamaken2.js"></script>
 <script src="ptamaken.js"></script>
 <script>
     const urlParams = new URLSearchParams(window.location.search);
