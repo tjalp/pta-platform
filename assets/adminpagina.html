@@ -38,44 +38,51 @@
         <div id="vakkenVwo6">
 
         </div>
-        <button type="button" onclick="voegExtraVakToe('vakkenVwo6')">Extra vak 6 Vwo</button>
+        <input type="number" id="nummerVakken6Vwo">
+        <button type="button" onclick="voegExtraVakToe('vakkenVwo6', 'nummerVakken6Vwo')">Extra vak 6 Vwo</button>
         <button type="button" onclick="verwijderVeld('vakkenVwo6')">Vak minder 6 Vwo</button>
         <h2>Vakken 5 Vwo</h2>
         <div id="vakkenVwo5">
 
         </div>
-        <button type="button" onclick="voegExtraVakToe('vakkenVwo5')">Extra vak 5 Vwo</button>
+        <input type="number" id="nummerVakken5Vwo">
+        <button type="button" onclick="voegExtraVakToe('vakkenVwo5', '')">Extra vak 5 Vwo</button>
         <button type="button" onclick="verwijderVeld('vakkenVwo5')">Vak minder 5 Vwo</button>
         <h2>Vakken 4 Vwo</h2>
         <div id="vakkenVwo4">
 
         </div>
-        <button type="button" onclick="voegExtraVakToe('vakkenVwo4')">Extra vak 4 Vwo</button>
+        <input type="number" id="nummerVakken4Vwo">
+        <button type="button" onclick="voegExtraVakToe('vakkenVwo4', 'nummerVakken4Vwo')">Extra vak 4 Vwo</button>
         <button type="button" onclick="verwijderVeld('vakkenVwo4')">Vak minder 4 Vwo</button>
         <h2>Vakken 5 Havo</h2>
         <div id="vakkenHavo5">
 
         </div>
-        <button type="button" onclick="voegExtraVakToe('vakkenHavo5')">Extra vak 5 Havo</button>
+        <input type="number" id="nummerVakken5Havo">
+        <button type="button" onclick="voegExtraVakToe('vakkenHavo5', 'nummerVakken5Havo')">Extra vak 5 Havo</button>
         <button type="button" onclick="verwijderVeld('vakkenHavo5')">Vak minde 5 Havo</button>
         <h2>Vakken 4 Havo</h2>
         <div id="vakkenHavo4">
 
         </div>
-        <button type="button" onclick="voegExtraVakToe('vakkenHavo4')">Extra vak 4 Havo</button>
+        <input type="number" id="nummerVakken4Havo">
+        <button type="button" onclick="voegExtraVakToe('vakkenHavo4', 'nummerVakken4Havo')">Extra vak 4 Havo</button>
         <button type="button" onclick="verwijderVeld('vakkenHavo4')">Vak minder 4 Havo</button>
         <h2>Vakken 4 Mavo</h2>
         <div id="vakkenMavo4">
 
         </div>
-        <button type="button" onclick="voegExtraVakToe('vakkenMavo4')">Extra vak 4 Mavo</button>
+        <input type="number" id="nummerVakken4Mavo">
+        <button type="button" onclick="voegExtraVakToe('vakkenMavo4', 'nummerVakken4Mavo')">Extra vak 4 Mavo</button>
         <button type="button" onclick="verwijderVeld('vakkenMavo4')">Vak minder 4 Mavo</button>
 
         <h2>Vakken 3 Mavo</h2>
         <div id="vakkenMavo3">
 
         </div>
-        <button type="button" onclick="voegExtraVakToe('vakkenMavo3')">Extra vak 3 Mavo</button>
+        <input type="number" id="nummerVakken3Mavo">
+        <button type="button" onclick="voegExtraVakToe('vakkenMavo3','nummerVakken3Mavo' )">Extra vak 3 Mavo</button>
         <button type="button" onclick="verwijderVeld('vakkenMavo3')">Vak minder 3 Mavo</button>
 
         <input type="submit" value="Vakken opslaan">
@@ -137,28 +144,31 @@
         window.location.href = 'options.html';
     }
 
-    function voegExtraVakToe(containerId) {
+    function voegExtraVakToe(containerId, aantalId) {
       var container = document.getElementById(containerId);
-      var newFieldNumber = container.children.length + 1;
+      var aantal = document.getElementById(aantalId).value
+      for(i = 0; i < aantal; i ++){
+        var newFieldNumber = container.children.length + 1;
 
-      // Create a div to contain the label and input
-      var fieldContainer = document.createElement('div');
+        // Create a div to contain the label and input
+        var fieldContainer = document.createElement('div');
 
-      var label = document.createElement('label');
-      label.setAttribute('for', containerId + '_field' + newFieldNumber);
-      label.textContent = 'vak ' + newFieldNumber + ':';
+        var label = document.createElement('label');
+        label.setAttribute('for', containerId + '_field' + newFieldNumber);
+        label.textContent = 'vak ' + newFieldNumber + ':';
 
-      var input = document.createElement('input');
-      input.setAttribute('type', 'text');
-      input.setAttribute('id', containerId + '_field' + newFieldNumber);
-      input.setAttribute('name', containerId + '_field' + newFieldNumber);
+        var input = document.createElement('input');
+        input.setAttribute('type', 'text');
+        input.setAttribute('id', containerId + '_field' + newFieldNumber);
+        input.setAttribute('name', containerId + '_field' + newFieldNumber);
 
-      // Append label and input to the field container
-      fieldContainer.appendChild(label);
-      fieldContainer.appendChild(input);
+        // Append label and input to the field container
+        fieldContainer.appendChild(label);
+        fieldContainer.appendChild(input);
 
-      // Append the field container to the main container
-      container.appendChild(fieldContainer);
+        // Append the field container to the main container
+        container.appendChild(fieldContainer);
+      }
     }
 
     function vakkenPtaOpslaan(){
