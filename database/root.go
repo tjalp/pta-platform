@@ -7,6 +7,10 @@ type Database interface {
 	LoadPta(id string) *PtaData
 	DeletePta(id string) bool
 	SearchPta(map[string][]string) []PtaData
+	GetTools() []string
+	SetTools([]string)
+	GetSubjects() []string
+	SetSubjects([]string)
 }
 
 type PtaData struct {
