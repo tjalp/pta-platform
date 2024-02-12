@@ -33,6 +33,58 @@
 
         <input type="submit" class="button" value="lever de aanpassingen in">
     </form>
+    <form id="VakkenPtaSchool" onsubmit="vakkenPtaOpslaan()">
+        <h2>Vakken 6 Vwo</h2>
+        <div id="vakkenVwo6">
+
+        </div>
+        <button type="button" onclick="voegExtraVakToe('vakkenVwo6')">Extra vak 6 Vwo</button>
+        <button type="button" onclick="verwijderVeld('vakkenVwo6')">Vak minder 6 Vwo</button>
+        <h2>Vakken 5 Vwo</h2>
+        <div id="vakkenVwo5">
+
+        </div>
+        <button type="button" onclick="voegExtraVakToe('vakkenVwo5')">Extra vak 5 Vwo</button>
+        <button type="button" onclick="verwijderVeld('vakkenVwo5')">Vak minder 5 Vwo</button>
+        <h2>Vakken 4 Vwo</h2>
+        <div id="vakkenVwo4">
+
+        </div>
+        <button type="button" onclick="voegExtraVakToe('vakkenVwo4')">Extra vak 4 Vwo</button>
+        <button type="button" onclick="verwijderVeld('vakkenVwo4')">Vak minder 4 Vwo</button>
+        <h2>Vakken 5 Havo</h2>
+        <div id="vakkenHavo5">
+
+        </div>
+        <button type="button" onclick="voegExtraVakToe('vakkenHavo5')">Extra vak 5 Havo</button>
+        <button type="button" onclick="verwijderVeld('vakkenHavo5')">Vak minde 5 Havo</button>
+        <h2>Vakken 4 Havo</h2>
+        <div id="vakkenHavo4">
+
+        </div>
+        <button type="button" onclick="voegExtraVakToe('vakkenHavo4')">Extra vak 4 Havo</button>
+        <button type="button" onclick="verwijderVeld('vakkenHavo4')">Vak minder 4 Havo</button>
+        <h2>Vakken 4 Mavo</h2>
+        <div id="vakkenMavo4">
+
+        </div>
+        <button type="button" onclick="voegExtraVakToe('vakkenMavo4')">Extra vak 4 Mavo</button>
+        <button type="button" onclick="verwijderVeld('vakkenMavo4')">Vak minder 4 Mavo</button>
+
+        <h2>Vakken 3 Mavo</h2>
+        <div id="vakkenMavo3">
+
+        </div>
+        <button type="button" onclick="voegExtraVakToe('vakkenMavo3')">Extra vak 3 Mavo</button>
+        <button type="button" onclick="verwijderVeld('vakkenMavo3')">Vak minder 3 Mavo</button>
+
+        <input type="submit" value="Vakken opslaan">
+    </form>
+    <h2>Docenten</h2>
+    <form id="VerantwoordelijkeDocentenPta" onSubmit="docentenPtaOpslaan()">
+        
+        <input type="submit" value="Verantwoordelijke docenten opgeven">
+    </form>
     <script>
         function voegExtraVeldToe(containerId) {
       var container = document.getElementById(containerId);
@@ -72,8 +124,81 @@
             // Hier kan je de data versturen naar een server of iets anders doen met de data
         }
 
-        function PaginaTerug(){
-            window.location.href = 'options.html';
-        }
+    function verwijderVeld(containerId) {
+    var container = document.getElementById(containerId);
+    if (container.children.length > 1) { // Controleert of er meer dan één veld is
+        container.removeChild(container.lastChild);
+    } else {
+        alert('Er kunnen niet meer velden verwijderd worden.');
+    }
+    }
+
+    function PaginaTerug(){
+        window.location.href = 'options.html';
+    }
+
+    function voegExtraVakToe(containerId) {
+      var container = document.getElementById(containerId);
+      var newFieldNumber = container.children.length + 1;
+
+      // Create a div to contain the label and input
+      var fieldContainer = document.createElement('div');
+
+      var label = document.createElement('label');
+      label.setAttribute('for', containerId + '_field' + newFieldNumber);
+      label.textContent = 'vak ' + newFieldNumber + ':';
+
+      var input = document.createElement('input');
+      input.setAttribute('type', 'text');
+      input.setAttribute('id', containerId + '_field' + newFieldNumber);
+      input.setAttribute('name', containerId + '_field' + newFieldNumber);
+
+      // Append label and input to the field container
+      fieldContainer.appendChild(label);
+      fieldContainer.appendChild(input);
+
+      // Append the field container to the main container
+      container.appendChild(fieldContainer);
+    }
+
+    function vakkenPtaOpslaan(){
+    event.preventDefault(); // Voorkom het standaard verzenden van het formulier
+
+    // Leeg de form VerantwoordelijkeDocentenPta voordat je nieuwe velden toevoegt
+    var formDocentenPta = document.getElementById('VerantwoordelijkeDocentenPta');
+    formDocentenPta.innerHTML = '';
+
+    // Een lijst van alle vakken containers met hun respectievelijke niveaus en jaargangen
+    var containers = [
+        { id: 'vakkenVwo6', niveau: '6 Vwo' },
+        { id: 'vakkenVwo5', niveau: '5 Vwo' },
+        { id: 'vakkenVwo4', niveau: '4 Vwo' },
+        { id: 'vakkenHavo5', niveau: '5 Havo' },
+        { id: 'vakkenHavo4', niveau: '4 Havo' },
+        { id: 'vakkenMavo4', niveau: '4 Mavo' },
+        { id: 'vakkenMavo3', niveau: '3 Mavo' }
+    ];
+
+    // Loop door elke container en verwerk de vakken
+    containers.forEach(function(container) {
+        var vakkenInputs = document.querySelectorAll('#' + container.id + ' input[type="text"]');
+
+        vakkenInputs.forEach(function(input, index) {
+            var volledigeNaam = input.value + ' (' + container.niveau + ')'; // Combineer de vaknaam met het niveau en jaargang
+            var label = document.createElement('label');
+            label.setAttribute('for', 'docent_' + container.id + '_' + index);
+            label.textContent = volledigeNaam + ':';
+
+            var inputDocent = document.createElement('input');
+            inputDocent.setAttribute('type', 'text');
+            inputDocent.setAttribute('id', 'docent_' + container.id + '_' + index);
+            inputDocent.setAttribute('name', 'docent_' + container.id + '_' + index);
+
+            formDocentenPta.appendChild(label);
+            formDocentenPta.appendChild(inputDocent);
+            formDocentenPta.appendChild(document.createElement('br')); // Voeg een line break toe voor nette indeling
+        });
+    });
+}
     </script>
 </body>
