@@ -9,8 +9,8 @@ type Database interface {
 	SearchPta(map[string][]string) []PtaData
 	GetTools() []string
 	SetTools([]string)
-	GetSubjects() []string
-	SetSubjects([]string)
+	GetSubjects() []Subject
+	SetSubjects([]Subject)
 }
 
 type PtaData struct {
@@ -21,4 +21,8 @@ type PtaData struct {
 	Responsible string   `json:"responsible" form:"responsible"`
 	Tools       []string `json:"tools" form:"tools"`
 	Tests       []Test   `json:"tests" form:"tests"`
+}
+
+type Subject struct {
+	Name string `json:"name" form:"name"`
 }
