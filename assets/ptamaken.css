@@ -56,6 +56,7 @@ button:disabled, input[type="button"]:disabled {
 /* Additional styling for the cloned forms */
 .clonedForm {
     margin-top: 20px;
+    width: 50vw;
     border: 1px solid var(--primary-color);
     border-radius: 5px;
     padding: 15px;
