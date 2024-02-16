@@ -45,7 +45,7 @@
 
         </div>
         <input type="number" id="nummerVakken5Vwo">
-        <button type="button" onclick="voegExtraVakToe('vakkenVwo5', '')">Extra vak 5 Vwo</button>
+        <button type="button" onclick="voegExtraVakToe('vakkenVwo5', 'nummerVakken5Vwo')">Extra vak 5 Vwo</button>
         <button type="button" onclick="verwijderVeld('vakkenVwo5')">Vak minder 5 Vwo</button>
         <h2>Vakken 4 Vwo</h2>
         <div id="vakkenVwo4">
@@ -87,10 +87,9 @@
         <input type="submit" value="Vakken opslaan">
     </form>
     <h2>Docenten</h2>
-    <form id="VerantwoordelijkeDocentenPta" onSubmit="docentenPtaOpslaan()">
-        
-        <input type="submit" value="Verantwoordelijke docenten opgeven">
+    <form id="VerantwoordelijkeDocentenPta">
     </form>
+    <button type="button" onclick="docentenPtaOpslaan()">Lever de docenten in</button>
     <script>
         function voegExtraVeldToe(containerId) {
       var container = document.getElementById(containerId);
@@ -191,7 +190,6 @@
     // Loop door elke container en verwerk de vakken
     containers.forEach(function(container) {
         var vakkenInputs = document.querySelectorAll('#' + container.id + ' input[type="text"]');
-
         vakkenInputs.forEach(function(input, index) {
             var volledigeNaam = input.value + ' (' + container.niveau + ')'; // Combineer de vaknaam met het niveau en jaargang
             var label = document.createElement('label');
@@ -209,5 +207,52 @@
         });
     });
 }
+
+    function vakkenOphalen(){
+        fetch(`/api/defaults/subjects`)
+        .then(response => {
+                if (!response.ok) {
+                    throw new Error('Netwerkrespons was niet ok');
+                }
+                return response.json();
+        })
+        .then(data =>{
+            vakken = data;
+            vakkenLaden()
+        })
+        .catch(error => {
+                console.error('Fout bij het laden:', error);
+            });
+    }
+
+    function vakkenLaden(){
+        var formDocentenPta = document.getElementById('VerantwoordelijkeDocentenPta')
+        var volledigeNaam = vakken
+        for(i = 0; i < volledigeNaam.length; i ++){
+            var label = document.createElement('label');
+            label.textContent = volledigeNaam[i] + ':';
+
+            var inputDocent = document.createElement('input');
+            inputDocent.setAttribute('type', 'text');
+            inputDocent.setAttribute('id', 'docent_' + i);
+            inputDocent.setAttribute('name', 'docent_'+ i);
+
+            var input = document.createElement('input');           
+            input.setAttribute('type', 'text'); 
+            input.setAttribute('id', '_field' + i); // Gecorrigeerd
+            input.setAttribute('name', '_field' + i); // Gecorrigeerd
+
+            formDocentenPta.appendChild(label);
+            formDocentenPta.appendChild(inputDocent);
+            formDocentenPta.appendChild(document.createElement('br')); // Voeg een line break toe voor nette indeling
+            var input = document.createElement('input');
+        }
+
+    }
+
+
+    vakkenOphalen()
+
+
     </script>
 </body>
