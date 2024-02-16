@@ -24,5 +24,6 @@ type PtaData struct {
 }
 
 type Subject struct {
-	Name string `json:"name" form:"name"`
+	Name  string `json:"name" form:"name"`
+	Level string `json:"level" form:"level"`
 }
