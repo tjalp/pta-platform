@@ -31,7 +31,27 @@
         <button type="button" onclick="verwijderVeld('kloonbareVeld2')">Haal een veld weg</button>
 
         <input type="submit" class="button" value="lever de aanpassingen in">
+        <h2>Staandaardhulpmiddelen</h2> 
+        <div id="kloonbareVeld3">
+            <div>
+            <label for="hulpmiddelenVeld">Mogelijkheid 1:</label>
+            <input type="text" class="adminveld" id="hulpmiddelenVeld">
+            </div>
+        </div>
+        <button type="button" onclick="voegExtraVeldToe('kloonbareVeld3')">voeg een extra veld toe</button>
+        <button type="button" onclick="verwijderVeld('kloonbareVeld3')">Haal een veld weg</button>
+
+        <input type="submit" class="button" value="lever de aanpassingen in">
     </form>
+    <h2>Periodes</h2>
+    <label for="periode1">Periode 1:</label>
+    <input type ="text" class="adminveld" id="periode1">
+    <label for="periode2">Periode 2:</label>
+    <input type ="text" class="adminveld" id="periode2">
+    <label for="periode3">Periode 3:</label>
+    <input type ="text" class="adminveld" id="periode3">
+    <label for="periode4">Periode 4:</label>
+    <input type ="text" class="adminveld" id="periode4">
     <form id="VakkenPtaSchool" onsubmit="vakkenPtaOpslaan()">
         <h2>Vakken 6 Vwo</h2>
         <div id="vakkenVwo6">
