@@ -60,7 +60,7 @@ func (s MongoDatabase) LoadPta(id string) *PtaData {
 	var result PtaData
 	err := collection.FindOne(ctx, bson.D{{"id", id}}).Decode(&result)
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
 		return nil
 	}
 	return &result
