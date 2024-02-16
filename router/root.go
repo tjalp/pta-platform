@@ -209,7 +209,7 @@ func getSubjects(c *gin.Context) {
 }
 
 func addSubjects(c *gin.Context) {
-	var subjectsToAdd []string
+	var subjectsToAdd []database.Subject
 
 	err := c.Bind(&subjectsToAdd)
 
@@ -226,7 +226,7 @@ func addSubjects(c *gin.Context) {
 }
 
 func setSubjects(c *gin.Context) {
-	var subjects []string
+	var subjects []database.Subject
 
 	err := c.Bind(&subjects)
 
