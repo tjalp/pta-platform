@@ -226,11 +226,12 @@
     }
 
     function vakkenLaden(){
-        var formDocentenPta = document.getElementById('VerantwoordelijkeDocentenPta')
-        var volledigeNaam = vakken
+        const formDocentenPta = document.getElementById('VerantwoordelijkeDocentenPta');
+        const volledigeNaam = Array.from(vakken).sort((a, b) => a.name.localeCompare(b.name));
+        console.log(vakken)
         for(i = 0; i < volledigeNaam.length; i ++){
             var label = document.createElement('label');
-            label.textContent = volledigeNaam[i] + ':';
+            label.textContent = volledigeNaam[i].name + " (" + volledigeNaam[i].level + ")" + ':';
 
             var inputDocent = document.createElement('input');
             inputDocent.setAttribute('type', 'text');
