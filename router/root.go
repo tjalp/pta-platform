@@ -78,6 +78,8 @@ func StartServer() {
 				user = &newUser
 			}
 
+			c.SetCookie("google-token", token, int(payload.Expires), "/", "", false, false)
+			// c.Redirect(http.StatusAccepted, c.Param("next"))
 			c.JSON(http.StatusOK, user)
 		})
 

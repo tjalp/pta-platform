@@ -97,6 +97,8 @@
   </div>
   <script>
     // document.getElementById('login-form').addEventListener('submit', login);
+    const urlParams = new URLSearchParams(window.location.search);
+    const next = urlParams.get('next');
 
     function login(event) {
       event.preventDefault()
@@ -110,7 +112,7 @@
 
     function onGoogleSignIn(response) {
       // Set cookie to token
-      document.cookie = 'google-token=' + response.credential;
+      // document.cookie = 'google-token=' + response.credential;
 
       signInGoogle(response.credential);
     }
@@ -122,17 +124,26 @@
           'Content-Type': 'application/json',
           'Authorization': 'Bearer ' + token
         }
-      }).then(response => response.json()).then(data => {
-        console.log(data);
-        window.location.href = '/options.html';
+      }).then(response => {
+        if (!response.ok) throw new Error('Failed to sign in with Google');
+        if (next != null) window.location.href = next;
+        else window.location.href = '/options.html';
+        return response;
       }).catch(error => {
         console.error(error);
       });
     }
 
-    if (document.cookie.includes('google-token')) {
-      const token = document.cookie.split('google-token=')[1];
-      signInGoogle(token);
+    function getCookie(name) {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop().split(';').shift();
+    }
+
+    const googleTokenCookie = getCookie('google-token');
+
+    if (googleTokenCookie != null) {
+      signInGoogle(googleTokenCookie);
     }
   </script>
 </body>

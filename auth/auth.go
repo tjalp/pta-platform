@@ -20,15 +20,7 @@ func Authentication(db database.Database) gin.HandlerFunc {
 }
 
 func Authenticate(c *gin.Context, db database.Database) bool {
-	bearerToken := c.GetHeader("Authorization")
-
-	if bearerToken == "" {
-		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": "unauthorized"})
-		return false
-	}
-
-	reqToken := strings.Split(bearerToken, "Bearer ")[1]
-
+	reqToken := getToken(c)
 	payload, err := idtoken.Validate(c, reqToken, "")
 
 	if err != nil {
@@ -45,6 +37,21 @@ func Authenticate(c *gin.Context, db database.Database) bool {
 	}
 
 	return true
+}
+
+func getToken(c *gin.Context) string {
+	bearerToken := c.GetHeader("Authorization")
+	split := strings.Split(bearerToken, "Bearer ")
+
+	if bearerToken == "" || len(split) < 2 {
+		token, err := c.Cookie("google-token")
+		if err != nil {
+			return ""
+		}
+		return token
+	}
+
+	return split[1]
 }
 
 func GenerateToken(n int) (string, error) {
