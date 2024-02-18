@@ -2,14 +2,17 @@ package router
 
 import (
 	"fmt"
+	"net/http"
+	"strings"
+	"time"
+
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"github.com/tjalp/pta-platform/auth"
 	"github.com/tjalp/pta-platform/database"
 	"github.com/tjalp/pta-platform/export/pdf"
-	"net/http"
-	"strings"
 )
 
 var data database.Database
@@ -27,6 +30,16 @@ func StartServer() {
 
 	gin.SetMode(gin.ReleaseMode)
 
+	user := database.User{
+		Id:        "testId",
+		Email:     "test@example.com",
+		CreatedAt: time.Unix(0, 0),
+	}
+	if data.FindUser(user) == nil {
+		fmt.Println("Creating test user")
+		data.SaveUser(user)
+	}
+
 	router := gin.Default()
 	router.Use(cors.Default())
 	router.Use(static.Serve("/", static.LocalFile("assets", false)))
@@ -40,7 +53,18 @@ func StartServer() {
 	})
 	apiGroup := router.Group("/api")
 
+	apiGroup.POST("/login", gin.BasicAuth(gin.Accounts{"admin": "pw"}), func(c *gin.Context) {
+		authToken, _ := auth.GenerateToken(20)
+
+		if authToken != "" {
+			auth.AddToken(authToken)
+		}
+
+		c.JSON(http.StatusOK, gin.H{"token": authToken})
+	})
+
 	apiGroup.Group("/pta").
+		Use(auth.Authentication()).
 		GET("/:id", getPta).
 		DELETE("/:id", deletePta).
 		POST("/create", createPta).

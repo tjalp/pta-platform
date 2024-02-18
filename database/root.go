@@ -1,5 +1,7 @@
 package database
 
+import "time"
+
 type Database interface {
 	Start() error
 	Terminate()
@@ -11,6 +13,8 @@ type Database interface {
 	SetTools([]string)
 	GetSubjects() []Subject
 	SetSubjects([]Subject)
+	FindUser(User) *User
+	SaveUser(User)
 }
 
 type PtaData struct {
@@ -26,4 +30,10 @@ type PtaData struct {
 type Subject struct {
 	Name  string `json:"name" form:"name"`
 	Level string `json:"level" form:"level"`
+}
+
+type User struct {
+	Id        string    `json:"id" form:"id"`
+	Email     string    `json:"email" form:"email"`
+	CreatedAt time.Time `json:"created_at" form:"created_at"`
 }

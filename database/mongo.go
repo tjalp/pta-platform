@@ -178,3 +178,26 @@ func (s MongoDatabase) SetSubjects(subjects []Subject) {
 		panic(err)
 	}
 }
+
+func (s MongoDatabase) FindUser(query User) *User {
+	collection := mongodb.Collection("users")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	var result User
+	err := collection.FindOne(ctx, query).Decode(&result)
+	if err != nil {
+		fmt.Println(err)
+		return nil
+	}
+	return &result
+}
+
+func (s MongoDatabase) SaveUser(user User) {
+	collection := mongodb.Collection("users")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	_, err := collection.InsertOne(ctx, user)
+	if err != nil {
+		panic(err)
+	}
+}
