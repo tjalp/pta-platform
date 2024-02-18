@@ -13,6 +13,7 @@ import (
 	"github.com/tjalp/pta-platform/auth"
 	"github.com/tjalp/pta-platform/database"
 	"github.com/tjalp/pta-platform/export/pdf"
+	"google.golang.org/api/idtoken"
 )
 
 var data database.Database
@@ -35,7 +36,7 @@ func StartServer() {
 		Email:     "test@example.com",
 		CreatedAt: time.Unix(0, 0),
 	}
-	if data.FindUser(user) == nil {
+	if data.FindUser(map[string]string{"id": "testId"}) == nil {
 		fmt.Println("Creating test user")
 		data.SaveUser(user)
 	}
@@ -55,7 +56,29 @@ func StartServer() {
 
 	apiGroup.Group("/auth").
 		POST("/google", func(c *gin.Context) {
-			c.Status(http.StatusOK)
+			bearerToken := c.GetHeader("Authorization")
+			token := strings.Split(bearerToken, "Bearer ")[1]
+			payload, err := idtoken.Validate(c, token, "")
+			if err != nil {
+				fmt.Println("Error validating token: ", err)
+				c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "invalid token"})
+				return
+			}
+			googleId := payload.Subject
+			user := data.FindUser(map[string]string{"google_user_id": googleId})
+
+			if user == nil {
+				newUser := database.User{
+					Id:           uuid.NewString(),
+					GoogleUserId: googleId,
+					Email:        payload.Claims["email"].(string),
+					CreatedAt:    time.Now(),
+				}
+				data.SaveUser(newUser)
+				user = &newUser
+			}
+
+			c.JSON(http.StatusOK, user)
 		})
 
 	apiGroup.POST("/login", gin.BasicAuth(gin.Accounts{"admin": "pw"}), func(c *gin.Context) {

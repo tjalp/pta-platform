@@ -73,7 +73,7 @@
     <!-- <a href="options.html" class="button">Login</a> -->
 
     <div id="g_id_onload"
-        data-client_id="228748467369-o7r1ob2mgk1otiej8s35c537b8jtaudn.apps.googleusercontent.com"
+        data-client_id="228748467369-o7r1ob2mgk1otiej8s35c537b8jtaudn"
         data-context="signin"
         data-ux_mode="popup"
         data-callback="onGoogleSignIn"
@@ -112,17 +112,15 @@
       fetch('/api/auth/google', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          token: response.credential
-        })
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + response.credential
+        }
       }).then(response => response.json()).then(data => {
         console.log(data);
+        // window.location.href = '/options.html';
       }).catch(error => {
         console.error(error);
       });
-      console.log(response);
     }
   </script>
 </body>
