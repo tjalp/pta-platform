@@ -33,7 +33,8 @@ type Subject struct {
 }
 
 type User struct {
-	Id        string    `json:"id" form:"id"`
-	Email     string    `json:"email" form:"email"`
-	CreatedAt time.Time `json:"created_at" form:"created_at"`
+	Id           string    `json:"id" form:"id"`
+	Email        string    `json:"email" form:"email"`
+	CreatedAt    time.Time `json:"created_at" form:"created_at"`
+	GoogleUserId string    `json:"google_user_id" form:"google_user_id"`
 }

@@ -20,6 +20,7 @@ require (
 	github.com/go-playground/validator/v10 v10.15.5 // indirect
 	github.com/go-sql-driver/mysql v1.7.1 // indirect
 	github.com/goccy/go-json v0.10.2 // indirect
+	github.com/golang-jwt/jwt/v5 v5.2.0 // indirect
 	github.com/golang/snappy v0.0.1 // indirect
 	github.com/jmoiron/sqlx v1.3.5 // indirect
 	github.com/joho/godotenv v1.5.1 // indirect

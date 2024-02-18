@@ -53,6 +53,11 @@ func StartServer() {
 	})
 	apiGroup := router.Group("/api")
 
+	apiGroup.Group("/auth").
+		POST("/google", func(c *gin.Context) {
+			c.Status(http.StatusOK)
+		})
+
 	apiGroup.POST("/login", gin.BasicAuth(gin.Accounts{"admin": "pw"}), func(c *gin.Context) {
 		authToken, _ := auth.GenerateToken(20)
 

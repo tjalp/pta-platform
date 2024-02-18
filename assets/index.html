@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://accounts.google.com/gsi/client" async></script>
   <title>PTA Platform</title>
   <style>
     body {
@@ -69,7 +70,24 @@
   <div id="login-container">
     <h2>Welkom bij PTA Platform</h2>
     <h1>Login</h1>
-    <a href="options.html" class="button">Login</a>
+    <!-- <a href="options.html" class="button">Login</a> -->
+
+    <div id="g_id_onload"
+        data-client_id="228748467369-o7r1ob2mgk1otiej8s35c537b8jtaudn.apps.googleusercontent.com"
+        data-context="signin"
+        data-ux_mode="popup"
+        data-callback="onGoogleSignIn"
+        data-auto_prompt="false">
+    </div>
+
+    <div class="g_id_signin"
+        data-type="standard"
+        data-shape="rectangular"
+        data-theme="outline"
+        data-text="continue_with"
+        data-size="large"
+        data-logo_alignment="left">
+    </div>
 <!--    <form id="login-form">-->
 <!--      <label for="teacher-id">Afkorting</label><input name="teacher-id" type="text" placeholder="Docent afkorting" id="teacher-id">-->
 <!--      <button type="submit">Login</button>-->
@@ -88,6 +106,23 @@
 
     function loginWithGoogle() {
         window.location.href = '/auth/google';
+    }
+
+    function onGoogleSignIn(response) {
+      fetch('/api/auth/google', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          token: response.credential
+        })
+      }).then(response => response.json()).then(data => {
+        console.log(data);
+      }).catch(error => {
+        console.error(error);
+      });
+      console.log(response);
     }
   </script>
 </body>
