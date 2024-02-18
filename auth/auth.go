@@ -7,33 +7,44 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/tjalp/pta-platform/database"
+	"google.golang.org/api/idtoken"
 )
 
 var tokens []string
 
-func Authentication() gin.HandlerFunc {
+func Authentication(db database.Database) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		authenticate(c)
+		Authenticate(c, db)
 	}
 }
 
-func authenticate(c *gin.Context) {
+func Authenticate(c *gin.Context, db database.Database) bool {
 	bearerToken := c.GetHeader("Authorization")
 
 	if bearerToken == "" {
 		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": "unauthorized"})
-		return
+		return false
 	}
 
 	reqToken := strings.Split(bearerToken, "Bearer ")[1]
 
-	for _, token := range tokens {
-		if token == reqToken {
-			continue
-		}
+	payload, err := idtoken.Validate(c, reqToken, "")
 
+	if err != nil {
 		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": "unauthorized"})
+		return false
 	}
+
+	googleId := payload.Subject
+	user := db.FindUser(map[string]string{"google_user_id": googleId})
+
+	if user == nil {
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": "unauthorized"})
+		return false
+	}
+
+	return true
 }
 
 func GenerateToken(n int) (string, error) {

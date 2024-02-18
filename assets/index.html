@@ -109,18 +109,30 @@
     }
 
     function onGoogleSignIn(response) {
+      // Set cookie to token
+      document.cookie = 'google-token=' + response.credential;
+
+      signInGoogle(response.credential);
+    }
+
+    function signInGoogle(token) {
       fetch('/api/auth/google', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + response.credential
+          'Authorization': 'Bearer ' + token
         }
       }).then(response => response.json()).then(data => {
         console.log(data);
-        // window.location.href = '/options.html';
+        window.location.href = '/options.html';
       }).catch(error => {
         console.error(error);
       });
+    }
+
+    if (document.cookie.includes('google-token')) {
+      const token = document.cookie.split('google-token=')[1];
+      signInGoogle(token);
     }
   </script>
 </body>

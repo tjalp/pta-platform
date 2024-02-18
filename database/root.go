@@ -37,4 +37,5 @@ type User struct {
 	Email        string    `json:"email" form:"email"`
 	CreatedAt    time.Time `json:"created_at" form:"created_at" bson:"created_at"`
 	GoogleUserId string    `json:"google_user_id" form:"google_user_id" bson:"google_user_id"`
+	Abbreviation string    `json:"abbreviation" form:"abbreviation"`
 }

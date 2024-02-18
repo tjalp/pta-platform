@@ -81,18 +81,8 @@ func StartServer() {
 			c.JSON(http.StatusOK, user)
 		})
 
-	apiGroup.POST("/login", gin.BasicAuth(gin.Accounts{"admin": "pw"}), func(c *gin.Context) {
-		authToken, _ := auth.GenerateToken(20)
-
-		if authToken != "" {
-			auth.AddToken(authToken)
-		}
-
-		c.JSON(http.StatusOK, gin.H{"token": authToken})
-	})
-
 	apiGroup.Group("/pta").
-		Use(auth.Authentication()).
+		Use(auth.Authentication(data)).
 		GET("/:id", getPta).
 		DELETE("/:id", deletePta).
 		POST("/create", createPta).
@@ -102,6 +92,7 @@ func StartServer() {
 		GET("/all", func(c *gin.Context) { searchPta(c, true) })
 
 	apiGroup.Group("/defaults").
+		Use(auth.Authentication(data)).
 		GET("/tools", getTools).
 		POST("/tools", addTools).
 		PUT("/tools", setTools).
