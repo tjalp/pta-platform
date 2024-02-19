@@ -1,0 +1,18 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "go",
+			"label": "go: build program",
+			"command": "build",
+			"args": [
+				"${workspaceFolder}"
+			],
+			"problemMatcher": [
+				"$go"
+			],
+			"group": "build",
+			"detail": "go build ${workspaceFolder}"
+		}
+	]
+}
