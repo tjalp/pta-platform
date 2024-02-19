@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://accounts.google.com/gsi/client" async></script>
   <title>PTA Platform</title>
   <style>
     body {
@@ -69,7 +70,24 @@
   <div id="login-container">
     <h2>Welkom bij PTA Platform</h2>
     <h1>Login</h1>
-    <a href="options.html" class="button">Login</a>
+    <!-- <a href="options.html" class="button">Login</a> -->
+
+    <div id="g_id_onload"
+        data-client_id="228748467369-o7r1ob2mgk1otiej8s35c537b8jtaudn"
+        data-context="signin"
+        data-ux_mode="popup"
+        data-callback="onGoogleSignIn"
+        data-auto_prompt="false">
+    </div>
+
+    <div class="g_id_signin"
+        data-type="standard"
+        data-shape="rectangular"
+        data-theme="outline"
+        data-text="continue_with"
+        data-size="large"
+        data-logo_alignment="left">
+    </div>
 <!--    <form id="login-form">-->
 <!--      <label for="teacher-id">Afkorting</label><input name="teacher-id" type="text" placeholder="Docent afkorting" id="teacher-id">-->
 <!--      <button type="submit">Login</button>-->
@@ -79,6 +97,8 @@
   </div>
   <script>
     // document.getElementById('login-form').addEventListener('submit', login);
+    const urlParams = new URLSearchParams(window.location.search);
+    const next = urlParams.get('next');
 
     function login(event) {
       event.preventDefault()
@@ -88,6 +108,42 @@
 
     function loginWithGoogle() {
         window.location.href = '/auth/google';
+    }
+
+    function onGoogleSignIn(response) {
+      // Set cookie to token
+      // document.cookie = 'google-token=' + response.credential;
+
+      signInGoogle(response.credential);
+    }
+
+    function signInGoogle(token) {
+      fetch('/api/auth/google', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token
+        }
+      }).then(response => {
+        if (!response.ok) throw new Error('Failed to sign in with Google');
+        if (next != null) window.location.href = next;
+        else window.location.href = '/options.html';
+        return response;
+      }).catch(error => {
+        console.error(error);
+      });
+    }
+
+    function getCookie(name) {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop().split(';').shift();
+    }
+
+    const googleTokenCookie = getCookie('google-token');
+
+    if (googleTokenCookie != null) {
+      signInGoogle(googleTokenCookie);
     }
   </script>
 </body>

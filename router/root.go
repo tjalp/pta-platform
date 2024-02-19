@@ -2,14 +2,18 @@ package router
 
 import (
 	"fmt"
+	"net/http"
+	"strings"
+	"time"
+
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"github.com/tjalp/pta-platform/auth"
 	"github.com/tjalp/pta-platform/database"
 	"github.com/tjalp/pta-platform/export/pdf"
-	"net/http"
-	"strings"
+	"google.golang.org/api/idtoken"
 )
 
 var data database.Database
@@ -27,6 +31,16 @@ func StartServer() {
 
 	gin.SetMode(gin.ReleaseMode)
 
+	user := database.User{
+		Id:        "testId",
+		Email:     "test@example.com",
+		CreatedAt: time.Unix(0, 0),
+	}
+	if data.FindUser(map[string]string{"id": "testId"}) == nil {
+		fmt.Println("Creating test user")
+		data.SaveUser(user)
+	}
+
 	router := gin.Default()
 	router.Use(cors.Default())
 	router.Use(static.Serve("/", static.LocalFile("assets", false)))
@@ -40,7 +54,37 @@ func StartServer() {
 	})
 	apiGroup := router.Group("/api")
 
+	apiGroup.Group("/auth").
+		POST("/google", func(c *gin.Context) {
+			bearerToken := c.GetHeader("Authorization")
+			token := strings.Split(bearerToken, "Bearer ")[1]
+			payload, err := idtoken.Validate(c, token, "")
+			if err != nil {
+				fmt.Println("Error validating token: ", err)
+				c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "invalid token"})
+				return
+			}
+			googleId := payload.Subject
+			user := data.FindUser(map[string]string{"google_user_id": googleId})
+
+			if user == nil {
+				newUser := database.User{
+					Id:           uuid.NewString(),
+					GoogleUserId: googleId,
+					Email:        payload.Claims["email"].(string),
+					CreatedAt:    time.Now(),
+				}
+				data.SaveUser(newUser)
+				user = &newUser
+			}
+
+			c.SetCookie("google-token", token, int(payload.Expires), "/", "", false, false)
+			// c.Redirect(http.StatusAccepted, c.Param("next"))
+			c.JSON(http.StatusOK, user)
+		})
+
 	apiGroup.Group("/pta").
+		Use(auth.Authentication(data)).
 		GET("/:id", getPta).
 		DELETE("/:id", deletePta).
 		POST("/create", createPta).
@@ -50,6 +94,7 @@ func StartServer() {
 		GET("/all", func(c *gin.Context) { searchPta(c, true) })
 
 	apiGroup.Group("/defaults").
+		Use(auth.Authentication(data)).
 		GET("/tools", getTools).
 		POST("/tools", addTools).
 		PUT("/tools", setTools).
