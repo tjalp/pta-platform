@@ -3,3 +3,6 @@ pta-platform.exe
 
 # GoLang
 .idea
+
+# Environment file
+.env

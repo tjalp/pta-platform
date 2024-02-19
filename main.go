@@ -1,6 +1,9 @@
 package main
 
-import "github.com/tjalp/pta-platform/router"
+import (
+	_ "github.com/joho/godotenv/autoload"
+	"github.com/tjalp/pta-platform/router"
+)
 
 func main() {
 	router.StartServer()
