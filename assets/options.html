@@ -7,6 +7,11 @@
     <title>PTA Platform - Mogelijkheden</title>
 </head>
 <body>
+    <form method="post" enctype="multipart/form-data" action="/api/pta/upload">
+        <label for="file">File</label>
+        <input id="file" name="file" type="file" />
+        <button>Upload</button>
+        </form>
 <button onclick="createPta()">PTA Aanmaken</button>
 <input type="text" maxlength="3" id="Afkorting-docent">
 <button type="button" onclick="ptaVanDocentKrijgen()">Ik wil de pta's die ik kan aanpassen zien</button>

@@ -13,6 +13,7 @@ import (
 	"github.com/tjalp/pta-platform/auth"
 	"github.com/tjalp/pta-platform/database"
 	"github.com/tjalp/pta-platform/export/pdf"
+	"github.com/xuri/excelize/v2"
 	"google.golang.org/api/idtoken"
 )
 
@@ -91,7 +92,8 @@ func StartServer() {
 		PUT("/:id", editPta).
 		GET("/:id/export", exportPta).
 		GET("/search", func(c *gin.Context) { searchPta(c, false) }).
-		GET("/all", func(c *gin.Context) { searchPta(c, true) })
+		GET("/all", func(c *gin.Context) { searchPta(c, true) }).
+		POST("/upload", uploadPta)
 
 	apiGroup.Group("/defaults").
 		Use(auth.Authentication(data)).
@@ -283,4 +285,38 @@ func setSubjects(c *gin.Context) {
 	data.SetSubjects(subjects)
 
 	c.JSON(http.StatusOK, subjects)
+}
+
+func uploadPta(c *gin.Context) {
+	fileHeader, err := c.FormFile("file")
+
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "no file provided"})
+		return
+	}
+
+	file, err := fileHeader.Open()
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "error opening file"})
+		return
+	}
+	defer file.Close()
+	f, err := excelize.OpenReader(file)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "error reading file"})
+		return
+	}
+	sheets := f.GetSheetList()
+
+	for _, sheetName := range sheets {
+		rows, err := f.GetRows(sheetName, excelize.Options{})
+		if err != nil {
+			fmt.Println("error reading sheet", sheetName, ":", err)
+			continue
+		}
+		pta := ReadRows(rows)
+		data.SavePta(pta)
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "file uploaded"})
 }

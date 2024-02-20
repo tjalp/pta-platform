@@ -33,7 +33,7 @@ func (s MongoDatabase) Start() error {
 	}
 	fmt.Println("Successfully opened MongoDB connection")
 	mongodb = client.Database("pta-platform")
-	s.SavePta(ptaData[0])
+	// s.SavePta(ptaData[0])
 	return nil
 }
 
