@@ -1,7 +1,6 @@
 package router
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"strings"
@@ -310,19 +309,14 @@ func uploadPta(c *gin.Context) {
 		return
 	}
 	sheets := f.GetSheetList()
-	
+
 	for _, sheetName := range sheets {
 		rows, err := f.GetRows(sheetName, excelize.Options{})
 		if err != nil {
 			fmt.Println("error reading sheet", sheetName, ":", err)
 			continue
 		}
-
 		pta := ReadRows(rows)
-
-		text, _ := json.Marshal(pta)
-		fmt.Println("Sheet Name:", sheetName, " | Data:", string(text))
-
 		data.SavePta(pta)
 	}
 
