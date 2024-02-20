@@ -84,8 +84,6 @@ func StartServer() {
 			c.JSON(http.StatusOK, user)
 		})
 
-	router.POST("/upload", uploadPta)
-
 	apiGroup.Group("/pta").
 		Use(auth.Authentication(data)).
 		GET("/:id", getPta).
