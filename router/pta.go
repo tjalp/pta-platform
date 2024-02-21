@@ -74,6 +74,34 @@ func ReadRows(rows [][]string) database.PtaData {
 			resitable = true
 		}
 		weight, _ := strconv.Atoi(rows[i][12])
+		testToolsString := rows[i][14]
+		testTools := []int{}
+
+		if strings.Contains(testToolsString, " t/m ") {
+			tools := strings.Split(testToolsString, " t/m ")
+			start, _ := strconv.Atoi(tools[0])
+			end, _ := strconv.Atoi(tools[1])
+			for j := start; j <= end; j++ {
+				testTools = append(testTools, j)
+			}
+		} else {
+			testToolsString = strings.Replace(testToolsString, " en ", ", ", -1)
+			testToolsString = strings.Replace(testToolsString, "-", ", ", -1)
+			testToolsString = strings.Replace(testToolsString, "&", ", ", -1)
+			tools := strings.Split(testToolsString, ", ")
+			for _, tool := range tools {
+				toolInt, err := strconv.Atoi(strings.TrimSpace(tool))
+				if err != nil {
+					continue
+				}
+				testTools = append(testTools, toolInt)
+			}
+		}
+
+		for i := range testTools {
+			testTools[i] = testTools[i] - 1
+		}
+
 		tests = append(tests, database.Test{
 			Id:            id,
 			YearAndPeriod: rows[i][1],
@@ -85,7 +113,7 @@ func ReadRows(rows [][]string) database.PtaData {
 			Time:          time,
 			Resitable:     resitable,
 			Weight:        weight,
-			Tools:         []int{},
+			Tools:         testTools,
 		})
 	}
 	pta.Tests = tests
