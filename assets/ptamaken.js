@@ -28,11 +28,20 @@ function calculate6VWOPercentage() {
 }
 
 function validatePercentageInput(event) {
-    const value = parseInt(event.target.value);
-    if (value > 100) {
-        event.target.value = 100;
+    let invoer = event.target.value;
+    let gefilterdeInvoer = invoer.replace(/[^0-9]/g, '');
+  
+    let waarde = parseInt(gefilterdeInvoer);
+    if (waarde > 100) {
+      event.target.value = 100;
     }
-}
+    else if (waarde < 0 || isNaN(waarde)) {
+      event.target.value = 0;
+    }
+    else {
+      event.target.value = waarde;
+    }
+  }
 
 input4vwo.addEventListener('input', function(event) {
     validatePercentageInput(event);
