@@ -443,4 +443,6 @@ function createSearchModal(title, searchOptions, bevestigActie, terugActie = nul
     }
 
     document.body.appendChild(modal);
+    searchInput.focus();
+    searchInput.select();
 }
