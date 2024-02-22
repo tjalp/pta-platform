@@ -272,3 +272,7 @@ select {
 #dynamicButtons button, .modal button {
     margin: 10px;
 }
+
+#havoVelden {
+    display: none;
+}

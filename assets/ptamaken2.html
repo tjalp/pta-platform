@@ -32,21 +32,38 @@
 <div id="percentages">
     <h2>Procent Eindcijfer</h2>
     <div class="error" id="errorPercentages"></div>
-    <div class="weging-container">
-        <label for="percentage4vwo">Weging 4 VWO:</label>
-        <input type="text" id="percentage4vwo" name="percentage4vwo" value="0" class="inputField">
-        <span class="character">%</span>
+    <div id="vwoVelden">
+        <!-- VWO velden -->  
+        <div class="weging-container">
+            <label for="percentage4vwo">Weging 4 VWO:</label>
+            <input type="text" id="percentage4vwo" name="percentage4vwo" value="0" class="inputField">
+            <span class="character">%</span>
+        </div>
+        <div class="weging-container">
+            <label for="percentage5vwo">Weging 5 VWO:</label>
+            <input type="text" id="percentage5vwo" name="percentage5vwo" value="0" class="inputField">
+            <span class="character">%</span>
+        </div>
+        <div class="weging-container">
+            <label for="percentage6vwo">Weging 6 VWO:</label>
+            <input type="text" id="percentage6vwo" name="percentage6vwo" class="showField" value="0" disabled>
+            <span class="character">% (automatisch berekend)</span>
+        </div>
     </div>
-    <div class="weging-container">
-        <label for="percentage5vwo">Weging 5 VWO:</label>
-        <input type="text" id="percentage5vwo" name="percentage5vwo" value="0" class="inputField">
-        <span class="character">%</span>
+    <div id="havoVelden">
+        <!-- HAVO velden -->
+        <div class="weging-container">
+            <label for="percentage4havo">Weging 4 HAVO:</label>
+            <input type="text" id="percentage4havo" name="percentage4havo" value="0" class="inputField">
+            <span class="character">%</span>
+        </div>
+        <div class="weging-container">
+            <label for="percentage5havo">Weging 5 HAVO:</label>
+            <input type="text" id="percentage5havo" name="percentage5havo" value="0" class="inputField" disabled>
+            <span class="character">% (automatisch berekend)</span>
+        </div>
     </div>
-    <div class="weging-container">
-        <label for="percentage6vwo">Weging 6 VWO:</label>
-        <input type="text" id="percentage6vwo" name="percentage6vwo" class="showField" value="0" disabled>
-        <span class="character">% (automatisch berekend)</span>
-    </div>
+    
 </div>
 
 <h2>Toetsen</h2>
