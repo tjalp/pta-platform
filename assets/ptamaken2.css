@@ -1,17 +1,24 @@
 /* Color Scheme */
 :root {
-    --primary-color: #27ae60; /* Blue */
-    --secondary-color: #2ecc71; /* Green */
-    --text-color: #333; /* Dark Gray */
-    --modal-background-color: #fefefe;  /* Light White */
-    --overlay-color: rgba(0, 0, 0, 0.6);  /* Semi-Transparent Black */
-    --button-hover-color: #1abc9c;  /* Lighter Green */
+    --primary-color: #27ae60;
+    /* Blue */
+    --secondary-color: #2ecc71;
+    /* Green */
+    --text-color: #333;
+    /* Dark Gray */
+    --modal-background-color: #fefefe;
+    /* Light White */
+    --overlay-color: rgba(0, 0, 0, 0.6);
+    /* Semi-Transparent Black */
+    --button-hover-color: #1abc9c;
+    /* Lighter Green */
 }
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    margin: 20px;
-    background-color: #ecf0f1; /* Light Gray */
+    margin: 10px 20px 10px 20px;
+    background-color: #ecf0f1;
+    /* Light Gray */
     color: var(--text-color);
 }
 
@@ -31,7 +38,8 @@ label {
     color: var(--text-color);
 }
 
-button, input[type="button"] {
+button,
+input[type="button"] {
     background-color: var(--secondary-color);
     color: #fff;
     padding: 10px 20px;
@@ -40,12 +48,16 @@ button, input[type="button"] {
     border-radius: 5px;
 }
 
-button:hover, input[type="button"]:hover {
-    background-color: #27ae60; /* Darker Green on hover */
+button:hover,
+input[type="button"]:hover {
+    background-color: #27ae60;
+    /* Darker Green on hover */
 }
 
-button:disabled, input[type="button"]:disabled {
-    background-color: #bdc3c7; /* Light Gray */
+button:disabled,
+input[type="button"]:disabled {
+    background-color: #bdc3c7;
+    /* Light Gray */
     cursor: default;
 }
 
@@ -67,7 +79,8 @@ button:disabled, input[type="button"]:disabled {
     width: 50vw;
 }
 
-input, textarea {
+input,
+textarea {
     padding: 10px;
     box-sizing: border-box;
     border: 1px solid #ccc;
@@ -81,12 +94,13 @@ textarea {
 }
 
 
-input:focus, textarea:focus {
+input:focus,
+textarea:focus {
     outline: none;
     border-color: var(--primary-color);
 }
 
-#toetsen {
+.toets {
     margin-top: 20px;
     border: 1px solid var(--primary-color);
     border-radius: 5px;
@@ -111,20 +125,31 @@ input:focus, textarea:focus {
     background-color: #f8f8f8;
 }
 
+#dynamicButtons button {
+    font-size: 1em;
+}
+
 #percentages .weging-container {
     display: flex;
     align-items: center;
+}
+
+#percentages * {
+
+    font-size: 16px;
 }
 
 #percentages .weging-container label {
     margin-right: 10px;
 }
 
-#percentages .inputField, #percentages .showField {
-    width: 50px; /* Of een andere breedte naar keuze */
+#percentages .inputField,
+#percentages .showField {
+    width: 50px;
+    /* Of een andere breedte naar keuze */
     margin-right: 5px;
 }
- 
+
 .error {
     color: red;
     margin-top: 10px;
@@ -133,17 +158,21 @@ input:focus, textarea:focus {
 
 nav {
     display: flex;
-    align-items: center; /* Zorgt voor verticale centrering */
-    justify-content: start; /* Lijnt items uit aan de start (links), kan aangepast worden naar wens */
+    align-items: center;
+    /* Zorgt voor verticale centrering */
+    justify-content: start;
+    /* Lijnt items uit aan de start (links), kan aangepast worden naar wens */
 }
 
-nav h1  {
-    margin: 0; /* Verwijdert de standaard marge */
+nav h1 {
+    margin: 0;
+    /* Verwijdert de standaard marge */
     /* Voeg hier eventueel andere stijlen voor h1 toe */
 }
 
-nav > *:not(:last-child) {
-    margin-right: 10px; /* Voegt 10px marge toe aan de rechterkant van elk element, behalve het laatste */
+nav>*:not(:last-child) {
+    margin-right: 10px;
+    /* Voegt 10px marge toe aan de rechterkant van elk element, behalve het laatste */
 }
 
 #controls {
@@ -169,8 +198,10 @@ nav > *:not(:last-child) {
     padding: 20px;
     border: 1px solid #888;
     border-radius: 10px;
-    width: 50%; /* Smaller width for a more centered look */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Soft shadow for depth */
+    width: 50%;
+    /* Smaller width for a more centered look */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    /* Soft shadow for depth */
 }
 
 .modal button {
@@ -195,7 +226,8 @@ nav > *:not(:last-child) {
     margin-right: 10px;
 }
 
-label, .selectField {
+label,
+.selectField {
     display: inline-block;
     margin-right: 10px;
 }
@@ -209,7 +241,8 @@ label, .selectField {
 
 .explanationDiv.visible {
     /* Gebruik een geschatte max-height die groter is dan de verwachte inhoud */
-    max-height: 200px; /* Pas dit aan op basis van de verwachte inhoudsgrootte */
+    max-height: 200px;
+    /* Pas dit aan op basis van de verwachte inhoudsgrootte */
     visibility: visible;
 }
 
@@ -217,7 +250,8 @@ label, .selectField {
     overflow-y: hidden;
     resize: none;
     min-height: 35px;
-    height: 35px; /* Verwijder 'height: auto;' aangezien de textarea automatisch groeit */
+    height: 35px;
+    /* Verwijder 'height: auto;' aangezien de textarea automatisch groeit */
 }
 
 #addToolModal {
@@ -228,9 +262,11 @@ label, .selectField {
     background-color: white;
     padding: 20px;
     border-radius: 10px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-    z-index: 1000; /* Zorg dat het boven andere elementen verschijnt */
-    display: none; /* Verborgen tot het geactiveerd wordt */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    /* Zorg dat het boven andere elementen verschijnt */
+    display: none;
+    /* Verborgen tot het geactiveerd wordt */
 }
 
 /* Achtergrond overlay */
@@ -241,22 +277,29 @@ label, .selectField {
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.5);
-    z-index: 999; /* Onder de modal, maar boven andere elementen */
-    display: none; /* Verborgen tot het geactiveerd wordt */
+    z-index: 999;
+    /* Onder de modal, maar boven andere elementen */
+    display: none;
+    /* Verborgen tot het geactiveerd wordt */
 }
 
-.toolsSelect, option {
+.toolsSelect,
+option {
     max-width: 50vw;
 }
 
 ul.selectedTools {
-    width: 100%; /* Of een specifieke breedte */
+    width: 100%;
+    /* Of een specifieke breedte */
 }
 
 ul.selectedTools li {
-    white-space: normal; /* Zorgt ervoor dat de tekst normaal omloopt */
-    word-wrap: break-word; /* Breekt lange woorden af zodat ze binnen de breedte passen */
-    overflow-wrap: break-word; /* Alternatief voor word-wrap, voor betere ondersteuning */
+    white-space: normal;
+    /* Zorgt ervoor dat de tekst normaal omloopt */
+    word-wrap: break-word;
+    /* Breekt lange woorden af zodat ze binnen de breedte passen */
+    overflow-wrap: break-word;
+    /* Alternatief voor word-wrap, voor betere ondersteuning */
 }
 
 select {
@@ -266,11 +309,21 @@ select {
     border: 1px solid #ccc;
     border-radius: 5px;
     background-color: white;
-    box-sizing: border-box; /* Include padding and border in width */
+    box-sizing: border-box;
+    /* Include padding and border in width */
 }
 
-#dynamicButtons button, .modal button {
-    margin: 10px;
+#dynamicButtons {
+    display: flex;
+    align-items: center;
+    height: 50px;
+    margin-left: 10px;
+}
+
+#dynamicButtons button,
+.modal button {
+    margin-right: 10px;
+    margin-bottom: 10px
 }
 
 #havoVelden {
@@ -286,8 +339,9 @@ select {
     width: 100%;
     height: 100%;
     overflow: auto;
-    background-color: rgba(0, 0, 0, 0.4); /* Overlay */
-    padding-top: 60px;
+    background-color: rgba(0, 0, 0, 0.4);
+    /* Overlay */
+    padding: 30px;
 }
 
 .searchModal-content {
@@ -295,7 +349,8 @@ select {
     margin: auto;
     padding: 20px;
     border-radius: 10px;
-    width: 35%; /* Aanpasbare breedte */
+    width: 35%;
+    /* Aanpasbare breedte */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
@@ -315,9 +370,11 @@ select {
 .searchModal-content ul {
     list-style: none;
     padding: 0;
-    height: 400px;
-    max-height: 400px; /* Maximale hoogte van 500px */
-    overflow-y: auto; /* Toon een verticale scrollbar indien nodig */
+    height: 300px;
+    max-height: 400px;
+    /* Maximale hoogte van 500px */
+    overflow-y: auto;
+    /* Toon een verticale scrollbar indien nodig */
 }
 
 .searchModal-content ul li {
@@ -331,6 +388,51 @@ select {
 }
 
 .searchModal-content ul li.selected {
-    background-color: #e9ecef; /* Lichtgrijze achtergrond voor geselecteerde optie */
-    color: #495057; /* Donkerdere tekstkleur voor contrast */
+    background-color: #e9ecef;
+    /* Lichtgrijze achtergrond voor geselecteerde optie */
+    color: #495057;
+    /* Donkerdere tekstkleur voor contrast */
+}
+
+.tabContainer {
+    display: flex;
+    flex-direction: row;
+}
+
+.tabs {
+    margin-top: 50px;
+    max-width: max-content;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.tab {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    cursor: pointer;
+    background-color: #f7f7f7;
+    transition: background-color 0.3s ease;
+    border-radius: 5px;
+    margin: 1px;
+}
+
+.tab.active {
+    background-color: var(--secondary-color);
+    color: white;
+}
+
+.tabContent {
+    flex: 3;
+    padding: 10px;
+    margin-left: 10px;
+    border: 1px solid var(--primary-color);
+    border-radius: 5px;
+    background-color: #f8f8f8;
+}
+
+#right {
+    display: flex;
+    flex-direction: column;
+    width: 100%
 }

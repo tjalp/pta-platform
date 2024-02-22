@@ -10,6 +10,7 @@ let isDynamicButtonClicked = false;
 
 document.addEventListener('DOMContentLoaded', function () {
     start();
+    genereerToetsen();
 });
 
 function start() {
@@ -114,7 +115,7 @@ function bevestigJaarkeuze() {
         laadAlles();
         return;
     }
-    laadAlles();    
+    laadAlles();
     updateDynamicButtonValue('Jaar', selectedJaar);
 }
 
@@ -285,63 +286,6 @@ input4vwo.addEventListener('input', valideerInvoer);
 input5vwo.addEventListener('input', valideerInvoer);
 input4havo.addEventListener('input', valideerInvoer);
 
-/*
-GET & SET FUNCTIES VOOR DATABASE
-*/
-
-// Ophalen uit DB
-let vwoWegingen = { '4 vwo': 30, '5 vwo': 40, '6 vwo': 30 };
-let havoWegingen = { '4 havo': 50, '5 havo': 50 }; 
-let oefenOpties = ['Optie 1', 'Optie 2', 'Optie 3'];
-let vakkenOpties = ['Aardrijkskunde', 'Informatica', 'Wiskunde A'];
-let niveauOpties = ['4 havo', '5 havo', '4 vwo', '5 vwo', '6 vwo'];
-let jaarOpties = ['2021/2022', '2022/2023', '2023/2024', '2024/2025'];
-let bewerkJaar = '2025' // De te bewerken jaar
-let opSlot = false; // Als Admin op slot gooit
-let toetsNummers = ['401', '402', '403', '404', '405'];
-
-function getPercentages() {
-    if (selectedNiveau.includes('vwo')) {
-        input4vwo.value = vwoWegingen['4 vwo'];
-        input5vwo.value = vwoWegingen['5 vwo'];
-        input6vwo.value = vwoWegingen['6 vwo'];
-    } else if (selectedNiveau.includes('havo')) {
-        input4havo.value = havoWegingen['4 havo'];
-        input5havo.value = havoWegingen['5 havo'];
-    }
-    berekenPercentage();
-}
-
-function setPercentages() {
-    if (!isBewerker) {
-        console.log('Gebruiker is geen bewerker')
-        return;
-    }
-    if (!isDynamicButtonClicked) {
-        console.log('Gebruiker voor het eerst in het menu');
-        return;
-    }
-    if (prevNiveau === selectedNiveau) {
-        console.log('Geen nieuw niveau geselecteerd');
-        return;
-    }
-
-    console.log('Opslaan naar de database:');
-    if (prevNiveau.includes('vwo')) {
-        vwoWegingen = {
-            '4 vwo': input4vwo.value,
-            '5 vwo': input5vwo.value,
-            '6 vwo': input6vwo.value
-        };
-        console.log('vwo-wegingen:', vwoWegingen);
-    } else if (prevNiveau.includes('havo')) {
-        havoWegingen = {
-            '4 havo': input4havo.value,
-            '5 havo': input5havo.value
-        };
-        console.log('havo-wegingen:', havoWegingen);
-    }
-}
 
 /*
 NIEUW MODAL SYSTEEM
@@ -449,4 +393,131 @@ function createSearchModal(title, searchOptions, bevestigActie, terugActie = nul
     document.body.appendChild(modal);
     searchInput.focus();
     searchInput.select();
+}
+
+/*
+GET & SET FUNCTIES VOOR DATABASE
+*/
+
+// Ophalen uit DB
+let vwoWegingen = { '4 vwo': 30, '5 vwo': 40, '6 vwo': 30 };
+let havoWegingen = { '4 havo': 50, '5 havo': 50 };
+let oefenOpties = ['Optie 1', 'Optie 2', 'Optie 3'];
+let vakkenOpties = ['Aardrijkskunde', 'Informatica', 'Wiskunde A'];
+let niveauOpties = ['4 havo', '5 havo', '4 vwo', '5 vwo', '6 vwo'];
+let jaarOpties = ['2021/2022', '2022/2023', '2023/2024', '2024/2025'];
+let bewerkJaar = '2025' // De te bewerken jaar
+let opSlot = false; // Als Admin op slot gooit
+let toetsNummers = ['401', '402', '403', '404', '405'];
+
+function getPercentages() {
+    if (selectedNiveau.includes('vwo')) {
+        input4vwo.value = vwoWegingen['4 vwo'];
+        input5vwo.value = vwoWegingen['5 vwo'];
+        input6vwo.value = vwoWegingen['6 vwo'];
+    } else if (selectedNiveau.includes('havo')) {
+        input4havo.value = havoWegingen['4 havo'];
+        input5havo.value = havoWegingen['5 havo'];
+    }
+    berekenPercentage();
+}
+
+function setPercentages() {
+    if (!isBewerker) {
+        console.log('Gebruiker is geen bewerker')
+        return;
+    }
+    if (!isDynamicButtonClicked) {
+        console.log('Gebruiker voor het eerst in het menu');
+        return;
+    }
+    if (prevNiveau === selectedNiveau) {
+        console.log('Geen nieuw niveau geselecteerd');
+        return;
+    }
+
+    console.log('Opslaan naar de database:');
+    if (prevNiveau.includes('vwo')) {
+        vwoWegingen = {
+            '4 vwo': input4vwo.value,
+            '5 vwo': input5vwo.value,
+            '6 vwo': input6vwo.value
+        };
+        console.log('vwo-wegingen:', vwoWegingen);
+    } else if (prevNiveau.includes('havo')) {
+        havoWegingen = {
+            '4 havo': input4havo.value,
+            '5 havo': input5havo.value
+        };
+        console.log('havo-wegingen:', havoWegingen);
+    }
+}
+
+/*
+TOETSEN GENEREREN
+*/
+
+function genereerToetsen() {
+    maakTabs();
+}
+function toonTabInhoud(tabNaam) {
+    document.querySelectorAll('.contentPane').forEach(pane => pane.style.display = 'none');
+    document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+
+    let contentPane = document.getElementById(tabNaam + "Content");
+    if (contentPane) {
+        contentPane.style.display = 'block';
+    }
+
+    let activeTab = document.querySelector(`[data-tab="${tabNaam}"]`);
+    if (activeTab) {
+        activeTab.classList.add('active');
+    }
+}
+
+function genereerOverzichtInhoud() {
+    let contentPane = document.getElementById("overzichtContent");
+    contentPane.textContent = "Inhoud voor Overzicht";
+    // Voeg specifieke logica toe voor het genereren van inhoud voor 'Overzicht'
+}
+
+function genereerTabInhoud(nummer) {
+    let contentPane = document.getElementById(nummer + "Content");
+    console.log('test')
+    contentPane.textContent = `Inhoud voor tab ${nummer}`;
+    // Voeg specifieke logica toe voor het genereren van inhoud voor elke toetsnummer tab
+}
+
+function maakTabs() {
+    let tabsContainer = document.querySelector('.tabs');
+    let contentContainer = document.querySelector('.tabContent');
+
+    toetsNummers.forEach(nummer => {
+        let tab = document.createElement('div');
+        tab.textContent = nummer;
+        tab.className = 'tab';
+        tab.dataset.tab = nummer;
+        tabsContainer.appendChild(tab);
+
+        let contentPane = document.createElement('div');
+        contentPane.id = nummer + "Content";
+        contentPane.className = 'contentPane';
+        contentPane.style.display = 'none';
+        contentContainer.appendChild(contentPane);
+    });
+
+
+    document.querySelectorAll('.tabs .tab').forEach(tab => {
+        tab.onclick = () => {
+            toonTabInhoud(tab.dataset.tab);
+            if (tab.dataset.tab === 'overzicht') {
+                genereerOverzichtInhoud();
+            } else if (toetsNummers.includes(tab.dataset.tab)) {
+                genereerTabInhoud(tab.dataset.tab);
+            }
+        };
+    });
+
+
+    toonTabInhoud('wegingen');
 }
