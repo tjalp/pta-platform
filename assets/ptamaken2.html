@@ -16,15 +16,27 @@
     <template id="toetsTemplate">
         <div class="toetsContainer">
             <!-- Hier komt de structuur voor je toets-inhoud -->
-            <div>Toetsnummer: <span class="toetsNummer"></span></div>
+            <!-- <div>Toetsnummer: <span class="toetsNummer"></span></div> -->
             <div>Jaar & Periode: <span class="jaarPeriode"></span></div>
-            <!-- Voeg meer velden toe zoals nodig -->
+            <div>Weeknummer: <span class="weeknummer"></span></div>
+            <div>Subdomein: <span class="subdomein"></span></div>
+            <div>Stofomschrijving: <span class="stofomschrijving"></span></div>
+            <div>Afnamevorm: <span class="afnamevorm"></span></div>
+            <div>Afnamevorm anders: <span class="afnamevormAnders"></span></div>
+            <div>Beoordeling: <span class="beoordeling"></span></div>
+            <div>Tijd: <span class="tijd"></span></div>
+            <div>Herkansbaar: <span class="herkansbaar"></span></div>
+            <div>POD: <span class="pod"></span></div>
+            <div>PTA: <span class="pta"></span></div>
+            <div>Hulpmiddelen: <span class="hulpmiddelen"></span></div>
+
         </div>
     </template>
+
     <div class="tabContainer">
         <div class="tabs">
-            <div class="tab" data-tab="wegingen">Wegingen</div>
-            <div class="tab" data-tab="overzicht">Overzicht</div>
+            <div id="tabWegingen" class="tab" data-tab="wegingenContent">Wegingen</div>
+            <div id="tabOverzicht" class="tab" data-tab="overzichtContent">Overzicht</div>
             <!-- De tabs voor toetsNummers worden hier gegenereerd door de JavaScript -->
         </div>
 
@@ -32,8 +44,10 @@
             <div id="dynamicButtons">
                 <!-- Knoppen worden hier dynamisch toegevoegd -->
             </div>
+
             <div class="tabContent">
                 <div id="wegingenContent" class="contentPane">
+                    <!-- Inhoud voor wegingen -->
                     <div id="percentages">
                         <div id="vwoVelden">
                             <!-- VWO velden -->
@@ -90,9 +104,9 @@
         const urlParams = new URLSearchParams(window.location.search);
         const ptaId = urlParams.get('id');
         const teacherId = urlParams.get('teacherId');
-        var ptaData = {};
+        var dbData = {};
 
-        function loadPtaData() {
+        function loaddbData() {
             fetch(`/api/pta/${ptaId}`)
                 .then(response => {
                     if (!response.ok) {
@@ -101,7 +115,7 @@
                     return response.json();
                 })
                 .then(data => {
-                    ptaData = data;
+                    dbData = data;
                     updateFields();
                 })
                 .catch(error => {
@@ -110,18 +124,18 @@
         }
 
         function updateFields() {
-            document.getElementById("name").textContent = `PTA Veranderen (${ptaData.name})`;
+            document.getElementById("name").textContent = `PTA Veranderen (${dbData.name})`;
 
-            for (const key in ptaData.tests) {
-                if (ptaData.tests.hasOwnProperty(key)) {
-                    const test = ptaData.tests[key];
+            for (const key in dbData.tests) {
+                if (dbData.tests.hasOwnProperty(key)) {
+                    const test = dbData.tests[key];
                     cloneForm('toetsTemplate', test);
                 }
             }
 
-            for (const key in ptaData.tools) {
-                if (ptaData.tools.hasOwnProperty(key)) {
-                    const tool = ptaData.tools[key];
+            for (const key in dbData.tools) {
+                if (dbData.tools.hasOwnProperty(key)) {
+                    const tool = dbData.tools[key];
                     addAdditionalField('toolsFieldsContainer', tool);
                 }
             }
@@ -355,7 +369,7 @@
         }
 
         function isAuthenticated() {
-            return teacherId === ptaData.responsible;
+            return teacherId === dbData.responsible;
         }
 
         function verstuurToolsData(toolsData) {
@@ -518,7 +532,7 @@
             doc.save('ToetsenEnHulpmiddelenOverzicht.pdf');
         }
 
-        loadPtaData();
+        loaddbData();
 
         function paginaTerug() {
             window.location.href = 'options.html';
@@ -530,7 +544,7 @@
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(ptaData)
+                body: JSON.stringify(dbData)
             }).then(response => {
                 if (!response.ok) {
                     throw new Error('Netwerkrespons was niet ok');

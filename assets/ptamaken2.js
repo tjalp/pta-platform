@@ -400,7 +400,7 @@ GET & SET FUNCTIES VOOR DATABASE
 */
 
 // Ophalen uit DB
-let vwoWegingen = { '4 vwo': 30, '5 vwo': 40, '6 vwo': 30 };
+let vwoWegingen = { '4 vwo': 0, '5 vwo': 10, '6 vwo': 90 };
 let havoWegingen = { '4 havo': 50, '5 havo': 50 };
 let oefenOpties = ['Optie 1', 'Optie 2', 'Optie 3'];
 let vakkenOpties = ['Aardrijkskunde', 'Informatica', 'Wiskunde A'];
@@ -408,7 +408,116 @@ let niveauOpties = ['4 havo', '5 havo', '4 vwo', '5 vwo', '6 vwo'];
 let jaarOpties = ['2021/2022', '2022/2023', '2023/2024', '2024/2025'];
 let bewerkJaar = '2025' // De te bewerken jaar
 let opSlot = false; // Als Admin op slot gooit
-let toetsNummers = ['401', '402', '403', '404', '405'];
+
+
+let ptaData = {
+    "id": "d15690",
+    "name": "Duits",
+    "level": "6 VWO",
+    "cohort": "2021 - 2024",
+    "responsible": "LNM",
+    "tools": [
+        "pen (blauw of zwart), potlood, geodriehoek/lineaal",
+        "woordenboek Duits-Nederlands",
+        "woordenboek Nederlands-Duits",
+        "steekwoordenlijst"
+    ],
+    "tests": [
+        {
+            "id": 601,
+            "year_and_period": "6.1",
+            "week": "SE 1",
+            "subdomain": "E",
+            "description": "Schrijfvaardigheid Formele schrijfopdracht",
+            "type": "schriftelijk",
+            'type_else': null,
+            "result_type": "cijfer",
+            "time": 100,
+            "time_else": null,
+            "resitable": true,
+            "weight_pod": 0,
+            "weight_pta": 2,
+            "tools": [
+                0,
+                1,
+                2
+            ]
+        },
+        {
+            "id": 602,
+            "year_and_period": "6.2",
+            "week": "SE 2",
+            "subdomain": "C",
+            "description": "Spreek- en gespreksvaardigheid dialoog over 10 stellingen",
+            "type": "mondeling",
+            'type_else': null,
+            "result_type": "cijfer",
+            "time": 0,
+            "time_else": '???',
+            "resitable": true,
+            "weight_pod": 0,
+            "weight_pta": 2,
+            "tools": [
+                0
+            ]
+        },
+        {
+            "id": 603,
+            "year_and_period": "6.3",
+            "week": "4",
+            "subdomain": "D",
+            "description": "Literatuur/film vergelijking",
+            "type": "anders",
+            'type_else': 'Literatuur/ film vergelijking',
+            "result_type": "o/v/g",
+            "time": 0,
+            "time_else": 'Project',
+            "resitable": true,
+            "weight_pod": 0,
+            "weight_pta": 0,
+            "tools": [
+
+            ]
+        },
+        {
+            "id": 604,
+            "year_and_period": "6.3",
+            "week": "4",
+            "subdomain": "B",
+            "description": "Cito kijk-en luistertoets 23 januari",
+            "type": "digitaal",
+            'type_else': null,
+            "result_type": "cijfer",
+            "time": 50,
+            "time_else": null,
+            "resitable": true,
+            "weight_pod": 0,
+            "weight_pta": 2,
+            "tools": [
+                0
+            ]
+        },
+        {
+            "id": 605,
+            "year_and_period": "6.3",
+            "week": "SE 3",
+            "subdomain": "CD",
+            "description": "Examenidiom en kennis van land en volk",
+            "type": "schriftelijk",
+            'type_else': null,
+            "result_type": "cijfer",
+            "time": 100,
+            "time_else": null,
+            "resitable": true,
+            "weight_pod": 0,
+            "weight_pta": 2,
+            "tools": [
+                0
+            ]
+        }
+    ]
+}
+
 
 function getPercentages() {
     if (selectedNiveau.includes('vwo')) {
@@ -456,24 +565,63 @@ function setPercentages() {
 /*
 TOETSEN GENEREREN
 */
+let toetsNummers;
+
+function leesPtaData() {
+    toetsNummers = ptaData.tests.map(test => test.id.toString());
+}
 
 function genereerToetsen() {
+    leesPtaData();
     maakTabs();
-    maakToetsen();
+    initialiseerVasteTabs(); // Zorg dat de vaste tabs juist functioneren
 }
-function toonTabInhoud(tabNaam) {
-    document.querySelectorAll('.contentPane').forEach(pane => pane.style.display = 'none');
-    document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
 
-    let contentPane = document.getElementById(tabNaam + "Content");
-    if (contentPane) {
-        contentPane.style.display = 'block';
-    }
+function initialiseerVasteTabs() {
+    let wegingenTab = document.getElementById('tabWegingen');
+    let overzichtTab = document.getElementById('tabOverzicht');
 
-    let activeTab = document.querySelector(`[data-tab="${tabNaam}"]`);
-    if (activeTab) {
-        activeTab.classList.add('active');
+    if (wegingenTab) {
+        wegingenTab.onclick = () => toonTabInhoud('wegingenContent');
     }
+    if (overzichtTab) {
+        overzichtTab.onclick = () => {
+            toonTabInhoud('overzichtContent');
+            genereerOverzichtInhoud();
+        };
+    }
+}
+
+
+function maakTabs() {
+    let tabsContainer = document.querySelector('.tabs');
+    let contentContainer = document.querySelector('.tabContent');
+
+    toetsNummers.forEach(nummer => {
+        maakTab(nummer, tabsContainer, contentContainer);
+    });
+
+    // Activeer standaard de 'Wegingen' tab
+    toonTabInhoud('wegingenContent');
+}
+
+function maakTab(nummer, tabsContainer, contentContainer) {
+    let tab = document.createElement('div');
+    tab.textContent = nummer;
+    tab.className = 'tab';
+    tab.dataset.tab = 'toets' + nummer; // Voeg 'toets' toe voor de data-tab
+    tabsContainer.appendChild(tab);
+
+    let contentPane = document.createElement('div');
+    contentPane.id = 'toets' + nummer; // ID is 'toets' gevolgd door het nummer
+    contentPane.className = 'contentPane';
+    contentPane.style.display = 'none';
+    contentContainer.appendChild(contentPane);
+
+    tab.onclick = () => {
+        toonTabInhoud('toets' + nummer); // Gebruik 'toets' + nummer om de ID te krijgen
+        laadToetsInhoud(nummer);
+    };
 }
 
 function genereerOverzichtInhoud() {
@@ -482,70 +630,101 @@ function genereerOverzichtInhoud() {
     // Voeg specifieke logica toe voor het genereren van inhoud voor 'Overzicht'
 }
 
+function toonTabInhoud(tabId) {
+    document.querySelectorAll('.contentPane').forEach(pane => pane.style.display = 'none');
+    document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
 
-function laadToetsInhoud(toetsNummer) {
-    const tabContent = document.getElementById(toetsNummer + 'Content');
-    if (tabContent && !tabContent.dataset.isLoaded) {
-        // Vul hier de logica in om de data voor de toets op te halen
-        // Voor dit voorbeeld gebruik ik dummy data
-        const toetsData = { nummer: toetsNummer, jaarPeriode: '2024-' + toetsNummer.slice(-1) };
+    let contentPane = document.getElementById(tabId);
+    if (contentPane) {
+        contentPane.style.display = 'block';
+    }
 
-        vulToetsInhoud(toetsData);
-
-        // Markeer dat de inhoud geladen is
-        tabContent.dataset.isLoaded = 'true';
+    let activeTab = document.querySelector(`.tab[data-tab="${tabId}"]`);
+    if (activeTab) {
+        activeTab.classList.add('active');
     }
 }
 
-function maakTabs() {
-    let tabsContainer = document.querySelector('.tabs');
-    let contentContainer = document.querySelector('.tabContent');
+function getPtaData(toetsNummer) {
+    const toets = ptaData.tests.find(test => test.id === parseInt(toetsNummer));
 
-    toetsNummers.forEach(nummer => {
-        let tab = document.createElement('div');
-        tab.textContent = nummer;
-        tab.className = 'tab';
-        tab.dataset.tab = nummer;
-        tabsContainer.appendChild(tab);
+    if (!toets) {
+        console.error(`Toets met nummer ${toetsNummer} niet gevonden.`);
+        return null;
+    }
 
-        let contentPane = document.createElement('div');
-        contentPane.id = nummer + 'Content';
-        contentPane.className = 'contentPane';
-        contentPane.style.display = 'none';
-        contentContainer.appendChild(contentPane);
-    });
-
-    document.querySelectorAll('.tabs .tab').forEach(tab => {
-        tab.onclick = () => {
-            toonTabInhoud(tab.dataset.tab);
-            if (tab.dataset.tab === 'overzicht') {
-                genereerOverzichtInhoud();
-            } else if (toetsNummers.includes(tab.dataset.tab)) {
-                laadToetsInhoud(tab.dataset.tab);
-            }
-        };
-    });
-
-    // Stel 'Wegingen' in als de actieve tab bij het laden van de pagina
-    toonTabInhoud('wegingen');
+    return {
+        id: toets.id,
+        jaarPeriode: toets.year_and_period,
+        week: toets.week,
+        subdomain: toets.subdomain,
+        description: toets.description,
+        afnamevorm: toets.type,
+        afnamevormAnders: toets.type_else || "N/A",
+        beoordeling: toets.result_type,
+        tijd: toets.time,
+        herkansbaar: toets.resitable ? "Ja" : "Nee",
+        pod: toets.weight_pod,
+        pta: toets.weight_pta,
+        hulpmiddelen: toets.tools.map(toolIndex => ptaData.tools[toolIndex]).join(", ")
+    };
 }
 
-/*
-CODE VOOR DE TEMPLATE
-*/
+
+function laadToetsInhoud(toetsNummer) {
+    try {
+        const tabContent = document.getElementById('toets' + toetsNummer);
+        if (tabContent && !tabContent.dataset.isLoaded) {
+            vulToetsInhoud(getPtaData(toetsNummer));
+            tabContent.dataset.isLoaded = 'true';
+        } else if (!tabContent) {
+            console.log(`TabContent met ID 'toets${toetsNummer}' niet gevonden.`);
+        }
+    } catch (error) {
+        console.error("Fout in laadToetsInhoud: ", error);
+    }
+}
 
 function vulToetsInhoud(toetsData) {
-    // Zoek de template en kloon deze
-    const template = document.getElementById('toetsTemplate');
-    const clone = template.content.cloneNode(true);
+    try {
+        const template = document.getElementById('toetsTemplate');
+        if (!template) {
+            console.log("Template 'toetsTemplate' niet gevonden.");
+            return;
+        }
 
-    // Vul de gekloonde template met data
-    clone.querySelector('.toetsNummer').textContent = toetsData.nummer;
-    clone.querySelector('.jaarPeriode').textContent = toetsData.jaarPeriode;
-    // Vul andere velden in zoals nodig
+        const clone = template.content.cloneNode(true);
+        const fields = {
+            '.toetsNummer': toetsData.id,
+            '.jaarPeriode': toetsData.jaarPeriode,
+            '.weeknummer': toetsData.week,
+            '.subdomein': toetsData.subdomain,
+            '.stofomschrijving': toetsData.description,
+            '.afnamevorm': toetsData.afnamevorm,
+            '.afnamevormAnders': toetsData.afnamevormAnders,
+            '.beoordeling': toetsData.beoordeling,
+            '.tijd': toetsData.tijd,
+            '.herkansbaar': toetsData.herkansbaar,
+            '.pod': toetsData.pod,
+            '.pta': toetsData.pta,
+            '.hulpmiddelen': toetsData.hulpmiddelen
+        };
 
-    // Voeg de gekloonde template toe aan de juiste container in je tabContent
-    const tabContent = document.getElementById(toetsData.nummer + 'Content');
-    tabContent.innerHTML = ''; // Maak de container leeg voor het geval dat
-    tabContent.appendChild(clone);
+        for (let key in fields) {
+            const element = clone.querySelector(key);
+            if (element) {
+                element.textContent = fields[key];
+            }
+        }
+
+        const tabContent = document.getElementById('toets' + toetsData.id);
+        if (tabContent) {
+            tabContent.innerHTML = '';
+            tabContent.appendChild(clone);
+        } else {
+            console.log(`TabContent met ID 'toets${toetsData.id}' niet gevonden.`);
+        }
+    } catch (error) {
+        console.error("Fout in vulToetsInhoud: ", error);
+    }
 }
