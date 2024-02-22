@@ -1,7 +1,10 @@
 // Globale variabelen
+let isBewerker = false;
 let selectedBewerkerOfBekijker = "";
+let prevVak = "";
 let selectedVak = "";
 let selectedJaar = "";
+let prevNiveau = "";
 let selectedNiveau = "";
 let isDynamicButtonClicked = false;
 
@@ -36,6 +39,8 @@ function bewerken() {
 }
 
 function bevestigBewerken() {
+    // Hier moet verificatie worden afgehandeld
+    isBewerker = true;
     selectedBewerkerOfBekijker = "Bewerken";
     vakkeuze();
 }
@@ -51,11 +56,16 @@ function vakkeuze() {
 }
 
 function bevestigVakkeuze() {
+    prevVak = selectedVak;
     selectedVak = document.getElementById('subjectSelect').value;
     if (!isDynamicButtonClicked) {
         niveaukeuze();
         return;
     }
+
+    setPercentages();
+    laadPercentages();
+
     updateDynamicButtonValue('Vak', selectedVak);
 }
 
@@ -70,19 +80,19 @@ function niveaukeuze() {
 }
 
 function bevestigNiveaukeuze() {
-    setPercentages();
+    prevNiveau = selectedNiveau;
     selectedNiveau = document.getElementById('niveauSelect').value;
-    laadPercentages();
 
     if (!isDynamicButtonClicked) {
         jaarkeuze();
         return;
     }
 
+    setPercentages();
+    laadPercentages();
+
     updateDynamicButtonValue('Niveau', selectedNiveau);
 }
-
-
 
 function jaarkeuze() {
     removeExistingModal();
@@ -98,6 +108,7 @@ function bevestigJaarkeuze() {
     selectedJaar = document.getElementById('yearSelect').value;
     if (!isDynamicButtonClicked) {
         createDynamicButtons();
+        laadAlles();
         return;
     }
     updateDynamicButtonValue('Jaar', selectedJaar);
@@ -146,7 +157,7 @@ function updateDynamicButtonValue(buttonType, value) {
     // Gebruik de 'name' attribuut om de juiste knop te vinden
     const button = document.querySelector(`#dynamicButtons button[name="${buttonType}"]`);
     if (button) {
-        button.textContent = `${buttonType}: ${value}`;
+        button.textContent = `${value}`;
     }
     removeExistingModal();
 }
@@ -165,7 +176,7 @@ function handleDynamicButtonClick(buttonType) {
     // Afhandelen van de knopklik gebaseerd op het type
     switch (buttonType) {
         case 'Rol':
-            createModal1();
+            start();
             break;
         case 'Vak':
             vakkeuze();
@@ -194,9 +205,22 @@ const input4havo = document.getElementById('percentage4havo');
 const input5havo = document.getElementById('percentage5havo');
 const foutDiv = document.getElementById('errorPercentages');
 
+function laadAlles() {
+    laadPercentages();
+}
+
 function laadPercentages() {
     vwoVelden.style.display = selectedNiveau.includes('vwo') ? 'block' : 'none';
     havoVelden.style.display = selectedNiveau.includes('havo') ? 'block' : 'none';
+
+    getPercentages();
+
+    if (!isBewerker) {
+        [input4vwo, input5vwo, input6vwo, input4havo, input5havo].forEach(input => {
+            input.disabled = true;
+        });
+        return;
+    }
 
     input4vwo.disabled = selectedNiveau === '5 vwo' || selectedNiveau === '6 vwo';
     input5vwo.disabled = selectedNiveau === '6 vwo';
@@ -204,7 +228,6 @@ function laadPercentages() {
 
     input4havo.disabled = selectedNiveau === '5 havo';
     input5havo.disabled = true;
-    getPercentages();
 }
 
 
@@ -274,24 +297,28 @@ function getPercentages() {
 }
 
 function setPercentages() {
+  if (!isBewerker) {
+    console.log('Gebruiker is geen bewerker')
+    return;
+  }  
   if (!isDynamicButtonClicked) {
     console.log('Gebruiker voor het eerst in het menu');
     return;
   }
-  if (selectedNiveau === document.getElementById('niveauSelect').value) {
+  if (prevNiveau === selectedNiveau) {
     console.log('Geen nieuw niveau geselecteerd');
     return;
   }
 
   console.log('Opslaan naar de database:');
-  if (selectedNiveau.includes('vwo')) {
+  if (prevNiveau.includes('vwo')) {
     vwoWegingen = {
       '4 vwo': input4vwo.value,
       '5 vwo': input5vwo.value,
       '6 vwo': input6vwo.value
     };
     console.log('vwo-wegingen:', vwoWegingen);
-  } else if (selectedNiveau.includes('havo')) {
+  } else if (prevNiveau.includes('havo')) {
     havoWegingen = {
       '4 havo': input4havo.value,
       '5 havo': input5havo.value
