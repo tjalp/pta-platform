@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 function start() {
     isDynamicButtonClicked = false;
-    removeExistingModal();
+    removeExistingModals();
     const modal = createModal('Wilt u PTAs bekijken of bewerken?', [
         { text: 'Bekijken', action: bekijken },
         { text: 'Bewerken', action: bewerken }
@@ -28,7 +28,7 @@ function bekijken() {
 }
 
 function bewerken() {
-    removeExistingModal();
+    removeExistingModals();
     const modal = createModal('Inloggen', [
         { type: 'input', placeholder: 'Afkorting' },
         { type: 'input', placeholder: 'Wachtwoord', inputType: 'password' },
@@ -46,18 +46,19 @@ function bevestigBewerken() {
 }
 
 function vakkeuze() {
-    removeExistingModal();
-    const modal = createModal('Voor welk vak wilt u PTAs bekijken?', [
-        { type: 'select', options: ['Informatica', 'Aardrijkskunde'], id: 'subjectSelect' },
-        { text: 'Bevestigen', action: bevestigVakkeuze },
-        { text: 'Terug', action: start }
-    ]);
-    document.body.appendChild(modal);
+    removeExistingModals();
+    createSearchModal(
+        'Voor welk vak wilt u PTAs bekijken?',
+        vakkenOpties,
+        bevestigVakkeuze,
+        start,
+        document.querySelector('button[name="Vak"]')
+    )
 }
 
 function bevestigVakkeuze() {
     prevVak = selectedVak;
-    selectedVak = document.getElementById('subjectSelect').value;
+    selectedVak = huidigeSelectie;
     if (!isDynamicButtonClicked) {
         niveaukeuze();
         return;
@@ -70,18 +71,19 @@ function bevestigVakkeuze() {
 }
 
 function niveaukeuze() {
-    removeExistingModal();
-    const modal = createModal('Voor welk niveau wilt u PTAs bekijken?', [
-        { type: 'select', options: ['4 havo', '5 havo', '4 vwo', '5 vwo', '6 vwo'], id: 'niveauSelect' },
-        { text: 'Bevestigen', action: bevestigNiveaukeuze },
-        { text: 'Terug', action: vakkeuze }
-    ]);
-    document.body.appendChild(modal);
+    removeExistingModals();
+    createSearchModal(
+        'Voor welk niveau wilt u PTAs bekijken?',
+        niveauOpties,
+        bevestigNiveaukeuze,
+        vakkeuze,
+        document.querySelector('button[name="Niveau"]')
+    )
 }
 
 function bevestigNiveaukeuze() {
     prevNiveau = selectedNiveau;
-    selectedNiveau = document.getElementById('niveauSelect').value;
+    selectedNiveau = huidigeSelectie;
 
     if (!isDynamicButtonClicked) {
         jaarkeuze();
@@ -95,17 +97,18 @@ function bevestigNiveaukeuze() {
 }
 
 function jaarkeuze() {
-    removeExistingModal();
-    const modal = createModal('Voor welk jaar wilt u PTAs bekijken?', [
-        { type: 'select', options: ['2021/2022', '2022/2023'], id: 'yearSelect' },
-        { text: 'Bevestigen', action: bevestigJaarkeuze },
-        { text: 'Terug', action: niveaukeuze }
-    ]);
-    document.body.appendChild(modal);
+    removeExistingModals();
+    createSearchModal(
+        'Voor welk jaar wilt u PTAs bekijken?',
+        jaarOpties,
+        bevestigJaarkeuze,
+        niveaukeuze,
+        document.querySelector('button[name="Jaar"]')
+    )
 }
 
 function bevestigJaarkeuze() {
-    selectedJaar = document.getElementById('yearSelect').value;
+    selectedJaar = huidigeSelectie;
     if (!isDynamicButtonClicked) {
         createDynamicButtons();
         laadAlles();
@@ -137,7 +140,7 @@ function createModal(title, elements) {
 }
 
 function createDynamicButtons() {
-    removeExistingModal();
+    removeExistingModals();
     const buttonContainer = document.getElementById('dynamicButtons');
     buttonContainer.innerHTML = `
         <button name="Rol" onclick="start()">${selectedBewerkerOfBekijker}</button>
@@ -159,14 +162,17 @@ function updateDynamicButtonValue(buttonType, value) {
     if (button) {
         button.textContent = `${value}`;
     }
-    removeExistingModal();
+    removeExistingModals();
 }
 
-
-function removeExistingModal() {
+function removeExistingModals() {
     const existingModal = document.querySelector('.modal');
     if (existingModal) {
         existingModal.remove();
+    }
+    const existingSearchModal = document.querySelector('.searchModal');
+    if (existingSearchModal) {
+        existingSearchModal.remove();
     }
 }
 
@@ -281,48 +287,160 @@ input4havo.addEventListener('input', valideerInvoer);
 /*
 GET & SET FUNCTIES VOOR DATABASE
 */
-let vwoWegingen = { '4 vwo': 30, '5 vwo': 40, '6 vwo': 30 }; // Ophalen uit DB
-let havoWegingen = { '4 havo': 50, '5 havo': 50 }; // Ophalen uit DB
+
+// Ophalen uit DB
+let vwoWegingen = { '4 vwo': 30, '5 vwo': 40, '6 vwo': 30 };
+let havoWegingen = { '4 havo': 50, '5 havo': 50 }; 
+let oefenOpties = ['Optie 1', 'Optie 2', 'Optie 3'];
+let vakkenOpties = ['Aardrijkskunde', 'Informatica', 'Wiskunde A'];
+let niveauOpties = ['4 havo', '5 havo', '4 vwo', '5 vwo', '6 vwo'];
+let jaarOpties = ['2021/2022', '2022/2023', '2023/2024'];
 
 function getPercentages() {
-  if (selectedNiveau.includes('vwo')) {
-    input4vwo.value = vwoWegingen['4 vwo'];
-    input5vwo.value = vwoWegingen['5 vwo'];
-    input6vwo.value = vwoWegingen['6 vwo'];
-  } else if (selectedNiveau.includes('havo')) {
-    input4havo.value = havoWegingen['4 havo'];
-    input5havo.value = havoWegingen['5 havo'];
-  }
-  berekenPercentage();
+    if (selectedNiveau.includes('vwo')) {
+        input4vwo.value = vwoWegingen['4 vwo'];
+        input5vwo.value = vwoWegingen['5 vwo'];
+        input6vwo.value = vwoWegingen['6 vwo'];
+    } else if (selectedNiveau.includes('havo')) {
+        input4havo.value = havoWegingen['4 havo'];
+        input5havo.value = havoWegingen['5 havo'];
+    }
+    berekenPercentage();
 }
 
 function setPercentages() {
-  if (!isBewerker) {
-    console.log('Gebruiker is geen bewerker')
-    return;
-  }  
-  if (!isDynamicButtonClicked) {
-    console.log('Gebruiker voor het eerst in het menu');
-    return;
-  }
-  if (prevNiveau === selectedNiveau) {
-    console.log('Geen nieuw niveau geselecteerd');
-    return;
-  }
+    if (!isBewerker) {
+        console.log('Gebruiker is geen bewerker')
+        return;
+    }
+    if (!isDynamicButtonClicked) {
+        console.log('Gebruiker voor het eerst in het menu');
+        return;
+    }
+    if (prevNiveau === selectedNiveau) {
+        console.log('Geen nieuw niveau geselecteerd');
+        return;
+    }
 
-  console.log('Opslaan naar de database:');
-  if (prevNiveau.includes('vwo')) {
-    vwoWegingen = {
-      '4 vwo': input4vwo.value,
-      '5 vwo': input5vwo.value,
-      '6 vwo': input6vwo.value
-    };
-    console.log('vwo-wegingen:', vwoWegingen);
-  } else if (prevNiveau.includes('havo')) {
-    havoWegingen = {
-      '4 havo': input4havo.value,
-      '5 havo': input5havo.value
-    };
-    console.log('havo-wegingen:', havoWegingen);
-  }
+    console.log('Opslaan naar de database:');
+    if (prevNiveau.includes('vwo')) {
+        vwoWegingen = {
+            '4 vwo': input4vwo.value,
+            '5 vwo': input5vwo.value,
+            '6 vwo': input6vwo.value
+        };
+        console.log('vwo-wegingen:', vwoWegingen);
+    } else if (prevNiveau.includes('havo')) {
+        havoWegingen = {
+            '4 havo': input4havo.value,
+            '5 havo': input5havo.value
+        };
+        console.log('havo-wegingen:', havoWegingen);
+    }
+}
+
+/*
+NIEUW MODAL SYSTEEM
+*/
+
+let huidigeSelectie = null;
+function createSearchModal(title, searchOptions, bevestigActie, terugActie = null, optie = null) {
+    if (optie) {
+        huidigeSelectie = optie.textContent;
+    }
+    else {
+        huidigeSelectie = searchOptions[0];
+    }
+    // Modal container
+    let modal = document.createElement('div');
+    modal.className = 'searchModal';
+
+    // Modal content
+    let modalContent = document.createElement('div');
+    modalContent.className = 'searchModal-content';
+
+    // Titel
+    let modalTitle = document.createElement('h2');
+    modalTitle.textContent = title;
+    modalContent.appendChild(modalTitle);
+
+    // Zoekbalk
+    let searchInput = document.createElement('input');
+    searchInput.type = 'text';
+    searchInput.placeholder = 'Zoeken...';
+    searchInput.onkeyup = () => filterOptions(searchInput.value);
+    modalContent.appendChild(searchInput);
+
+    // Lijst met opties
+    let ul = document.createElement('ul');
+    searchOptions.forEach((option, index) => {
+        let li = document.createElement('li');
+        li.textContent = option;
+        li.onclick = () => selectOption(li);
+        ul.appendChild(li);
+
+        // Standaard de eerste optie selecteren
+        if (option === huidigeSelectie) {
+            li.classList.add('selected');
+        }
+    });
+    modalContent.appendChild(ul);
+
+    // Container voor de knoppen
+    let buttonContainer = document.createElement('div');
+    buttonContainer.className = 'button-container';
+    buttonContainer.style.display = 'flex';
+    buttonContainer.style.flexDirection = 'row-reverse';
+    buttonContainer.style.justifyContent = 'space-between';
+    buttonContainer.style.paddingTop = '10px';
+
+    // Bevestig knop
+    let bevestigButton = document.createElement('button');
+    bevestigButton.textContent = 'Bevestigen';
+    bevestigButton.onclick = bevestigActie;
+    buttonContainer.appendChild(bevestigButton);
+
+    // Terug knop (indien nodig)
+    if (terugActie) {
+        let terugButton = document.createElement('button');
+        terugButton.textContent = 'Terug';
+        terugButton.onclick = terugActie;
+        buttonContainer.appendChild(terugButton);
+    }
+
+    modalContent.appendChild(buttonContainer);
+    modal.appendChild(modalContent);
+
+    // Functie voor het filteren van opties
+    function filterOptions(searchTerm) {
+        ul.innerHTML = '';
+        searchOptions.filter(option => option.toLowerCase().includes(searchTerm.toLowerCase()))
+            .forEach(option => {
+                let li = document.createElement('li');
+                li.textContent = option;
+                li.onclick = () => selectOption(li);
+                ul.appendChild(li);
+
+                // Markeer de huidige selectie als geselecteerd
+                if (huidigeSelectie === option) {
+                    li.classList.add('selected');
+                }
+            });
+    }
+
+    function selectOption(li) {
+        huidigeSelectie = li.textContent;
+        // Verwijder 'selected' klasse van alle 'li' elementen
+        document.querySelectorAll('.searchModal-content ul li').forEach(el => {
+            el.classList.remove('selected');
+        });
+
+        // Voeg 'selected' klasse toe aan het geklikte 'li' element
+        li.classList.add('selected');
+
+        console.log("Geselecteerde optie:", li.textContent);
+        // Verdere acties voor de geselecteerde optie
+    }
+
+    document.body.appendChild(modal);
 }
