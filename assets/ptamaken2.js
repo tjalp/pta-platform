@@ -298,6 +298,7 @@ let niveauOpties = ['4 havo', '5 havo', '4 vwo', '5 vwo', '6 vwo'];
 let jaarOpties = ['2021/2022', '2022/2023', '2023/2024', '2024/2025'];
 let bewerkJaar = '2025' // De te bewerken jaar
 let opSlot = false; // Als Admin op slot gooit
+let toetsNummers = ['401', '402', '403', '404', '405'];
 
 function getPercentages() {
     if (selectedNiveau.includes('vwo')) {

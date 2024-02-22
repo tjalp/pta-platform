@@ -295,7 +295,7 @@ select {
     margin: auto;
     padding: 20px;
     border-radius: 10px;
-    width: 40%; /* Aanpasbare breedte */
+    width: 35%; /* Aanpasbare breedte */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
@@ -315,6 +315,9 @@ select {
 .searchModal-content ul {
     list-style: none;
     padding: 0;
+    height: 400px;
+    max-height: 400px; /* Maximale hoogte van 500px */
+    overflow-y: auto; /* Toon een verticale scrollbar indien nodig */
 }
 
 .searchModal-content ul li {
