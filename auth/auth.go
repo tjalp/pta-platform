@@ -29,7 +29,7 @@ func Authenticate(c *gin.Context, db database.Database) bool {
 	}
 
 	googleId := payload.Subject
-	user := db.FindUser(map[string]string{"google_user_id": googleId})
+	user := db.FindUser(map[string][]string{"google_user_id": {googleId}})
 
 	if user == nil {
 		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": "unauthorized"})

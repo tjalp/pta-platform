@@ -32,15 +32,15 @@ func StartServer() {
 
 	gin.SetMode(gin.ReleaseMode)
 
-	user := database.User{
-		Id:        "testId",
-		Email:     "test@example.com",
-		CreatedAt: time.Unix(0, 0),
-	}
-	if data.FindUser(map[string]string{"id": "testId"}) == nil {
-		fmt.Println("Creating test user")
-		data.SaveUser(user)
-	}
+	// user := database.User{
+	// 	Id:        "testId",
+	// 	Email:     "test@example.com",
+	// 	CreatedAt: time.Unix(0, 0),
+	// }
+	// if data.FindUser(map[string]string{"id": "testId"}) == nil {
+	// 	fmt.Println("Creating test user")
+	// 	data.SaveUser(user)
+	// }
 
 	router := gin.Default()
 	router.Use(cors.Default())
@@ -66,16 +66,15 @@ func StartServer() {
 				return
 			}
 			googleId := payload.Subject
-			user := data.FindUser(map[string]string{"google_user_id": googleId})
+			user := data.FindUser(map[string][]string{"google_user_id": {googleId}})
 
 			if user == nil {
 				newUser := database.User{
-					Id:           uuid.NewString(),
 					GoogleUserId: googleId,
 					Email:        payload.Claims["email"].(string),
 					CreatedAt:    time.Now(),
 				}
-				data.SaveUser(newUser)
+				newUser = data.SaveUser(newUser)
 				user = &newUser
 			}
 
@@ -94,6 +93,10 @@ func StartServer() {
 		GET("/search", func(c *gin.Context) { searchPta(c, false) }).
 		GET("/all", func(c *gin.Context) { searchPta(c, true) }).
 		POST("/upload", uploadPta)
+
+	apiGroup.Group("/user").
+		Use(auth.Authentication(data)).
+		GET("/:id", getUser)
 
 	apiGroup.Group("/defaults").
 		Use(auth.Authentication(data)).
@@ -120,7 +123,7 @@ func getPta(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, data.LoadPta(id))
+	c.JSON(http.StatusOK, pta)
 }
 
 func createPta(c *gin.Context) {
@@ -285,6 +288,19 @@ func setSubjects(c *gin.Context) {
 	data.SetSubjects(subjects)
 
 	c.JSON(http.StatusOK, subjects)
+}
+
+func getUser(c *gin.Context) {
+	id := c.Param("id")
+
+	user := data.GetUser(id)
+
+	if user == nil {
+		c.AbortWithStatus(http.StatusNotFound)
+		return
+	}
+
+	c.JSON(http.StatusOK, user)
 }
 
 func uploadPta(c *gin.Context) {
