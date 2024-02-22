@@ -13,26 +13,14 @@
 </head>
 
 <body>
-    <header>
-        <!-- <nav>
-            <button type="button" onclick="paginaTerug()">Terug</button>
-            <button onclick="copyPta()">Kopie maken</button>
-            <button onclick="deletePta()">Verwijder PTA</button>
-            <button type="button" onclick="allesOpslaan()" class="inputField">Alles inleveren</button>
-            <button type="button" onclick="generatePDF()">Genereer PDF</button>
-        </nav> -->
-
-
-        <!-- <div id="controls">
-        </div> -->
-    </header>
-
-
-
-    <!-- <div id="percentages">
-        <h2>Wegingen</h2>
-
-    </div> -->
+    <template id="toetsTemplate">
+        <div class="toetsContainer">
+            <!-- Hier komt de structuur voor je toets-inhoud -->
+            <div>Toetsnummer: <span class="toetsNummer"></span></div>
+            <div>Jaar & Periode: <span class="jaarPeriode"></span></div>
+            <!-- Voeg meer velden toe zoals nodig -->
+        </div>
+    </template>
     <div class="tabContainer">
         <div class="tabs">
             <div class="tab" data-tab="wegingen">Wegingen</div>

@@ -459,6 +459,7 @@ TOETSEN GENEREREN
 
 function genereerToetsen() {
     maakTabs();
+    maakToetsen();
 }
 function toonTabInhoud(tabNaam) {
     document.querySelectorAll('.contentPane').forEach(pane => pane.style.display = 'none');
@@ -481,11 +482,19 @@ function genereerOverzichtInhoud() {
     // Voeg specifieke logica toe voor het genereren van inhoud voor 'Overzicht'
 }
 
-function genereerTabInhoud(nummer) {
-    let contentPane = document.getElementById(nummer + "Content");
-    console.log('test')
-    contentPane.textContent = `Inhoud voor tab ${nummer}`;
-    // Voeg specifieke logica toe voor het genereren van inhoud voor elke toetsnummer tab
+
+function laadToetsInhoud(toetsNummer) {
+    const tabContent = document.getElementById(toetsNummer + 'Content');
+    if (tabContent && !tabContent.dataset.isLoaded) {
+        // Vul hier de logica in om de data voor de toets op te halen
+        // Voor dit voorbeeld gebruik ik dummy data
+        const toetsData = { nummer: toetsNummer, jaarPeriode: '2024-' + toetsNummer.slice(-1) };
+
+        vulToetsInhoud(toetsData);
+
+        // Markeer dat de inhoud geladen is
+        tabContent.dataset.isLoaded = 'true';
+    }
 }
 
 function maakTabs() {
@@ -500,12 +509,11 @@ function maakTabs() {
         tabsContainer.appendChild(tab);
 
         let contentPane = document.createElement('div');
-        contentPane.id = nummer + "Content";
+        contentPane.id = nummer + 'Content';
         contentPane.className = 'contentPane';
         contentPane.style.display = 'none';
         contentContainer.appendChild(contentPane);
     });
-
 
     document.querySelectorAll('.tabs .tab').forEach(tab => {
         tab.onclick = () => {
@@ -513,11 +521,31 @@ function maakTabs() {
             if (tab.dataset.tab === 'overzicht') {
                 genereerOverzichtInhoud();
             } else if (toetsNummers.includes(tab.dataset.tab)) {
-                genereerTabInhoud(tab.dataset.tab);
+                laadToetsInhoud(tab.dataset.tab);
             }
         };
     });
 
-
+    // Stel 'Wegingen' in als de actieve tab bij het laden van de pagina
     toonTabInhoud('wegingen');
+}
+
+/*
+CODE VOOR DE TEMPLATE
+*/
+
+function vulToetsInhoud(toetsData) {
+    // Zoek de template en kloon deze
+    const template = document.getElementById('toetsTemplate');
+    const clone = template.content.cloneNode(true);
+
+    // Vul de gekloonde template met data
+    clone.querySelector('.toetsNummer').textContent = toetsData.nummer;
+    clone.querySelector('.jaarPeriode').textContent = toetsData.jaarPeriode;
+    // Vul andere velden in zoals nodig
+
+    // Voeg de gekloonde template toe aan de juiste container in je tabContent
+    const tabContent = document.getElementById(toetsData.nummer + 'Content');
+    tabContent.innerHTML = ''; // Maak de container leeg voor het geval dat
+    tabContent.appendChild(clone);
 }
