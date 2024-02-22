@@ -114,6 +114,7 @@ function bevestigJaarkeuze() {
         laadAlles();
         return;
     }
+    laadAlles();    
     updateDynamicButtonValue('Jaar', selectedJaar);
 }
 
@@ -221,7 +222,7 @@ function laadPercentages() {
 
     getPercentages();
 
-    if (!isBewerker) {
+    if (!isBewerker || !selectedJaar.includes(bewerkJaar) || opSlot) {
         [input4vwo, input5vwo, input6vwo, input4havo, input5havo].forEach(input => {
             input.disabled = true;
         });
@@ -294,7 +295,9 @@ let havoWegingen = { '4 havo': 50, '5 havo': 50 };
 let oefenOpties = ['Optie 1', 'Optie 2', 'Optie 3'];
 let vakkenOpties = ['Aardrijkskunde', 'Informatica', 'Wiskunde A'];
 let niveauOpties = ['4 havo', '5 havo', '4 vwo', '5 vwo', '6 vwo'];
-let jaarOpties = ['2021/2022', '2022/2023', '2023/2024'];
+let jaarOpties = ['2021/2022', '2022/2023', '2023/2024', '2024/2025'];
+let bewerkJaar = '2025' // De te bewerken jaar
+let opSlot = false; // Als Admin op slot gooit
 
 function getPercentages() {
     if (selectedNiveau.includes('vwo')) {
