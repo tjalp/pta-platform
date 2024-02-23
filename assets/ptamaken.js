@@ -108,11 +108,6 @@ function getWeekNumber(d) {
     return weekNo;
 }
 
-function adjustTextareaHeight(textarea) {
-    textarea.style.height = 'auto'; // Reset de hoogte
-    textarea.style.height = (textarea.scrollHeight - 16) + 'px'; // Stel de nieuwe hoogte in
-}
-
 function toggleExplanation(selectElement) {
     var explanationDiv = selectElement.parentElement.querySelector('.explanationDiv');
 

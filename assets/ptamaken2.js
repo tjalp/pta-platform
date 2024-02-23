@@ -419,7 +419,7 @@ let ptaData = {
             "year_and_period": "6.1",
             "week": "SE 1",
             "subdomain": "E",
-            "description": "Schrijfvaardigheid Formele schrijfopdracht",
+            "description": "Schrijfvaardigheid Formele schrijfopdrachtasdfffffffffffffffffff sdaffadsf sfdafdsafasdfd sdafdsafsad f sdafadsf asdfsdafdsf",
             "type": "schriftelijk",
             'type_else': null,
             "result_type": "cijfer",
@@ -612,6 +612,7 @@ function maakTab(nummer, tabsContainer, contentContainer) {
     tab.onclick = () => {
         toonTabInhoud('toets' + nummer); // Gebruik 'toets' + nummer om de ID te krijgen
         laadToetsInhoud(nummer);
+        setEditRights();
     };
 }
 
@@ -672,10 +673,10 @@ function laadToetsInhoud(toetsNummer) {
         } else if (!tabContent) {
             console.log(`TabContent met ID 'toets${toetsNummer}' niet gevonden.`);
         }
+        adjustTextareaHeights(tabContent);
     } catch (error) {
         console.error("Fout in laadToetsInhoud: ", error);
     }
-    setEditRights();
 }
 
 function setEditRights() {
@@ -717,6 +718,21 @@ function vulToetsInhoud(toetsData) {
         console.error("Fout in vulToetsInhoud: ", error);
     }
 }
+
+function adjustTextareaHeights(element) {
+    const textareas = element.querySelectorAll('textarea');
+    textareas.forEach(adjustTextareaHeight);
+}
+
+
+function adjustTextareaHeight(textarea) {
+    textarea.style.height = 'auto';
+    textarea.style.height = (textarea.scrollHeight) + 'px';
+}
+
+window.addEventListener('resize', () => {
+    document.querySelectorAll('textarea').forEach(adjustTextareaHeight);
+});
 
 function vulVelden(clone, toetsData) {
     const velden = {
@@ -824,6 +840,7 @@ function voegCloneToeAanTabContent(clone, toetsNummer) {
 
     tabContent.innerHTML = '';
     tabContent.appendChild(clone);
+    
 }
 
 function setSelectValue(selectElement, value) {
