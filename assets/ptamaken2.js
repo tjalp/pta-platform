@@ -21,10 +21,13 @@ function start() {
         { text: 'Bewerken', action: bewerken }
     ]);
     document.body.appendChild(modal);
+    toonTabInhoud('wegingenContent');
+    setEditRights()
 }
 
 function bekijken() {
     selectedBewerkerOfBekijker = "Bekijken";
+    isBewerker = false;
     vakkeuze();
 }
 
@@ -223,19 +226,7 @@ function laadPercentages() {
 
     getPercentages();
 
-    if (!isBewerker || !selectedJaar.includes(bewerkJaar) || opSlot) {
-        [input4vwo, input5vwo, input6vwo, input4havo, input5havo].forEach(input => {
-            input.disabled = true;
-        });
-        return;
-    }
-
-    input4vwo.disabled = selectedNiveau === '5 vwo' || selectedNiveau === '6 vwo';
-    input5vwo.disabled = selectedNiveau === '6 vwo';
-    input6vwo.disabled = true;
-
-    input4havo.disabled = selectedNiveau === '5 havo';
-    input5havo.disabled = true;
+    setEditRights();
 }
 
 
@@ -452,7 +443,7 @@ let ptaData = {
             "type": "mondeling",
             'type_else': null,
             "result_type": "cijfer",
-            "time": 0,
+            "time": 'anders',
             "time_else": '???',
             "resitable": true,
             "weight_pod": 0,
@@ -574,7 +565,7 @@ function leesPtaData() {
 function genereerToetsen() {
     leesPtaData();
     maakTabs();
-    initialiseerVasteTabs(); // Zorg dat de vaste tabs juist functioneren
+    initialiseerVasteTabs();
 }
 
 function initialiseerVasteTabs() {
@@ -660,9 +651,10 @@ function getPtaData(toetsNummer) {
         subdomain: toets.subdomain,
         description: toets.description,
         afnamevorm: toets.type,
-        afnamevormAnders: toets.type_else || "N/A",
+        afnamevormAnders: toets.type_else,
         beoordeling: toets.result_type,
         tijd: toets.time,
+        tijdAnders: toets.time_else,
         herkansbaar: toets.resitable ? "Ja" : "Nee",
         pod: toets.weight_pod,
         pta: toets.weight_pta,
@@ -683,48 +675,178 @@ function laadToetsInhoud(toetsNummer) {
     } catch (error) {
         console.error("Fout in laadToetsInhoud: ", error);
     }
+    setEditRights();
+}
+
+function setEditRights() {
+    const invulVelden = document.querySelectorAll('.tabContent input, .tabContent select, .tabContent textarea');
+    if (!isBewerker || !selectedJaar.includes(bewerkJaar) || opSlot) {
+        console.log('nee')
+        invulVelden.forEach(veld => {
+            veld.disabled = true;
+        });
+        return;
+    }
+    console.log('ja')
+    invulVelden.forEach(veld => {
+        veld.disabled = false;
+    });
+    input4vwo.disabled = selectedNiveau === '5 vwo' || selectedNiveau === '6 vwo';
+    input5vwo.disabled = selectedNiveau === '6 vwo';
+    input6vwo.disabled = true;
+
+    input4havo.disabled = selectedNiveau === '5 havo';
+    input5havo.disabled = true;
+
 }
 
 function vulToetsInhoud(toetsData) {
     try {
         const template = document.getElementById('toetsTemplate');
         if (!template) {
-            console.log("Template 'toetsTemplate' niet gevonden.");
+            console.error("Template 'toetsTemplate' niet gevonden.");
             return;
         }
 
         const clone = template.content.cloneNode(true);
-        const fields = {
-            '.toetsNummer': toetsData.id,
-            '.jaarPeriode': toetsData.jaarPeriode,
-            '.weeknummer': toetsData.week,
-            '.subdomein': toetsData.subdomain,
-            '.stofomschrijving': toetsData.description,
-            '.afnamevorm': toetsData.afnamevorm,
-            '.afnamevormAnders': toetsData.afnamevormAnders,
-            '.beoordeling': toetsData.beoordeling,
-            '.tijd': toetsData.tijd,
-            '.herkansbaar': toetsData.herkansbaar,
-            '.pod': toetsData.pod,
-            '.pta': toetsData.pta,
-            '.hulpmiddelen': toetsData.hulpmiddelen
-        };
-
-        for (let key in fields) {
-            const element = clone.querySelector(key);
-            if (element) {
-                element.textContent = fields[key];
-            }
-        }
-
-        const tabContent = document.getElementById('toets' + toetsData.id);
-        if (tabContent) {
-            tabContent.innerHTML = '';
-            tabContent.appendChild(clone);
-        } else {
-            console.log(`TabContent met ID 'toets${toetsData.id}' niet gevonden.`);
-        }
+        vulVelden(clone, toetsData);
+        toonAfnamevormAnders(clone, toetsData);
+        toonTijdAnders(clone, toetsData);
+        voegCloneToeAanTabContent(clone, toetsData.id);
     } catch (error) {
         console.error("Fout in vulToetsInhoud: ", error);
     }
+}
+
+function vulVelden(clone, toetsData) {
+    const velden = {
+        '.toetsNummer': toetsData.id,
+        '.jaarPeriode': toetsData.jaarPeriode,
+        '.weeknummer': toetsData.week,
+        '.subdomein': toetsData.subdomain,
+        '.stofomschrijving': toetsData.description,
+        '.beoordeling': toetsData.beoordeling,
+        '.pod': toetsData.pod,
+        '.pta': toetsData.pta,
+        '.hulpmiddelen': toetsData.hulpmiddelen ? toetsData.hulpmiddelen : "Geen"
+    };
+
+    for (let selector in velden) {
+        const element = clone.querySelector(selector);
+        if (element) {
+            if (element.tagName === 'TEXTAREA' || element.tagName === 'INPUT') {
+                element.value = velden[selector];
+            } else {
+                element.textContent = velden[selector];
+            }
+        }
+    }
+
+    // Hulpmiddelen
+    const hulpmiddelenList = clone.querySelector('.hulpmiddelen');
+    if (hulpmiddelenList) {
+        vulHulpmiddelenList(hulpmiddelenList, toetsData.hulpmiddelen);
+    }
+
+    // Afnamevorm
+    const afnamevormSelect = clone.querySelector('.afnamevormSelect');
+    if (afnamevormSelect) {
+        setSelectValue(afnamevormSelect, toetsData.afnamevorm);
+    }
+
+    // Beoordeling
+    const beoordelingSelect = clone.querySelector('.beoordelingSelect');
+    if (beoordelingSelect) {
+        setSelectValue(beoordelingSelect, toetsData.beoordeling);
+    }
+
+    // Herkansbaar
+    const herkansbaarSelect = clone.querySelector('.herkansbaarSelect');
+    if (herkansbaarSelect) {
+        setSelectValue(herkansbaarSelect, toetsData.herkansbaar);
+    }
+
+    // Tijd
+    const tijdSelect = clone.querySelector('.tijdSelect');
+    if (tijdSelect) {
+        setSelectValue(tijdSelect, toetsData.tijd.toString());
+    }
+}
+
+function toonAfnamevormAnders(clone, toetsData) {
+    const afnamevormSelect = clone.querySelector('.afnamevormSelect');
+    const afnamevormAndersTextarea = clone.querySelector('.afnamevormAnders');
+
+    if (!afnamevormSelect || !afnamevormAndersTextarea) {
+        console.error("Elementen voor afnamevorm select en/of anders textarea niet gevonden.");
+        return;
+    }
+
+    // Stel de waarde van afnamevormSelect in
+    if (toetsData.afnamevorm) {
+        afnamevormSelect.value = toetsData.afnamevorm;
+        toggleExplanation(afnamevormSelect);
+    }
+
+    // Stel de waarde van afnamevormAndersTextarea in indien afnamevorm 'anders' is
+    if (toetsData.afnamevorm === 'anders') {
+        afnamevormAndersTextarea.value = toetsData.afnamevormAnders || "";
+    }
+}
+
+function toonTijdAnders(clone, toetsData) {
+    const tijdSelect = clone.querySelector('.tijdSelect');
+    const tijdAndersTextarea = clone.querySelector('.tijdAnders');
+
+    if (!tijdSelect || !tijdAndersTextarea) {
+        console.error("Elementen voor afnamevorm select en/of anders textarea niet gevonden.");
+        return;
+    }
+
+    // Stel de waarde van afnamevormSelect in
+    if (toetsData.tijd) {
+        tijdSelect.value = toetsData.tijd;
+        toggleExplanation(tijdSelect);
+    }
+
+    // Stel de waarde van afnamevormAndersTextarea in indien afnamevorm 'anders' is
+    if (toetsData.tijd === 'anders') {
+        tijdAndersTextarea.value = toetsData.tijdAnders || "";
+    }
+}
+
+function voegCloneToeAanTabContent(clone, toetsNummer) {
+    const tabContent = document.getElementById('toets' + toetsNummer);
+    if (!tabContent) {
+        console.error(`TabContent met ID 'toets${toetsNummer}' niet gevonden.`);
+        return;
+    }
+
+    tabContent.innerHTML = '';
+    tabContent.appendChild(clone);
+}
+
+function setSelectValue(selectElement, value) {
+    const optionToSelect = Array.from(selectElement.options).find(option => option.value === value);
+    if (optionToSelect) {
+        selectElement.value = value;
+    } else {
+        console.error(`Waarde '${value}' komt niet overeen met een beschikbare optie in de select.`);
+    }
+}
+
+function vulHulpmiddelenList(ulElement, hulpmiddelenString) {
+    // Als de hulpmiddelenString leeg of undefined is
+    if (!hulpmiddelenString) {
+        ulElement.textContent = "Geen";
+        return;
+    }
+
+    ulElement.innerHTML = ''; // Eerst de huidige inhoud van de UL legen
+    const hulpmiddelenArray = hulpmiddelenString.split(', ');
+    hulpmiddelenArray.forEach(hulpmiddel => {
+        const li = document.createElement('li');
+        li.textContent = hulpmiddel.trim(); // Verwijder eventuele extra spaties
+        ulElement.appendChild(li);
+    });
 }

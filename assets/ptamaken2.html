@@ -19,16 +19,76 @@
             <!-- <div>Toetsnummer: <span class="toetsNummer"></span></div> -->
             <div>Jaar & Periode: <span class="jaarPeriode"></span></div>
             <div>Weeknummer: <span class="weeknummer"></span></div>
-            <div>Subdomein: <span class="subdomein"></span></div>
-            <div>Stofomschrijving: <span class="stofomschrijving"></span></div>
-            <div>Afnamevorm: <span class="afnamevorm"></span></div>
-            <div>Afnamevorm anders: <span class="afnamevormAnders"></span></div>
-            <div>Beoordeling: <span class="beoordeling"></span></div>
-            <div>Tijd: <span class="tijd"></span></div>
-            <div>Herkansbaar: <span class="herkansbaar"></span></div>
-            <div>POD: <span class="pod"></span></div>
-            <div>PTA: <span class="pta"></span></div>
-            <div>Hulpmiddelen: <span class="hulpmiddelen"></span></div>
+            <div>
+                <div>Subdomein:</div>
+                <textarea id="description" oninput="adjustTextareaHeight(this)"
+                    class="autoExpandTextarea subdomein"></textarea>
+            </div>
+            <div>
+                <div>Stofomschrijving:</div>
+                <textarea id="description" oninput="adjustTextareaHeight(this)"
+                    class="autoExpandTextarea stofomschrijving"></textarea>
+            </div>
+
+            <div>
+                Afnamevorm:
+                <select onchange="toggleExplanation(this)" class="inputField afnamevormSelect">
+                    <option hidden disabled selected value>Selecteer een optie</option>
+                    <option value="schriftelijk">Schriftelijk</option>
+                    <option value="mondeling">Mondeling</option>
+                    <option value="digitaal">Digitaal</option>
+                    <option value="praktisch">Praktisch</option>
+                    <option value="anders">Anders</option>
+                </select>
+                <div class="explanationDiv">
+                    Toelichting bij anders:
+                    <textarea oninput="adjustTextareaHeight(this)" class="autoExpandTextarea afnamevormAnders">
+                    </textarea>
+                </div>
+            </div>
+
+            <div>
+                Beoordeling:
+                <select class="inputField beoordelingSelect">
+                    <option hidden disabled selected value>Selecteer een optie</option>
+                    <option value="cijfer">Cijfer</option>
+                    <option value="o/v/g">O/V/G</option>
+                </select>
+            </div>
+            <div>
+                Tijd:
+                <select onchange="toggleExplanation(this)" class="inputField tijdSelect">
+                    <option hidden disabled selected value>Selecteer een optie</option>
+                    <option value="0">0 min.</option>
+                    <option value="50">50 min.</option>
+                    <option value="100">100 min.</option>
+                    <option value="150">150 min.</option>
+                    <option value="200">200 min.</option>
+                    <option value="anders">Anders</option>
+                </select>
+                <div class="explanationDiv">
+                    Toelichting bij anders:
+                    <textarea oninput="adjustTextareaHeight(this)" class="autoExpandTextarea tijdAnders">
+                    </textarea>
+                </div>
+            </div>
+            <div>
+                Herkansbaar:
+                <select id="resitable" name="resitable" class="inputField herkansbaarSelect">
+                    <option hidden disabled selected value>Selecteer een optie</option>
+                    <option value="Ja">Ja</option>
+                    <option value="Nee">Nee</option>
+                </select>
+            </div>
+            <label for="pod">POD:</label>
+            <input type="text" id="pod" name="pod" class="inputField pod">
+            <label for="pta">PTA:</label>
+            <input type="text" id="pta" name="pta" class="inputField pta">
+            <div>
+                Hulpmiddelen: 
+                <!-- <button id="hulpmiddelSelect">Selecteer Hulpmiddelen</button> -->
+                <ul class="hulpmiddelen"></ul>
+            </div>
 
         </div>
     </template>

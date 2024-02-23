@@ -16,7 +16,7 @@
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    margin: 10px 20px 10px 20px;
+    margin: 10px 20px 10px 100px;
     background-color: #ecf0f1;
     /* Light Gray */
     color: var(--text-color);
@@ -81,23 +81,21 @@ input[type="button"]:disabled {
 
 input,
 textarea {
-    padding: 10px;
     box-sizing: border-box;
-    border: 1px solid #ccc;
     border-radius: 4px;
     transition: border-color 0.3s ease;
 }
 
-textarea {
-    height: 35px;
-    width: 100%;
+input {
+    padding: 5px;
+    border: 1px solid #ccc;
 }
-
 
 input:focus,
 textarea:focus {
     outline: none;
     border-color: var(--primary-color);
+    height: 35px;
 }
 
 .toets {
@@ -246,12 +244,20 @@ label,
     visibility: visible;
 }
 
-.autoExpandTextarea {
-    overflow-y: hidden;
-    resize: none;
-    min-height: 35px;
-    height: 35px;
-    /* Verwijder 'height: auto;' aangezien de textarea automatisch groeit */
+.autoExpandTextarea, .stofomschrijving {
+    width: 100%;
+    border: 1px solid #ccc;
+    overflow-y: hidden; /* Verbergt de scrollbar */
+    resize: none; /* Voorkomt dat de gebruiker de grootte aanpast */
+    min-height: 35px; /* Minimale hoogte */
+    height: 35px; /* Start hoogte */
+    padding: 10px;
+    box-sizing: border-box; /* Inclusief padding en border in de totale breedte en hoogte */
+}
+
+.autoExpandTextarea:focus, .stofomschrijving:focus {
+    outline: none;
+    border-color: var(--primary-color);
 }
 
 #addToolModal {
@@ -300,17 +306,6 @@ ul.selectedTools li {
     /* Breekt lange woorden af zodat ze binnen de breedte passen */
     overflow-wrap: break-word;
     /* Alternatief voor word-wrap, voor betere ondersteuning */
-}
-
-select {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 20px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    background-color: white;
-    box-sizing: border-box;
-    /* Include padding and border in width */
 }
 
 #dynamicButtons {
@@ -429,6 +424,7 @@ select {
     border: 1px solid var(--primary-color);
     border-radius: 5px;
     background-color: #f8f8f8;
+    width: 65vw;
 }
 
 #right {

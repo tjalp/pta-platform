@@ -110,7 +110,7 @@ function getWeekNumber(d) {
 
 function adjustTextareaHeight(textarea) {
     textarea.style.height = 'auto'; // Reset de hoogte
-    textarea.style.height = textarea.scrollHeight + 'px'; // Stel de nieuwe hoogte in
+    textarea.style.height = (textarea.scrollHeight - 16) + 'px'; // Stel de nieuwe hoogte in
 }
 
 function toggleExplanation(selectElement) {
