@@ -134,7 +134,10 @@ function createModal(title, elements) {
             contentHtml += `<select id="${el.id}">${el.options.map(option => `<option value="${option}">${option}</option>`)}</select>`;
         } else if (el.type === 'input') {
             contentHtml += `<input type="${el.inputType || 'text'}" placeholder="${el.placeholder}">`;
-        } else {
+        } else if (el.type === 'div') {
+            contentHtml += `<div ${el.id}></div>`;
+        } 
+        else {
             contentHtml += `<button onclick="${el.action.name}()">${el.text}</button>`;
         }
     });
@@ -686,11 +689,19 @@ function setEditRights() {
         invulVelden.forEach(veld => {
             veld.disabled = true;
         });
+        const iconen = document.querySelectorAll('.edit-icon');
+        iconen.forEach(icoon => {
+            icoon.style.display = 'none';
+        });
         return;
     }
     console.log('ja')
     invulVelden.forEach(veld => {
         veld.disabled = false;
+    });
+    const iconen = document.querySelectorAll('.edit-icon');
+    iconen.forEach(icoon => {
+        icoon.style.display = 'inline-block';
     });
     input4vwo.disabled = selectedNiveau === '5 vwo' || selectedNiveau === '6 vwo';
     input5vwo.disabled = selectedNiveau === '6 vwo';
@@ -866,4 +877,13 @@ function vulHulpmiddelenList(ulElement, hulpmiddelenString) {
         li.textContent = hulpmiddel.trim(); // Verwijder eventuele extra spaties
         ulElement.appendChild(li);
     });
+}
+
+function bewerkWeeknummer() {
+    removeExistingModals();
+    const modal = createModal('Kies een weeknummer', [
+        { type: 'input', placeholder: 'Weeknummer' },
+        { type: 'div', id: 'test' }
+    ]);
+    document.body.appendChild(modal);
 }

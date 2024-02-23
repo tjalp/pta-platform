@@ -10,7 +10,7 @@
     /* Light White */
     --overlay-color: rgba(0, 0, 0, 0.6);
     /* Semi-Transparent Black */
-    --button-hover-color: #1abc9c;
+    --button-hover-color:#27ae60;
     /* Lighter Green */
 }
 
@@ -414,6 +414,11 @@ ul.selectedTools li {
     margin: 1px;
 }
 
+.tab:hover {
+    background-color: lightgrey;
+    transition: background-color 0.3s ease;
+}
+
 .tab.active {
     background-color: var(--secondary-color);
     color: white;
@@ -517,4 +522,15 @@ ul.selectedTools li {
 
 .flexItemNaastElkaar {
     grid-column: 2; /* Plaatst dit element in de tweede kolom */
+}
+
+.edit-icon {
+    color: var(--secondary-color);
+    cursor: pointer;
+    margin-left: 8px;
+    transition: color 0.3s ease;
+}
+
+.edit-icon:hover {
+    color: var(--button-hover-color);
 }
