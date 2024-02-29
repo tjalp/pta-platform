@@ -12,7 +12,7 @@ body {
 }
 
 h1 {
-    text-align: center;
+    text-align: left;
     color: var(--primary-color);
 }
 
@@ -27,14 +27,7 @@ label {
     color: var(--text-color);
 }
 
-input {
-    margin-bottom: 16px;
-    padding: 8px;
-    width: 100%;
-    box-sizing: border-box;
-}
-
-button {
+button, input[type="button"] {
     background-color: var(--secondary-color);
     color: #fff;
     padding: 10px 20px;
@@ -43,11 +36,11 @@ button {
     border-radius: 5px;
 }
 
-button:hover {
+button:hover, input[type="button"]:hover {
     background-color: #27ae60; /* Darker Green on hover */
 }
 
-button:disabled {
+button:disabled, input[type="button"]:disabled {
     background-color: #bdc3c7; /* Light Gray */
     cursor: default;
 }
@@ -63,55 +56,34 @@ button:disabled {
 /* Additional styling for the cloned forms */
 .clonedForm {
     margin-top: 20px;
+    width: 50vw;
     border: 1px solid var(--primary-color);
     border-radius: 5px;
     padding: 15px;
     background-color: #f8f8f8;
+    width: 50vw;
 }
 
 input, textarea {
-    margin-bottom: 16px;
     padding: 10px;
-    width: 100%;
     box-sizing: border-box;
     border: 1px solid #ccc;
     border-radius: 4px;
     transition: border-color 0.3s ease;
 }
 
+textarea {
+    height: 35px;
+    width: 100%;
+}
+
+
 input:focus, textarea:focus {
     outline: none;
     border-color: var(--primary-color);
 }
 
-/* Additional styling for the cloned forms */
-.clonedForm {
-    margin-top: 20px;
-    border: 1px solid var(--primary-color);
-    border-radius: 5px;
-    padding: 15px;
-    background-color: #f8f8f8;
-}
-
 #toetsen {
-    margin-top: 20px;
-    border: 1px solid var(--primary-color);
-    border-radius: 5px;
-    padding: 15px;
-    background-color: #f8f8f8;
-}
-
-#toetsen {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    justify-content: flex-start;
-    align-items: stretch;
-    align-content: stretch;
-}
-
-/* Additional styling for the cloned forms */
-.clonedForm {
     margin-top: 20px;
     border: 1px solid var(--primary-color);
     border-radius: 5px;
@@ -126,30 +98,160 @@ input:focus, textarea:focus {
     justify-content: flex-start;
     align-items: stretch;
     align-content: stretch;
-    padding: 10px;
-}
-
-/* Added padding to the children of .velden */
-.velden label,
-.velden input,
-.velden button {
-    padding: 8px; /* Adjust padding as needed */
-}
-
-/* Additional styling for the cloned forms */
-.clonedForm {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    justify-content: flex-start;
-    align-items: stretch;
-    align-content: stretch;
 }
 
 .velden form {
-    margin-top: 20px;
+    margin-bottom: 20px;
     border: 1px solid var(--primary-color);
     border-radius: 5px;
     padding: 15px;
     background-color: #f8f8f8;
+}
+
+#percentages .weging-container {
+    display: flex;
+    align-items: center;
+}
+
+#percentages .weging-container label {
+    margin-right: 10px;
+}
+
+#percentages .inputField, #percentages .showField {
+    width: 50px; /* Of een andere breedte naar keuze */
+    margin-right: 5px;
+}
+ 
+.error {
+    color: red;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+nav {
+    display: flex;
+    align-items: center; /* Zorgt voor verticale centrering */
+    justify-content: start; /* Lijnt items uit aan de start (links), kan aangepast worden naar wens */
+}
+
+nav h1  {
+    margin: 0; /* Verwijdert de standaard marge */
+    /* Voeg hier eventueel andere stijlen voor h1 toe */
+}
+
+nav > *:not(:last-child) {
+    margin-right: 10px; /* Voegt 10px marge toe aan de rechterkant van elk element, behalve het laatste */
+}
+
+#controls {
+    margin-top: 10px;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgb(0,0,0);
+    background-color: rgba(0,0,0,0.4);
+    padding-top: 60px;
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 5% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.selectField {
+    margin-right: 10px;
+}
+
+label, .selectField {
+    display: inline-block;
+    margin-right: 10px;
+}
+
+.modal button {
+    margin-top: 20px;
+}
+
+
+.explanationDiv {
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 1s ease-out, visibility 1s;
+    visibility: hidden;
+}
+
+.explanationDiv.visible {
+    /* Gebruik een geschatte max-height die groter is dan de verwachte inhoud */
+    max-height: 200px; /* Pas dit aan op basis van de verwachte inhoudsgrootte */
+    visibility: visible;
+}
+
+.autoExpandTextarea {
+    overflow-y: hidden;
+    resize: none;
+    min-height: 35px;
+    height: 35px; /* Verwijder 'height: auto;' aangezien de textarea automatisch groeit */
+}
+
+#addToolModal {
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    z-index: 1000; /* Zorg dat het boven andere elementen verschijnt */
+    display: none; /* Verborgen tot het geactiveerd wordt */
+}
+
+/* Achtergrond overlay */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 999; /* Onder de modal, maar boven andere elementen */
+    display: none; /* Verborgen tot het geactiveerd wordt */
+}
+
+.toolsSelect, option {
+    max-width: 50vw;
+}
+
+ul.selectedTools {
+    width: 100%; /* Of een specifieke breedte */
+}
+
+ul.selectedTools li {
+    white-space: normal; /* Zorgt ervoor dat de tekst normaal omloopt */
+    word-wrap: break-word; /* Breekt lange woorden af zodat ze binnen de breedte passen */
+    overflow-wrap: break-word; /* Alternatief voor word-wrap, voor betere ondersteuning */
 }

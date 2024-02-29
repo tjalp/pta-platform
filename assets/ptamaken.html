@@ -10,126 +10,164 @@
     <title>PTA Veranderen</title>
 </head>
 <body>
-<button type="button" onclick="paginaTerug()">terug</button>
-<button onclick="copyPta()">Kopie maken</button>
-<button onclick="deletePta()">Verwijder PTA</button>
-<h1 id="name">PTA Veranderen</h1>
+    <header>
+        <nav>
+            <button type="button" onclick="paginaTerug()">Terug</button>
+            <button onclick="copyPta()">Kopie maken</button>
+            <button onclick="deletePta()">Verwijder PTA</button>
+            <button type="button" onclick="allesOpslaan()" class="inputField">Alles inleveren</button>
+            <button type="button" onclick="generatePDF()">Genereer PDF</button>
+        </nav>
 
-<h2>Procent Eindcijfer</h2>
-<label for="percentage">Percentage:</label>
-<input type="text" id="percentage" name="percentage" class="inputField">
+        <h1 id="name">PTA Veranderen</h1>
+
+        <!-- <div id="controls">
+        </div> -->
+    </header>
 
 
-<h2>Hulpmiddelen</h2>
-<label for="tools">Hulpmiddelen:</label>
-<div class="velden">
-    <div class="additional-fields" id="toolsFieldsContainer">
-        <!--        <div>-->
-        <!--        <label for="tool1">Veld 1:</label>-->
-        <!--        <input type="text" id="tool1" name="tools">-->
-        <!--        </div>-->
-        <!-- Hier worden de extra velden toegevoegd -->
+<div id="percentages">
+    <h2>Procent Eindcijfer</h2>
+    <div class="error" id="errorPercentages"></div>
+    <div class="weging-container">
+        <label for="percentage4vwo">Weging 4 VWO:</label>
+        <input type="text" id="percentage4vwo" name="percentage4vwo" value="0" class="inputField">
+        <span class="character">%</span>
+    </div>
+    <div class="weging-container">
+        <label for="percentage5vwo">Weging 5 VWO:</label>
+        <input type="text" id="percentage5vwo" name="percentage5vwo" value="0" class="inputField">
+        <span class="character">%</span>
+    </div>
+    <div class="weging-container">
+        <label for="percentage6vwo">Weging 6 VWO:</label>
+        <input type="text" id="percentage6vwo" name="percentage6vwo" class="showField" value="0" disabled>
+        <span class="character">% (automatisch berekend)</span>
     </div>
 </div>
-<button type="button" onclick="addAdditionalField('toolsFieldsContainer')" class="inputField">Voeg Veld Toe</button>
-<button type="button" onclick="updateToolsCheckboxes()" class="inputField">Update de Hulpmiddelen bij toetsen</button>
-<button type="button" onclick="verwijderVeld('toolsFieldsContainer')" class="inputField">Verwijder Veld</button>
+
 <h2>Toetsen</h2>
+<div id="testControls">
+    <button id="addTestButton">Toets Toevoegen Menu</button>
+    <button type="button" onclick="cloneForm('toetsTemplate')" class="inputField">Toets Toevoegen</button>
+    <button type="button" onclick="verwijderToets()" class="inputField">Verwijder Toets</button>
+    <button type="button" onclick="toetsOpslaan()"  id="toetsOpslaanKnop">Toets(en) opslaan</button>
+</div>
+<div id="testModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <div id="modalPage1" class="modal-page">
+            <!-- Inhoud voor pagina 1 -->
+            <h2>Weeknummer</h2>
+            <label for="modal_date">Datum:</label>
+            <input type="date" id="modal_date" class="inputField" onchange="calculateWeekNumber()">
+            <div id="errorWeek" class="error"></div>
+            <div>
+                Weeknummer: <span id="weeknummer"></span>
+            </div>
+
+            <div>
+                <button type="button" onclick="goToPage(2)">Volgende</button>
+            </div>
+        </div>
+        <div id="modalPage2" class="modal-page" style="display:none;">
+            <!-- Inhoud voor pagina 2 -->
+            <button type="button" onclick="goToPage(1)">Terug</button>
+            <button type="button" onclick="goToPage(3)">Volgende</button>
+        </div>
+        <!-- Voeg meer pagina's toe zoals nodig -->
+        <div id="modalPage3" class="modal-page" style="display:none;">
+            <!-- Inhoud voor pagina 3 -->
+            <button type="button" onclick="goToPage(2)">Terug</button>
+            <button type="button" id="saveButton" onclick="cloneForm('toetsTemplate')">Opslaan</button>
+        </div>
+    </div>
+</div>
+
+
 <div class="velden" id="toetsVelden">
     <template id="toetsTemplate">
         <form id="toetsen">
+            <div>Toetsnummer: <span id="testNumber"></span></div>
+            <div>Jaar & Periode: <span id="year_and_period"></span></div>
+            <div>Weeknummer: <span id="week"></span></div>
+            <div>Subdomein: <span id="subdomain"></span></div>
             <div>
-                <label for="id">Toetsnummer:</label>
-                <input type="text" id="id" name="id" required="required" class="inputField">
+
+                <div>Stofomschrijving:</div>
+                <textarea id="description" oninput="adjustTextareaHeight(this)" class="autoExpandTextarea"></textarea>
+
             </div>
+            
             <div>
-                <label for="year_and_period">Jaar & periode:</label>
-                <input type="text" id="year_and_period" name="year_and_period" required="required" class="inputField">
-            </div>
-            <div>
-                <label for="week">Weeknummer:</label>
-                <input type="text" id="week" name="week" max="52" required="required" class="inputField">
-            </div>
-            <div>
-                <label for="subdomain">Subdomein:</label>
-                <input type="text" id="subdomain" name="subdomain" required="required" class="inputField">
-            </div>
-            <div>
-                <label for="description">Stofomschrijving:</label>
-                <textarea id="description" name="description" required="required" class="inputField"></textarea>
-            </div>
-            <div>
-                <label for="type">Afnamevorm:</label>
-                <select id="type" name="type" required="required" class="inputField">
-                    <option hidden disabled selected value>-- selecteer een optie --</option>
+                Afnamevorm: 
+                <select onchange="toggleExplanation(this)" class="inputField resultTypeSelect">
+                    <option hidden disabled selected value>Selecteer een optie</option>
                     <option value="schriftelijk">Schriftelijk</option>
                     <option value="mondeling">Mondeling</option>
-                    <option value="anders">Anders</option>
                     <option value="digitaal">Digitaal</option>
                     <option value="praktisch">Praktisch</option>
+                    <option value="anders">Anders</option>
                 </select>
+                <div class="explanationDiv">
+                    Toelichting bij anders:
+                    <textarea id="result_type_else" oninput="adjustTextareaHeight(this)" class="autoExpandTextarea"></textarea>
+                </div>
             </div>
+            
             <div>
-                <label for="result_type">Beoordeling:</label>
-                <select id="result_type" name="result_type" required="required" class="inputField">
-                    <option hidden disabled selected value>-- selecteer een optie --</option>
+                Beoordeling:
+                <select onchange="toggleExplanation(this)" class="inputField resultTypeSelect">
+                    <option hidden disabled selected value>Selecteer een optie</option>
                     <option value="cijfer">Cijfer</option>
                     <option value="O/V/G">O/V/G</option>
                     <option value="anders">Anders</option>
                 </select>
+                <div class="explanationDiv">
+                    Toelichting bij anders:
+                    <textarea id="result_type_else" oninput="adjustTextareaHeight(this)" class="autoExpandTextarea"></textarea>
+                </div>
             </div>
+            
             <div>
-                <label for="time">Tijd:</label>
-                <input type="text" id="time" name="time" required="required" class="inputField">
+                Tijd: <span id="time"></span>
             </div>
+            
             <div>
-                <label for="resitable">Herkansbaar:</label>
-                <select id="resitable" name="resitable" required="required" class="inputField">
-                    <option hidden disabled selected value>-- selecteer een optie --</option>
+                Herkansbaar: 
+                <select id="resitable" name="resitable" class="inputField">
+                    <option hidden disabled selected value>Selecteer een optie</option>
                     <option value="true">Ja</option>
                     <option value="false">Nee</option>
                 </select>
             </div>
+            
             <div>
-                <label for="weight">Weging:</label>
-                <input type="number" id="weight" name="weight" required="required" class="inputField">
+                Weging: <span id="weight"></span>
             </div>
+            
             <div>
-                <div>
-                    <label for="tools">Hulpmiddelen:</label>
-                    <div id="tools"></div>
-                </div>
-
+                Hulpmiddel: 
+                <select class="toolsSelect">
+                    <option hidden disabled selected value>Selecteer een optie</option>
+                    <!-- Dynamisch toegevoegde hulpmiddelen worden hier ingevoegd -->
+                    <option value="add-new">Voeg hulpmiddel toe</option>
+                </select>
+                <ul class="selectedTools"></ul>
             </div>
+            
+            
         </form>
     </template>
 </div>
-<div>
-    <input type="button" id="toetsOpslaanKnop" value="toets(en) opslaan" onclick="toetsOpslaan()" class="inputField">
+
+<div id="addToolModal"> 
+    <input type="text" id="newToolName" placeholder="Hulpmiddel naam">
+    <button onclick="addNewTool()">Toevoegen</button>
 </div>
-<button type="button" onclick="cloneForm('toetsTemplate')" class="inputField">Voeg toets toe</button>
-<button type="button" onclick="verwijderToets()" class="inputField">Verwijder Toets</button>
-<h2>Toelichting bij anders</h2>
-<div class="velden">
+<div class="modal-overlay" onclick="closeModalTools()"></div>
 
-
-    <div class="additional-fields" id="explanationFieldsContainer">
-        <div>
-            <label for="explanation">Veld 1:</label>
-            <input type="text" id="explanation" name="explanation" class="inputField">
-        </div>
-        <!-- Hier worden de extra velden toegevoegd -->
-    </div>
-</div>
-
-<button type="button" onclick="addAdditionalField('explanationFieldsContainer')" class="inputField">Voeg Veld Toe
-</button>
-<button type="button" onclick="verwijderVeld('explanationFieldsContainer')" class="inputField">Verwijder Veld</button>
-
-
-<h2>Pdf</h2>
-<button type="button" onclick="allesOpslaan()" class="inputField">Alles inleveren</button>
-<button type="button" onclick="generatePDF()">Genereer PDF</button>
+<script src="ptamaken.js"></script>
 <script>
     const urlParams = new URLSearchParams(window.location.search);
     const ptaId = urlParams.get('id');
@@ -192,7 +230,11 @@
         input.setAttribute('type', 'text');
         input.setAttribute('id', containerId + '_field' + newFieldNumber);
         input.setAttribute('name', containerId + '_field' + newFieldNumber);
-        input.setAttribute('disabled', (!isAuthenticated()).toString());
+        if (isAuthenticated()) {
+            input.removeAttribute('disabled');
+        } else {
+            input.setAttribute('disabled', '');
+        }
         input.value = value == null ? "" : value;
 
         // Append label and input to the field container
@@ -214,66 +256,49 @@
         document.getElementById(containerId + 'FormData').textContent = formDataString;
     }
 
-    function cloneForm(containerId, data = null) {
-        const originalForm = document.getElementById(containerId);
-
-        if (!originalForm) {
-            console.error("Origineel formulier niet gevonden: " + containerId);
+    function cloneForm(containerId) {
+        const template = document.getElementById(containerId);
+        if (!template) {
+            console.error("Template niet gevonden: " + containerId);
             return;
         }
 
-        var clonedForm = originalForm.content.cloneNode(true);
-        console.log(clonedForm)
+        var clonedForm = template.content.cloneNode(true);
+        var form = clonedForm.querySelector('form');
 
         // Creëer een unieke identifier voor de nieuwe kloon
         var cloneCount = document.getElementsByClassName('clonedForm').length + 1;
-        var newId = containerId + '_clone' + cloneCount;
-        clonedForm.children[0].id = newId;
-        clonedForm.children[0].className = 'clonedForm';
+        form.id = form.id + '_clone' + cloneCount;
+        form.className = 'clonedForm';
 
-        // Update IDs voor elementen in de gekloonde formulier, maar laat de name attributen ongewijzigd
-        var elements = clonedForm.children[0].elements;
+        // Voeg het toetsnummer en jaar en periode toe
+        let toetsnummerDiv = form.querySelector('#testNumber');
+        if (toetsnummerDiv) toetsnummerDiv.textContent = `40${cloneCount}`;
+
+        let jaarEnPeriodeDiv = form.querySelector('#year_and_period');
+        if (jaarEnPeriodeDiv) jaarEnPeriodeDiv.textContent = `4.${cloneCount}`;
+
+        // Voeg het weeknummer toe
+        let weekNummerSpan = form.querySelector('#week');
+        let modalWeekNummer = document.getElementById('weeknummer').textContent;
+        if (weekNummerSpan) weekNummerSpan.textContent = modalWeekNummer;
+
+        // Clear waarden die niet zijn ingesteld in de modal
+        var elements = form.elements;
         for (var i = 0; i < elements.length; i++) {
             var el = elements[i];
-
             if (el.id) el.id = el.id + '_clone' + cloneCount;
-
-            // Clear de waarden
-            if (el.type === 'text' || el.type === 'number' || el.tagName === 'TEXTAREA') {
-                el.value = data == null ? '' : data[el.name] || '';
-            }
-            if (el.type === 'checkbox') {
-                el.checked = false;
-
-                if (data != null) {
-                    console.log(data.tools)
-                    for (const value of data.tools.values()) {
-                        if (value === parseInt(el.name.replace('toolCheckbox', '')) - 1) {
-                            el.checked = true;
-                            break;
-                        }
-                    }
-                }
-            }
-            if (el.type === 'select-one') {
-                el.selectedIndex = 0;
-
-                if (data != null) {
-                    for (let j = 0; j < el.options.length; j++) {
-                        if (el.options[j].value === data[el.name].toString()) {
-                            el.selectedIndex = j;
-                            break;
-                        }
-                    }
-                }
+            if (el.tagName === 'SELECT' || el.tagName === 'TEXTAREA') {
+                el.value = '';
             }
         }
 
         // Voeg de gekloonde formulier toe
-        document.getElementById("toetsVelden").appendChild(clonedForm)
-        // originalForm.parentNode.insertBefore(clonedForm, originalForm.nextSibling);
+        document.getElementById("toetsVelden").appendChild(form);
+        updateToolsSelects();
     }
 
+    
 
     function toetsOpslaan() {
         // event.preventDefault(); // Voorkomt dat de pagina herlaadt

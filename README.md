@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # pta-platform
 
 ## Description
@@ -23,3 +24,6 @@ go run .
 # Build the server, the output will be in the root directory
 go build .
 ```
+=======
+# pta-platform
+>>>>>>> e1787e1 (pta maken front-end geupdate)
