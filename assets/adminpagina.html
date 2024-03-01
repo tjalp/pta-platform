@@ -9,9 +9,8 @@
 </head>
 
 <body>
-    <button type="button" onclick="PaginaTerug()">Terug</button>
-    <form id="AanpassingenVoorDropdown" onsubmit="dataVersturen(event)">
-        <h2>Soorten toetsen</h2>
+    <button type="button" onclick="PaginaTerug()">terug</button>
+    <form id="AanpassingenVoorDropdown" onsubmit="dataVersturen(event)">        <h2>Soorten toetsen</h2>
         <div id="kloonbareVeld1">
             <div>
             <label for="toetsSoortVeld">Mogelijkheid 1:</label>
@@ -32,7 +31,7 @@
         <button type="button" onclick="verwijderVeld('kloonbareVeld2')">Haal een veld weg</button>
 
         <input type="submit" class="button" value="lever de aanpassingen in">
-        <h2>Staandaardhulpmiddelen</h2>
+        <h2>Staandaardhulpmiddelen</h2> 
         <div id="kloonbareVeld3">
             <div>
             <label for="hulpmiddelenVeld">Mogelijkheid 1:</label>
@@ -44,15 +43,38 @@
 
         <input type="submit" class="button" value="lever de aanpassingen in">
     </form>
+    <form id="periodes" onsubmit="periodesOpslaan(event)">
     <h2>Periodes</h2>
     <label for="periode1">Periode 1:</label>
-    <input type ="text" class="adminveld" id="periode1">
+    <div id="periode1">
+        <label class="adminlabel" for="startPeriode1">Start periode 1</label>
+        <input type ="text" class="adminveld" id="startPeriode1">
+        <label class="adminlabel" for="eindPeriode1">Eind periode 1</label>
+        <input type ="text" class="adminveld" id="eindPeriode1">
+    </div>
     <label for="periode2">Periode 2:</label>
-    <input type ="text" class="adminveld" id="periode2">
+    <div id="periode2">
+        <label class="adminlabel" for="startPeriode2">Start periode 2</label>
+        <input type ="text" class="adminveld" id="startPeriode2">
+        <label class="adminlabel" for="eindPeriode2">Eind periode 2</label>
+        <input type ="text" class="adminveld" id="eindPeriode2">
+    </div>
     <label for="periode3">Periode 3:</label>
-    <input type ="text" class="adminveld" id="periode3">
+    <div id="periode3">
+        <label class="adminlabel" for="startPeriode3">Start periode 3</label>
+        <input type ="text" class="adminveld" id="startPeriode3">
+        <label class="adminlabel" for="eindPeriode3">Eind periode 3</label>
+        <input type ="text" class="adminveld" id="eindPeriode3">
+    </div>
     <label for="periode4">Periode 4:</label>
-    <input type ="text" class="adminveld" id="periode4">
+    <div id="periode4">
+        <label class="adminlabel" for="startPeriode4">Start periode 4</label>
+        <input type ="text" class="adminveld" id="startPeriode4">
+        <label class="adminlabel" for="eindPeriode4">Eind periode 4</label>
+        <input type ="text" class="adminveld" id="eindPeriode4">
+    </div>
+    <input type="submit" value="periodes opslaan">
+    </form>
     <form id="VakkenPtaSchool" onsubmit="vakkenPtaOpslaan()">
         <h2>Vakken 6 Vwo</h2>
         <div id="vakkenVwo6">
@@ -259,8 +281,8 @@
             inputDocent.setAttribute('id', 'docent_' + i);
             inputDocent.setAttribute('name', 'docent_'+ i);
 
-            var input = document.createElement('input');
-            input.setAttribute('type', 'text');
+            var input = document.createElement('input');           
+            input.setAttribute('type', 'text'); 
             input.setAttribute('id', '_field' + i); // Gecorrigeerd
             input.setAttribute('name', '_field' + i); // Gecorrigeerd
 
@@ -271,6 +293,33 @@
         }
 
     }
+
+    function periodesOpslaan(event) {
+            event.preventDefault(); // Prevent the default form submission
+
+            // Gather data from the form
+            var periodesData = {
+                periode1: {
+                    start: document.getElementById("startPeriode1").value,
+                    eind: document.getElementById("eindPeriode1").value
+                },
+                periode2: {
+                    start: document.getElementById("startPeriode2").value,
+                    eind: document.getElementById("eindPeriode2").value
+                },
+                periode3: {
+                    start: document.getElementById("startPeriode3").value,
+                    eind: document.getElementById("eindPeriode3").value
+                },
+                periode4: {
+                    start: document.getElementById("startPeriode4").value,
+                    eind: document.getElementById("eindPeriode4").value
+                }
+            };
+
+            // Send the data to your backend using fetch
+           console.log(periodesData)
+        }
 
 
     vakkenOphalen()
