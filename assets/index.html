@@ -1,151 +1,654 @@
 <!DOCTYPE html>
 <html lang="nl">
+<link rel="stylesheet" type="text/css" href="index.css">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="https://accounts.google.com/gsi/client" async></script>
-  <title>PTA Platform</title>
-  <style>
-    body {
-      background-color: #2ecc71; /* Donkergroene achtergrond */
-      color: #ffffff; /* Witte tekst */
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      margin: 0;
-    }
-
-    #login-container, #options-container {
-      background-color: #27ae60; /* Groene container */
-      padding: 40px;
-      border-radius: 8px;
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-      width: 400px;
-      text-align: center;
-    }
-
-    input {
-      width: 100%;
-      padding: 14px;
-      margin: 12px 0;
-      box-sizing: border-box;
-      border: 1px solid #219d47; /* Donkergroene rand rond invoervelden */
-      border-radius: 4px;
-    }
-
-    button {
-      background-color: #219d47; /* Donkergroene knop */
-      color: #ffffff;
-      padding: 14px 20px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      margin-top: 10px;
-    }
-
-    button:hover {
-      background-color: #1a8341; /* Donkergroene knop bij hover */
-    }
-
-    .button {
-      background-color: #219d47; /* Donkergroene knop */
-      color: #ffffff;
-      padding: 14px 20px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      margin-top: 10px;
-      text-decoration: none;
-    }
-
-    .button:hover {
-        background-color: #1a8341; /* Donkergroene knop bij hover */
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PTA Platform</title>
 </head>
+
 <body>
+    <template id="toetsTemplate">
+        <div class="toetsContainer">
+            <!-- Hier komt de structuur voor je toets-inhoud -->
+            <!-- <div>Toetsnummer: <span class="toetsNummer"></span></div> -->
 
-  <div id="login-container">
-    <h2>Welkom bij PTA Platform</h2>
-    <h1>Login</h1>
-    <!-- <a href="options.html" class="button">Login</a> -->
+            <div class="flexContainer">
+                <div class="flexItem">
+                    <div>Jaar & Periode: <span class="jaarPeriode"></span></div>
+                </div>
+                <div class="flexItem">
+                    <div>Weeknummer: <span class="weeknummer"></span>
+                        <i onclick=bewerkWeeknummer() class="fas fa-pencil-alt edit-icon"></i>
+                    </div>
+                </div>                
+            </div>
 
-    <div id="g_id_onload"
-        data-client_id="228748467369-o7r1ob2mgk1otiej8s35c537b8jtaudn"
-        data-context="signin"
-        data-ux_mode="popup"
-        data-callback="onGoogleSignIn"
-        data-auto_prompt="false">
+            <div>
+                <div>Subdomein:</div>
+                <textarea id="description" oninput="adjustTextareaHeight(this)"
+                    class="autoExpandTextarea subdomein"></textarea>
+            </div>
+            <div>
+                <div>Stofomschrijving:</div>
+                <textarea id="description" oninput="adjustTextareaHeight(this)"
+                    class="autoExpandTextarea stofomschrijving"></textarea>
+            </div>
+
+            <div class="flexOnderElkaar">
+                <div class="flexNaastElkaar">
+                    <label for="afnamevorm">Afnamevorm:</label>
+                    <div class="flexItemNaastElkaar">
+                        <select onchange="toggleExplanation(this)" class="inputField afnamevormSelect">
+                            <option hidden disabled selected value>Selecteer een optie</option>
+                            <option value="schriftelijk">Schriftelijk</option>
+                            <option value="mondeling">Mondeling</option>
+                            <option value="digitaal">Digitaal</option>
+                            <option value="praktisch">Praktisch</option>
+                            <option value="anders">Anders</option>
+                        </select>
+                            <div class="explanationDiv">
+                                Toelichting:
+                                <textarea oninput="adjustTextareaHeight(this)" class="autoExpandTextarea afnamevormAnders">
+                        </textarea>
+                            </div>
+                    </div>
+                </div>
+                <div class="flexNaastElkaar">
+                    <label for="tijd">Tijd:</label>
+                    <div class="flexItemNaastElkaar">
+                        <select onchange="toggleExplanation(this)" class="inputField tijdSelect">
+                            <option hidden disabled selected value>Selecteer een optie</option>
+                            <option value="0">0 min.</option>
+                            <option value="50">50 min.</option>
+                            <option value="100">100 min.</option>
+                            <option value="150">150 min.</option>
+                            <option value="200">200 min.</option>
+                            <option value="anders">Anders</option>
+                        </select>
+                        <div class="explanationDiv">
+                            Toelichting:
+                            <textarea oninput="adjustTextareaHeight(this)" class="autoExpandTextarea tijdAnders">
+                        </textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="flexContainer">
+                <div class="flexItem">
+                    <label for="beoordeling">Beoordeling:</label>
+                    <select class="inputField beoordelingSelect">
+                        <option hidden disabled selected value>Selecteer een optie</option>
+                        <option value="cijfer">Cijfer</option>
+                        <option value="o/v/g">O/V/G</option>
+                    </select>
+                </div>
+                <div class="flexItem">
+                    <label for="pod">POD:</label>
+                    <input type="text" id="pod" name="pod" class="inputField pod">
+                </div>
+                <div class="flexItem">
+                    <label for="pta">PTA:</label>
+                    <input type="text" id="pta" name="pta" class="inputField pta">
+                </div>
+                <div class="flexItem">
+                    <label for="resitable">Herkansbaar:</label>
+                    <select id="resitable" name="resitable" class="inputField herkansbaarSelect">
+                        <option hidden disabled selected value>Selecteer een optie</option>
+                        <option value="Ja">Ja</option>
+                        <option value="Nee">Nee</option>
+                    </select>
+                </div>
+            </div>
+            <div>
+                Hulpmiddelen:
+                <!-- <button id="hulpmiddelSelect">Selecteer Hulpmiddelen</button> -->
+                <ul class="hulpmiddelen"></ul>
+            </div>
+
+        </div>
+    </template>
+
+    <div class="tabContainer">
+        <div class="tabs">
+            <div id="tabWegingen" class="tab" data-tab="wegingenContent">Wegingen</div>
+            <div id="tabOverzicht" class="tab" data-tab="overzichtContent">Overzicht</div>
+            <!-- De tabs voor toetsNummers worden hier gegenereerd door de JavaScript -->
+        </div>
+
+        <div id="right">
+            <div id="dynamicButtons">
+                <!-- Knoppen worden hier dynamisch toegevoegd -->
+            </div>
+
+            <div class="tabContent">
+                <div id="wegingenContent" class="contentPane">
+                    <!-- Inhoud voor wegingen -->
+                    <div id="percentages">
+                        <div id="vwoVelden">
+                            <!-- VWO velden -->
+                            <div class="weging-container">
+                                <label for="percentage4vwo">4 vwo:</label>
+                                <input type="text" id="percentage4vwo" name="percentage4vwo" value="0"
+                                    class="inputField">
+                                <span class="character">%</span>
+                            </div>
+                            <div class="weging-container">
+                                <label for="percentage5vwo">5 vwo:</label>
+                                <input type="text" id="percentage5vwo" name="percentage5vwo" value="0"
+                                    class="inputField">
+                                <span class="character">%</span>
+                            </div>
+                            <div class="weging-container">
+                                <label for="percentage6vwo">6 vwo:</label>
+                                <input type="text" id="percentage6vwo" name="percentage6vwo" class="showField" value="0"
+                                    disabled>
+                                <span class="character">% (automatisch berekend)</span>
+                            </div>
+                        </div>
+                        <div id="havoVelden">
+                            <!-- HAVO velden -->
+                            <div class="weging-container">
+                                <label for="percentage4havo">4 havo:</label>
+                                <input type="text" id="percentage4havo" name="percentage4havo" value="0"
+                                    class="inputField">
+                                <span class="character">%</span>
+                            </div>
+                            <div class="weging-container">
+                                <label for="percentage5havo">5 havo:</label>
+                                <input type="text" id="percentage5havo" name="percentage5havo" value="0"
+                                    class="inputField" disabled>
+                                <span class="character">% (automatisch berekend)</span>
+                            </div>
+                        </div>
+
+                        <div class="error" id="errorPercentages"></div>
+                    </div>
+                </div>
+                <div id="overzichtContent" class="contentPane">
+                    <!-- Inhoud voor overzicht -->
+                </div>
+                <!-- Content panes voor toetsNummers worden hier gegenereerd door JavaScript -->
+            </div>
+        </div>
     </div>
 
-    <div class="g_id_signin"
-        data-type="standard"
-        data-shape="rectangular"
-        data-theme="outline"
-        data-text="continue_with"
-        data-size="large"
-        data-logo_alignment="left">
-    </div>
-<!--    <form id="login-form">-->
-<!--      <label for="teacher-id">Afkorting</label><input name="teacher-id" type="text" placeholder="Docent afkorting" id="teacher-id">-->
-<!--      <button type="submit">Login</button>-->
-<!--    </form>-->
 
-<!--    <button onclick="loginWithGoogle()">Login with Google</button>-->
-  </div>
-  <script>
-    // document.getElementById('login-form').addEventListener('submit', login);
-    const urlParams = new URLSearchParams(window.location.search);
-    const next = urlParams.get('next');
+    <script src="index.js"></script>
+    <script src="ptamaken.js"></script>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const ptaId = urlParams.get('id');
+        const teacherId = urlParams.get('teacherId');
+        var dbData = {};
 
-    function login(event) {
-      event.preventDefault()
-      window.location.href = '/options.html';
-      return false;
-    }
-
-    function loginWithGoogle() {
-        window.location.href = '/auth/google';
-    }
-
-    function onGoogleSignIn(response) {
-      // Set cookie to token
-      // document.cookie = 'google-token=' + response.credential;
-
-      signInGoogle(response.credential);
-    }
-
-    function signInGoogle(token) {
-      fetch('/api/auth/google', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + token
+        function loaddbData() {
+            fetch(`/api/pta/${ptaId}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Netwerkrespons was niet ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    dbData = data;
+                    updateFields();
+                })
+                .catch(error => {
+                    console.error('Fout bij het laden:', error);
+                });
         }
-      }).then(response => {
-        if (!response.ok) throw new Error('Failed to sign in with Google');
-        if (next != null) window.location.href = next;
-        else window.location.href = '/options.html';
-        return response;
-      }).catch(error => {
-        console.error(error);
-      });
-    }
 
-    function getCookie(name) {
-      const value = `; ${document.cookie}`;
-      const parts = value.split(`; ${name}=`);
-      if (parts.length === 2) return parts.pop().split(';').shift();
-    }
+        function updateFields() {
+            document.getElementById("name").textContent = `PTA Veranderen (${dbData.name})`;
 
-    const googleTokenCookie = getCookie('google-token');
+            for (const key in dbData.tests) {
+                if (dbData.tests.hasOwnProperty(key)) {
+                    const test = dbData.tests[key];
+                    cloneForm('toetsTemplate', test);
+                }
+            }
 
-    if (googleTokenCookie != null) {
-      signInGoogle(googleTokenCookie);
-    }
-  </script>
+            for (const key in dbData.tools) {
+                if (dbData.tools.hasOwnProperty(key)) {
+                    const tool = dbData.tools[key];
+                    addAdditionalField('toolsFieldsContainer', tool);
+                }
+            }
+
+            updateToolsCheckboxes(false);
+
+            for (let element of document.getElementsByClassName("inputField")) {
+                element.disabled = !isAuthenticated();
+            }
+        }
+
+        function addAdditionalField(containerId, value) {
+            var container = document.getElementById(containerId);
+            var newFieldNumber = container.children.length + 1;
+
+            // Create a div to contain the label and input
+            var fieldContainer = document.createElement('div');
+
+            var label = document.createElement('label');
+            label.setAttribute('for', containerId + '_field' + newFieldNumber);
+            label.textContent = 'Veld ' + newFieldNumber + ':';
+
+            var input = document.createElement('input');
+            input.setAttribute('type', 'text');
+            input.setAttribute('id', containerId + '_field' + newFieldNumber);
+            input.setAttribute('name', containerId + '_field' + newFieldNumber);
+            if (isAuthenticated()) {
+                input.removeAttribute('disabled');
+            } else {
+                input.setAttribute('disabled', '');
+            }
+            input.value = value == null ? "" : value;
+
+            // Append label and input to the field container
+            fieldContainer.appendChild(label);
+            fieldContainer.appendChild(input);
+
+            // Append the field container to the main container
+            container.appendChild(fieldContainer);
+        }
+
+        function showFormData(containerId) {
+            var formData = document.getElementById(containerId).elements;
+            var formDataString = '';
+
+            for (var i = 0; i < formData.length; i++) {
+                formDataString += formData[i].name + ': ' + formData[i].value + '\n';
+            }
+
+            document.getElementById(containerId + 'FormData').textContent = formDataString;
+        }
+
+        function cloneForm(containerId) {
+            const template = document.getElementById(containerId);
+            if (!template) {
+                console.error("Template niet gevonden: " + containerId);
+                return;
+            }
+
+            var clonedForm = template.content.cloneNode(true);
+            var form = clonedForm.querySelector('form');
+
+            // Creëer een unieke identifier voor de nieuwe kloon
+            var cloneCount = document.getElementsByClassName('clonedForm').length + 1;
+            form.id = form.id + '_clone' + cloneCount;
+            form.className = 'clonedForm';
+
+            // Voeg het toetsnummer en jaar en periode toe
+            let toetsnummerDiv = form.querySelector('#testNumber');
+            if (toetsnummerDiv) toetsnummerDiv.textContent = `40${cloneCount}`;
+
+            let jaarEnPeriodeDiv = form.querySelector('#year_and_period');
+            if (jaarEnPeriodeDiv) jaarEnPeriodeDiv.textContent = `4.${cloneCount}`;
+
+            // Voeg het weeknummer toe
+            let weekNummerSpan = form.querySelector('#week');
+            let modalWeekNummer = document.getElementById('weeknummer').textContent;
+            if (weekNummerSpan) weekNummerSpan.textContent = modalWeekNummer;
+
+            // Clear waarden die niet zijn ingesteld in de modal
+            var elements = form.elements;
+            for (var i = 0; i < elements.length; i++) {
+                var el = elements[i];
+                if (el.id) el.id = el.id + '_clone' + cloneCount;
+                if (el.tagName === 'SELECT' || el.tagName === 'TEXTAREA') {
+                    el.value = '';
+                }
+            }
+
+            // Voeg de gekloonde formulier toe
+            document.getElementById("toetsVelden").appendChild(form);
+            updateToolsSelects();
+        }
+
+
+
+        function toetsOpslaan() {
+            // event.preventDefault(); // Voorkomt dat de pagina herlaadt
+
+            // Vind alle formulieren inclusief gekloonde
+            var alleFormulieren = document.querySelectorAll('form[id^="toetsTemplate"]');
+            var alleToetsData = [];
+
+            alleFormulieren.forEach(function (form) {
+                var formData = new FormData(form);
+                var toetsData = {};
+
+                for (const [key, value] of formData.entries()) {
+                    // Verwijder '_cloneX' uit de key naam om overeen te komen met de oorspronkelijke veldnamen
+                    var cleanKey = key.replace(/_clone\d+$/, '');
+
+                    // Controleer of weekNumber niet groter is dan 52
+                    if (cleanKey === 'week' && parseInt(value) > 52) {
+                        alert('Fout: Weeknummer mag niet groter zijn dan 52.');
+                        return;
+                    }
+
+                    if ((cleanKey === 'id' || cleanKey === 'time' || cleanKey === 'weight') && !isNaN(parseInt(value))) {
+                        toetsData[cleanKey] = parseInt(value);
+                        continue;
+                    }
+
+                    if (cleanKey === 'resitable') {
+                        toetsData[cleanKey] = value === 'true';
+                        continue;
+                    }
+
+                    if (cleanKey.startsWith("toolCheckbox")) {
+                        const array = toetsData["tools"] || [];
+                        array.push(parseInt(cleanKey.replace('toolCheckbox', '')) - 1);
+                        toetsData["tools"] = array;
+                        continue;
+                    }
+
+                    toetsData[cleanKey] = value;
+                }
+
+                alleToetsData.push(toetsData);
+            });
+            console.log(alleToetsData)
+            // Controleer of er een fout is opgetreden tijdens de data verzameling
+            if (alleToetsData.some(data => data.hasOwnProperty('week') && parseInt(data.week) > 52)) {
+                return; // Stop de functie als er een fout is gedetecteerd
+            }
+
+            var tests = { "tests": alleToetsData };
+            console.log(JSON.stringify(tests));
+
+            // Stuur alleToetsData naar de server
+            fetch(`/api/pta/${ptaId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(tests)
+            })
+                .then(data => alert('Data succesvol verstuurd!'))
+                .catch((error) => {
+                    console.error('Fout bij het versturen van de aanvraag:', error);
+                });
+        }
+
+
+        function updateToolsCheckboxes(sendRequest = true) {
+            var alleFormulieren = document.querySelectorAll('form[id^="toetsTemplate"]');
+            var toolsFieldsContainer = document.getElementById('toolsFieldsContainer');
+            var toolsData = [];
+
+            for (var key in toolsFieldsContainer.children) {
+                if (toolsFieldsContainer.children.hasOwnProperty(key)) {
+                    toolsData.push(toolsFieldsContainer.children[key].querySelector('input').value);
+                }
+            }
+
+            alleFormulieren.forEach(function (formulier) {
+                var checkboxesContainer = formulier.querySelector('#tools');
+                if (!checkboxesContainer) {
+                    console.error('tools container niet gevonden in formulier');
+                    return;
+                }
+
+                checkboxesContainer.innerHTML = '';
+
+                var toolsContainer = document.getElementById('toolsFieldsContainer');
+                for (var i = 0; i < toolsContainer.children.length; i++) {
+                    var invoerElement = toolsContainer.children[i].querySelector('input');
+                    var toolNaam = invoerElement ? invoerElement.value : 'Hulpmiddel ' + (i + 1);
+
+                    var checkbox = document.createElement('input');
+                    checkbox.setAttribute('type', 'checkbox');
+                    checkbox.setAttribute('name', 'toolCheckbox' + (i + 1));
+                    checkbox.setAttribute('id', 'toolCheckbox' + (i + 1));
+                    checkbox.setAttribute('disabled', (!isAuthenticated()).toString());
+
+                    var label = document.createElement('label');
+                    label.setAttribute('for', 'toolCheckbox' + (i + 1));
+                    label.textContent = toolNaam;
+
+                    checkboxesContainer.appendChild(checkbox);
+                    checkboxesContainer.appendChild(label);
+                    checkboxesContainer.appendChild(document.createElement('br'));
+
+                    // toolsData.push(toolNaam);
+                }
+            });
+
+            if (sendRequest) verstuurToolsData(toolsData);
+        }
+
+
+        function verwijderVeld(containerId) {
+            var container = document.getElementById(containerId);
+            if (container.children.length > 1) { // Controleert of er meer dan één veld is
+                container.removeChild(container.lastChild);
+            } else {
+                alert('Er kunnen niet meer velden verwijderd worden.');
+            }
+        }
+
+        function verwijderToets() {
+            var toetsen = document.getElementsByClassName('clonedForm');
+            if (toetsen.length === 0) {
+                alert('Er zijn geen toetsen om te verwijderen.');
+            } else {
+                var bevestiging = confirm('Weet je zeker dat je de laatste toets wilt verwijderen?');
+                if (bevestiging) {
+                    var laatsteToets = toetsen[toetsen.length - 1];
+                    laatsteToets.parentNode.removeChild(laatsteToets);
+                }
+            }
+        }
+
+        function isAuthenticated() {
+            return teacherId === dbData.responsible;
+        }
+
+        function verstuurToolsData(toolsData) {
+            fetch(`/api/pta/${ptaId}`, { // Verander '/verstuur-tools' naar je eigen server endpoint
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ tools: toolsData })
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Netwerkrespons was niet ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Succesvol verstuurd:', data);
+                    // Voeg hier eventuele extra logica toe die moet gebeuren nadat de data succesvol is verstuurd
+                })
+                .catch(error => {
+                    console.error('Fout bij het versturen:', error);
+                });
+        }
+
+        function generatePDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({
+                orientation: 'l',
+                unit: 'mm',
+                format: [400, 250]
+            });
+
+            // Voeg het percentage toe bovenaan de PDF
+            const percentage = document.getElementById('percentage').value;
+            doc.setFontSize(12);
+            doc.text('Percentage: ' + percentage, 10, 10);
+
+            // Eerste tabel: informatie over de toetsen
+            const testTableColumn = [
+                "Toetsnummer",
+                "Jaar en periode",
+                "Weeknummer",
+                "Subdomein",
+                "Stofomschrijving",
+                "Afnamevorm",
+                "Beoordeling",
+                "Tijd",
+                "Herkansbaar",
+                "Weging",
+                "Hulpmiddelen"
+            ];
+            const testTableRows = [];
+
+            const alleFormulieren = document.querySelectorAll('form[id^="toetsVelden"], form[class^="clonedForm"]');
+
+            alleFormulieren.forEach(form => {
+                let toetsData = [];
+
+                // Verzamel waarden van inputvelden
+                ["testNumber", "year_and_period", "week", "subdomain", "description", "type", "result_type", "time", "resitable", "weight"].forEach(name => {
+                    const inputElement = form.querySelector(`[name="${name}"]`);
+                    toetsData.push(inputElement ? inputElement.value : "");
+                });
+
+                // Verzamel de hulpmiddelennummers
+                const hulpmiddelenNummers = Array.from(form.querySelectorAll('[name^="toolCheckbox"]'))
+                    .filter(checkbox => checkbox.checked)
+                    .map(checkbox => checkbox.name.replace('toolCheckbox', ''))
+                    .join(", ");
+                toetsData.push(hulpmiddelenNummers);
+
+                testTableRows.push(toetsData);
+            });
+
+            doc.autoTable(testTableColumn, testTableRows, {
+                startY: 20,
+                styles: {
+                    lineColor: [0, 0, 0],  // Zwart
+                    lineWidth: 0.1
+                },
+                headStyles: {
+                    fillColor: [220, 220, 220],  // Lichtgrijs voor de kopjes
+                    textColor: [0, 0, 0],  // Zwart
+                    halign: 'center'  // Centreren van kopjes
+                },
+                bodyStyles: {
+                    fillColor: [255, 255, 255],  // Wit
+                    textColor: [0, 0, 0]  // Zwart
+                }
+            });
+
+            const startYForNextTable = doc.previousAutoTable.finalY + 10;
+
+            // Tweede tabel: informatie over de hulpmiddelen
+            const toolsTableColumn = ["Hulpmiddelnummer", "Hulpmiddelnaam"];
+            const toolsTableRows = [];
+
+            const toolsFieldsContainer = document.getElementById('toolsFieldsContainer');
+            Array.from(toolsFieldsContainer.children).forEach((child, index) => {
+                const toolName = child.querySelector('input').value;
+                toolsTableRows.push([index + 1, toolName]);
+            });
+
+            // Bepaal de breedte van de PDF en zet de breedte van de hulpmiddelen tabel op de helft
+            const pageWidth = doc.internal.pageSize.width;
+            const halfPageWidth = pageWidth / 4;
+
+            // Voeg de tweede tabel toe aan de PDF
+            doc.autoTable(toolsTableColumn, toolsTableRows, {
+                startY: startYForNextTable,
+                tableWidth: halfPageWidth,
+                styles: {
+                    lineColor: [0, 0, 0],
+                    lineWidth: 0.1
+                },
+                headStyles: {
+                    fillColor: [220, 220, 220],
+                    textColor: [0, 0, 0],
+                    halign: 'center'
+                },
+                bodyStyles: {
+                    fillColor: [255, 255, 255],
+                    textColor: [0, 0, 0]
+                }
+            });
+
+            // Derde tabel: Uitleg bij Anders
+            const explanationTableColumn = ["Veldnummer", "Uitleg"];
+            const explanationTableRows = [];
+
+            const explanationFieldsContainer = document.getElementById('explanationFieldsContainer');
+            Array.from(explanationFieldsContainer.children).forEach((child, index) => {
+                const explanation = child.querySelector('input').value;
+                explanationTableRows.push([index + 1, explanation]);
+            });
+
+
+            // Voeg de derde tabel toe aan de PDF rechts van de hulpmiddelen tabel
+            doc.autoTable(explanationTableColumn, explanationTableRows, {
+                startY: startYForNextTable,
+                tableWidth: halfPageWidth, // Gebruik dezelfde breedte als de hulpmiddelen tabel
+                margin: { left: halfPageWidth + 20 }, // Zet de tabel rechts van de hulpmiddelen tabel
+                styles: {
+                    lineColor: [0, 0, 0],
+                    lineWidth: 0.1
+                },
+                headStyles: {
+                    fillColor: [220, 220, 220],
+                    textColor: [0, 0, 0],
+                    halign: 'center'
+                },
+                bodyStyles: {
+                    fillColor: [255, 255, 255],
+                    textColor: [0, 0, 0]
+                }
+            });
+
+            // Sla de PDF op
+            doc.save('ToetsenEnHulpmiddelenOverzicht.pdf');
+        }
+
+        loaddbData();
+
+        function paginaTerug() {
+            window.location.href = 'options.html';
+        }
+
+        function copyPta() {
+            fetch(`/api/pta/create`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(dbData)
+            }).then(response => {
+                if (!response.ok) {
+                    throw new Error('Netwerkrespons was niet ok');
+                }
+                return response.json();
+            }).then(data => {
+                window.location.href = `ptamaken.html?id=${data.id}&teacherId=${teacherId}`;
+            }).catch(error => {
+                console.error('Fout bij het versturen:', error);
+            });
+        }
+
+        function deletePta() {
+            const confirmed = confirm("Weet je zeker dat je dit PTA wilt verwijderen?");
+            if (!confirmed) return;
+            fetch(`/api/pta/${ptaId}`, {
+                method: 'DELETE'
+            }).then(response => {
+                if (!response.ok) {
+                    throw new Error('Netwerkrespons was niet ok');
+                }
+                paginaTerug();
+            }).catch(error => {
+                console.error('Fout bij het versturen:', error);
+            });
+        }
+    </script>
 </body>
 
 </html>
