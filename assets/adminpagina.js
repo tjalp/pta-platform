@@ -231,8 +231,8 @@ function hulpmiddelenLaden(){
         label.textContent = "Mogelijkheid " + (i+1) + ":";
         var input = document.createElement('input');           
         input.setAttribute('type', 'text'); 
-        input.setAttribute('id', '_field' + i); // Gecorrigeerd
-        input.setAttribute('name', '_field' + i); // Gecorrigeerd
+        input.setAttribute('id', i); // Gecorrigeerd
+        input.setAttribute('name', i); // Gecorrigeerd
         input.setAttribute('value', hulpmiddelen[i])
         var div = document.createElement('div');
         div.appendChild(label);
@@ -476,8 +476,38 @@ function VakkenControleren(fi, fniveau, fvaknaam,  fbestaandeVakken){
 }
 
 function hulpmiddelenOpslaan(){
+    event.preventDefault(); // Voorkom de standaardformulier verzending
+    const form = document.querySelector('#hulpmiddelenform');
+    const inputs = form.querySelectorAll('input[type="text"]'); // Zorg ervoor dat we alleen tekstvelden verzamelen
+    let data = []; // Verander dit naar een array
 
+    inputs.forEach((input) => {
+        data.push(input.value); 
+    });
+
+    console.log("Verzonden data:", data); // Controleer de data die wordt verzonden
+
+    fetch('/api/defaults/tools', {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data) // Verzend de array als JSON
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`Network response was not ok, status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Data sent successfully:', data);
+    })
+    .catch(error => {
+        console.error('Error sending data:', error);
+    });
 }
+
 
 // vakkenOphalen()
 
