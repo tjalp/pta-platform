@@ -116,6 +116,7 @@ function vakkenPtaOpslaan(){
 }
 
 function vakkenOphalen(){
+    console.log("help ik wil opgehaald worden uit smallland")
     fetch(`/api/defaults/subjects`)
     .then(response => {
             if (!response.ok) {
@@ -137,11 +138,20 @@ function vakkenLaden(){
     const volledigeNaam = Array.from(vakken).sort((a, b) => a.name.localeCompare(b.name));
     console.log(vakken)
     for(i = 0; i < volledigeNaam.length; i ++){
+        var str = vakken[i].level;
+        var parts = str.split(/\s+/); // Splits de string op één of meer spaties
+        var numberPart = parts[0];
+        var textPart = parts[1];
+        console.log(numberPart + textPart)  
+
         var label = document.createElement('label');
         label.textContent = volledigeNaam[i].name + " (" + volledigeNaam[i].level + ")" + ':';
 
         var inputDocent = document.createElement('input');
         inputDocent.setAttribute('type', 'text');
+        inputDocent.setAttribute('niveau', textPart)
+        inputDocent.setAttribute('jaarlaag', numberPart)
+        inputDocent.setAttribute('maxlength', 3)
         inputDocent.setAttribute('id', 'docent_' + i);
         inputDocent.setAttribute('name', 'docent_'+ i);
 
@@ -248,7 +258,6 @@ function vakToevoegen(){
     var vaknaam = document.getElementById('vaknaam').value;
     var niveau = document.getElementById('niveau').value;
     var jaarlaag = document.getElementById('jaarlaag').options[document.getElementById('jaarlaag').selectedIndex].text;
-    console.log(jaarlaag + '' + niveau + '' + vaknaam)
     if(niveau == "alle"){
       alert("geef bij alle altijd alle jaarlagen aan")
       return
@@ -276,6 +285,7 @@ function vakToevoegen(){
                 inputDocent.setAttribute('type', 'text');
                 inputDocent.setAttribute('id', vaknaam + '_' + niveaus[j] + '_' + i);
                 inputDocent.setAttribute('jaarlaag', i);
+                inputDocent.setAttribute('maxlength', 3)
                 inputDocent.setAttribute('vak', vaknaam);
                 inputDocent.setAttribute('niveau', niveaus[j]);
                 inputDocent.setAttribute('name', 'docent_' + vaknaam.replace(/\s+/g, '') + '_' + niveaus[j] + '_' + i); // Maak een unieke naam gebaseerd op vaknaam, niveau en jaarlaag
@@ -302,6 +312,7 @@ function vakToevoegen(){
             inputDocent.setAttribute('type', 'text');
             inputDocent.setAttribute('id', vaknaam + '_' + niveaus[j] + '_' + i);
             inputDocent.setAttribute('jaarlaag', i);
+            inputDocent.setAttribute('maxlength', 3)
             inputDocent.setAttribute('vak', vaknaam);
             inputDocent.setAttribute('niveau', niveaus[j]);
             inputDocent.setAttribute('name', 'docent_' + vaknaam.replace(/\s+/g, '') + '_' + niveaus[j] + '_' + i); // Maak een unieke naam gebaseerd op vaknaam, niveau en jaarlaag
@@ -328,13 +339,13 @@ function vakToevoegen(){
             inputDocent.setAttribute('type', 'text');
             inputDocent.setAttribute('id', vaknaam + '_' + niveaus[j] + '_' + i);
             inputDocent.setAttribute('jaarlaag', i);
+            inputDocent.setAttribute('maxlength', 3)
             inputDocent.setAttribute('vak', vaknaam);
             inputDocent.setAttribute('niveau', niveaus[j]);
             inputDocent.setAttribute('name', 'docent_' + vaknaam.replace(/\s+/g, '') + '_' + niveaus[j] + '_' + i); // Maak een unieke naam gebaseerd op vaknaam, niveau en jaarlaag
             var div = document.createElement('div')
             div.appendChild(label);
             div.appendChild(inputDocent);
-            console.log(bestaandeVakken.length)
             if(bestaandeVakken.length > 0 ){
                 if (VakkenControleren(i, niveau[j], vaknaam, bestaandeVakken)) {
                     console.log('Dit vak is al toegevoegd.');
@@ -366,13 +377,14 @@ function vakToevoegen(){
       console.log("help")
         if(niveau == 'Vwo'){
             for(let i = 4; i < 7; i ++){
-                console.log("help" + i)
+                console.log("help" + i + "3")
                 var formDocentenPta = document.getElementById('VerantwoordelijkeDocentenPta');
                 var label = document.createElement('label');
                 label.textContent = vaknaam + " ("  + i + ' '  + niveau+ "): ";
                 label.setAttribute('for', vaknaam + '_' + niveau + '_' + i)
                 var inputDocent = document.createElement('input');
                 inputDocent.setAttribute('type', 'text');
+                inputDocent.setAttribute('maxlength', 3)
                 inputDocent.setAttribute('id', vaknaam + '_' + niveau + '_' + jaarlaag);
                 inputDocent.setAttribute('name', 'docent_' + vaknaam.replace(/\s+/g, '') + '_' + niveau + '_' + i); // Maak een unieke naam gebaseerd op vaknaam, niveau en jaarlaag
                 var div = document.createElement('div')
@@ -391,13 +403,13 @@ function vakToevoegen(){
             return
         }else if(niveau == 'Havo'){
             for(let i = 4; i < 6; i ++){
-                console.log("help" + i)
                 var formDocentenPta = document.getElementById('VerantwoordelijkeDocentenPta');
                 var label = document.createElement('label');
                 label.textContent = vaknaam + " ("  + i + ' '  + niveau+ "): ";
                 label.setAttribute('for', vaknaam + '_' + niveau + '_' + i)
                 var inputDocent = document.createElement('input');
                 inputDocent.setAttribute('type', 'text');
+                inputDocent.setAttribute('maxlength', 3)
                 inputDocent.setAttribute('id', vaknaam + '_' + niveau + '_' + jaarlaag);
                 inputDocent.setAttribute('name', 'docent_' + vaknaam.replace(/\s+/g, '') + '_' + niveau + '_' + i); // Maak een unieke naam gebaseerd op vaknaam, niveau en jaarlaag
                 var div = document.createElement('div')
@@ -416,7 +428,6 @@ function vakToevoegen(){
             return
         }else if(niveau == 'Mavo'){
             for(let i = 3; i < 5; i ++){
-                console.log("help" + i)
                 var formDocentenPta = document.getElementById('VerantwoordelijkeDocentenPta');
                 var label = document.createElement('label');
                 label.textContent = vaknaam + " ("  + i + ' '  + niveau+ "): ";
@@ -426,6 +437,7 @@ function vakToevoegen(){
                 inputDocent.setAttribute('id', vaknaam + '_' + niveau + '_' + jaarlaag);
                 inputDocent.setAttribute('jaarlaag', jaarlaag);
                 inputDocent.setAttribute('vak', vaknaam);
+                inputDocent.setAttribute('maxlength', 3)
                 inputDocent.setAttribute('niveau', i);
                 inputDocent.setAttribute('name', 'docent_' + vaknaam.replace(/\s+/g, '') + '_' + niveau + '_' + i); // Maak een unieke naam gebaseerd op vaknaam, niveau en jaarlaag
                 var div = document.createElement('div')
@@ -456,6 +468,7 @@ function vakToevoegen(){
     inputDocent.setAttribute('id', vaknaam + '_' + niveau + '_' + jaarlaag);
     inputDocent.setAttribute('jaarlaag', jaarlaag);
     inputDocent.setAttribute('vak', vaknaam);
+    inputDocent.setAttribute('maxlength', 3)
     inputDocent.setAttribute('niveau', niveau);
     inputDocent.setAttribute('name', 'docent_' + vaknaam.replace(/\s+/g, '') + '_' + niveau + '_' + jaarlaag); // Maak een unieke naam gebaseerd op vaknaam, niveau en jaarlaag
     var div = document.createElement('div')
@@ -508,8 +521,48 @@ function hulpmiddelenOpslaan(){
     });
 }
 
+function docentenPtaOpslaan(){
+    var form = document.getElementById('VerantwoordelijkeDocentenPta');
+    var veldenArray = [];
+    var inputs = form.querySelectorAll('input[type="text"]'); 
+    
+    
+    inputs.forEach(function(input) {
+        var vak = input.getAttribute("vak");
+        var niveau = input.getAttribute("niveau");
+        var jaarlaag = input.getAttribute("jaarlaag");
+        var veldObject = {
+            name: vak,  
+            responsible : input.value,
+            level: jaarlaag + ' ' + niveau
+        };
+        veldenArray.push(veldObject);
+    });
 
-// vakkenOphalen()
+    console.log(veldenArray);
+
+    fetch('/api/defaults/subjects', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(veldenArray) // Verzend de array als JSON
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`Network response was not ok, status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Data sent successfully:', data);
+    })
+    .catch(error => {
+        console.error('Error sending data:', error);
+    });
+}
+
+vakkenOphalen()
 
 hulpmiddelenOphalen()
 
