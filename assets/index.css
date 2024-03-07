@@ -663,3 +663,7 @@ ul.selectedTools li {
     text-decoration: line-through;
     cursor: pointer;
 }
+
+.nieuwHulpmiddelInput {
+    display: none;
+}

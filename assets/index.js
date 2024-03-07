@@ -877,6 +877,26 @@ function setSelectValue(selectElement, value) {
     }
 }
 
+function vulHulpmiddelenList(ulElement, hulpmiddelenString) {
+    if (!hulpmiddelenString) {
+        ulElement.textContent = "Geen";
+        return;
+    }
+
+    ulElement.innerHTML = '';
+    const hulpmiddelenArray = hulpmiddelenString.split(', ');
+    hulpmiddelenArray.forEach(hulpmiddel => {
+        const li = document.createElement('li');
+        li.textContent = hulpmiddel.trim();
+        li.addEventListener('click', () => verwijderHulpmiddel(li));
+        ulElement.appendChild(li);
+    });
+}
+
+function verwijderHulpmiddel(liElement) {
+    liElement.remove();
+}
+
 
 function maakTab(tabId, tabNummer, tabsContainer, contentContainer) {
     // Maak de tab
@@ -1019,28 +1039,3 @@ function togglePickWeek(selectElement) {
     let weekWaarde = selectElement.value == 'week' ? "" : selectElement.value
     toggleWeekInputEnBijwerkenJaarPeriode(selectElement, weekInputField, jaarPeriodeSpan, weekWaarde);
 }
-
-
-
-function vulHulpmiddelenList(ulElement, hulpmiddelenString) {
-    if (!hulpmiddelenString) {
-        ulElement.textContent = "Geen";
-        return;
-    }
-
-    ulElement.innerHTML = '';
-    const hulpmiddelenArray = hulpmiddelenString.split(', ');
-    hulpmiddelenArray.forEach(hulpmiddel => {
-        voegHulpmiddelToe(ulElement, hulpmiddel.trim());
-    });
-}
-
-function voegHulpmiddelToe(ulElement, hulpmiddel) {
-    const li = document.createElement('li');
-    li.textContent = hulpmiddel;
-    li.addEventListener('mouseover', () => li.style.textDecoration = "line-through");
-    li.addEventListener('mouseout', () => li.style.textDecoration = "none");
-    li.addEventListener('click', () => li.remove());
-    ulElement.appendChild(li);
-}
-
