@@ -324,54 +324,73 @@ ul.selectedTools li {
 #havoVelden {
     display: none;
 }
-
 .searchModal {
-    display: block;
+    display: flex;
+    align-items: flex-start; 
+    justify-content: center;
     position: fixed;
-    z-index: 1000;
+    top: 0; /* Iets hoger dan eerder */
     left: 0;
-    top: 0;
     width: 100%;
-    height: 90vh;
-    overflow: auto;
+    height: 100vh;
     background-color: rgba(0, 0, 0, 0.4);
-    /* Overlay */
-    padding: 30px;
+    padding: 20px;
+    box-sizing: border-box;
 }
+
 
 .searchModal-content {
     background-color: #fff;
-    margin: auto;
     padding: 20px;
     border-radius: 10px;
-    width: 40%;
-    height: 90%;
-    /* Aanpasbare breedte */
+    width: 100%;
+    max-width: 450px; /* Minder breed */
+    min-height: 65vh; /* Minimale hoogte */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.searchModal-content h2, .searchModal-content input, .searchModal-content ul {
+    margin-bottom: 15px; /* Zorgt voor ruimte tussen elementen */
+}
+
+.searchModal-content .button-container {
+    margin-top: auto; /* Zorgt ervoor dat de knoppen naar onderen geduwd worden */
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
 }
 
 .searchModal-content h2 {
     text-align: center;
-    margin-bottom: 20px;
 }
 
 .searchModal-content input[type="text"] {
-    width: 90%;
-    height: auto;
+    width: 100%;
     padding: 10px;
     font-size: 16px;
     border-radius: 5px;
     border: 1px solid #ddd;
+    box-sizing: border-box;
+}
+
+.searchModal-content .input-ul-container {
+    flex-grow: 1; /* Neemt beschikbare ruimte in beslag */
+    display: flex;
+    flex-direction: column;
 }
 
 .searchModal-content ul {
     list-style: none;
+    margin-top: 0px; /* Ruimte tussen input en ul */
     padding: 0;
-    height: 50%;
-    max-height: 50%;
-    /* Maximale hoogte van 500px */
     overflow-y: auto;
-    /* Toon een verticale scrollbar indien nodig */
+    max-height: 300px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-sizing: border-box;
 }
 
 .searchModal-content ul li {
@@ -386,9 +405,7 @@ ul.selectedTools li {
 
 .searchModal-content ul li.selected {
     background-color: #e9ecef;
-    /* Lichtgrijze achtergrond voor geselecteerde optie */
     color: #495057;
-    /* Donkerdere tekstkleur voor contrast */
 }
 
 .tabContainer {
