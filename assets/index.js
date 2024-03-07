@@ -432,7 +432,7 @@ let ptaData = {
             "year_and_period": "6.1",
             "week": "SE 1",
             "subdomain": "E",
-            "description": "Schrijfvaardigheid Formele schrijfopdrachtasdfffffffffffffffffff sdaffadsf sfdafdsafasdfd sdafdsafsad f sdafadsf asdfsdafdsf",
+            "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque felis velit, tristique at odio luctus, dignissim facilisis nisi. Sed fermentum blandit varius. Suspendisse scelerisque ex eget dui sollicitudin consequat.",
             "type": "schriftelijk",
             'type_else': null,
             "result_type": "cijfer",
@@ -747,12 +747,13 @@ function vulToetsInhoud(toetsData) {
 function adjustTextareaHeights(element) {
     const textareas = element.querySelectorAll('textarea');
     textareas.forEach(adjustTextareaHeight);
+    textareas.forEach(adjustTextareaHeight); // dit moet blijkbaar twee keer.. 
 }
 
 
 function adjustTextareaHeight(textarea) {
-    textarea.style.height = 'auto';
-    let height = textarea.scrollHeight == 0 ? 30 : textarea.scrollHeight
+    //textarea.style.height = 'auto';
+    let height = textarea.scrollHeight >= 0 && textarea.scrollHeight <= 45 ? 30 : textarea.scrollHeight
     textarea.style.height = (height) + 'px';
 }
 
