@@ -814,26 +814,6 @@ function vulVelden(clone, toetsData) {
     }
 }
 
-function updateWeekSelectie(clone, weekWaarde) {
-    const weekSelect = clone.querySelector('.weekSelect');
-    const weekInputField = clone.querySelector('.pickWeek .week');
-
-    if (!weekSelect || !weekInputField) {
-        console.error("Weekselect of week inputfield niet gevonden in de clone");
-        return;
-    }
-
-    if (weekWaarde.startsWith('SE')) {
-        setSelectValue(weekSelect, weekWaarde);
-        weekInputField.parentElement.style.display = 'none';
-    } else {
-        setSelectValue(weekSelect, 'week');
-        weekInputField.parentElement.style.display = 'block';
-        weekInputField.value = weekWaarde;
-    }
-}
-
-
 function toonAfnamevormAnders(clone, toetsData) {
     const afnamevormSelect = clone.querySelector('.afnamevormSelect');
     const afnamevormAndersTextarea = clone.querySelector('.afnamevormAnders');
@@ -1008,7 +988,58 @@ function voegNieuweTabToe() {
     maakTab(nieuweTabId.toString(), nieuweTabNummer, tabsContainer, document.querySelector('.tabContent'));
 }
 
-
-
 document.getElementById('voegTabToe').onclick = voegNieuweTabToe;
 
+
+function updateWeekSelectie(clone, weekWaarde) {
+    const weekSelect = clone.querySelector('.weekSelect');
+    const weekInputField = clone.querySelector('.pickWeek .week');
+    const jaarPeriodeSpan = clone.querySelector('.jaarPeriode');
+
+    if (!weekSelect || !weekInputField || !jaarPeriodeSpan) {
+        console.error("Weekselect, week inputfield of jaarPeriode span niet gevonden in de clone");
+        return;
+    }
+
+    // Toon of verberg pickWeek en werk jaarPeriode bij
+    toggleWeekInputEnBijwerkenJaarPeriode(weekSelect, weekInputField, jaarPeriodeSpan, weekWaarde);
+}
+
+function toggleWeekInputEnBijwerkenJaarPeriode(weekSelect, weekInputField, jaarPeriodeSpan, weekWaarde) {
+    if (weekWaarde.startsWith('SE')) {
+        weekInputField.parentElement.style.display = 'none';
+        jaarPeriodeSpan.textContent = '6.' + weekWaarde.split(' ')[1];
+        setSelectValue(weekSelect, weekWaarde);
+    } else {
+        weekInputField.parentElement.style.display = 'block';
+        weekInputField.value = weekWaarde; // Reset de week input
+        setSelectValue(weekSelect, 'week');
+        jaarPeriodeSpan.textContent = berekenJaarPeriode(weekWaarde);
+    } 
+
+    weekInputField.oninput = () => {
+        let weekNummer = parseInt(weekInputField.value);
+        weekNummer = isNaN(weekNummer) ? 0 : Math.min(weekNummer, 52);
+        weekInputField.value = weekNummer;
+        jaarPeriodeSpan.textContent = berekenJaarPeriode(weekNummer);
+    };
+}
+
+function berekenJaarPeriode(weekNummer) {
+    weekNummer = Math.max(1, Math.min(weekNummer, 52));
+    const periode = Math.ceil(weekNummer / (52 / 4));
+    return '6.' + periode;
+}
+
+function togglePickWeek(selectElement) {
+    var pickWeekDiv = selectElement.nextElementSibling;
+    var jaarPeriodeSpan = selectElement.closest('.jaarEnWeek').querySelector('.jaarPeriode');
+    var weekInputField = pickWeekDiv.querySelector('.week');
+
+    if (!pickWeekDiv || !jaarPeriodeSpan || !weekInputField) {
+        console.error("JaarPeriode span, pickWeek div of week inputfield niet gevonden");
+        return;
+    }
+    let weekWaarde = selectElement.value == 'week' ? "" : selectElement.value
+    toggleWeekInputEnBijwerkenJaarPeriode(selectElement, weekInputField, jaarPeriodeSpan, weekWaarde);
+}

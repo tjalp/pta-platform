@@ -643,6 +643,7 @@ ul.selectedTools li {
     display: flex;
 	flex-direction: row-reverse;
 	justify-content: space-between;
+    margin-right: 10px;
 }
 
 .naastElkaar {
