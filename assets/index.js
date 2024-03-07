@@ -762,7 +762,6 @@ function vulVelden(clone, toetsData) {
     const velden = {
         '.toetsNummer': toetsData.id,
         '.jaarPeriode': toetsData.jaarPeriode,
-        '.weeknummer': toetsData.week,
         '.subdomein': toetsData.subdomain,
         '.stofomschrijving': toetsData.description,
         '.beoordeling': toetsData.beoordeling,
@@ -781,6 +780,8 @@ function vulVelden(clone, toetsData) {
             }
         }
     }
+
+    updateWeekSelectie(clone, toetsData.week);
 
     // Hulpmiddelen
     const hulpmiddelenList = clone.querySelector('.hulpmiddelen');
@@ -812,6 +813,26 @@ function vulVelden(clone, toetsData) {
         setSelectValue(tijdSelect, toetsData.tijd.toString());
     }
 }
+
+function updateWeekSelectie(clone, weekWaarde) {
+    const weekSelect = clone.querySelector('.weekSelect');
+    const weekInputField = clone.querySelector('.pickWeek .week');
+
+    if (!weekSelect || !weekInputField) {
+        console.error("Weekselect of week inputfield niet gevonden in de clone");
+        return;
+    }
+
+    if (weekWaarde.startsWith('SE')) {
+        setSelectValue(weekSelect, weekWaarde);
+        weekInputField.parentElement.style.display = 'none';
+    } else {
+        setSelectValue(weekSelect, 'week');
+        weekInputField.parentElement.style.display = 'block';
+        weekInputField.value = weekWaarde;
+    }
+}
+
 
 function toonAfnamevormAnders(clone, toetsData) {
     const afnamevormSelect = clone.querySelector('.afnamevormSelect');

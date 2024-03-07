@@ -13,17 +13,30 @@
         <div class="toetsContainer">
             <!-- Hier komt de structuur voor je toets-inhoud -->
             <!-- <div>Toetsnummer: <span class="toetsNummer"></span></div> -->
-
-            <div class="flexContainer">
-                <div class="flexItem">
+            <div class="jaarEnWeek">
+                <div>
                     <div>Jaar & Periode: <span class="jaarPeriode"></span></div>
                 </div>
-                <div class="flexItem">
-                    <div>Weeknummer: <span class="weeknummer"></span>
-                        <i onclick=bewerkWeeknummer() class="fas fa-pencil-alt edit-icon"></i>
+                <div class="flexOnderElkaar">
+                    <div class="flexNaastElkaar">
+                        <label for="weeknummer">Weeknummer:</label>
+                        <div class="naastElkaar">
+                            <select onchange="togglePickWeek(this)" class="inputField weekSelect">
+                                <option hidden disabled selected value></option>
+                                <option value="SE 1">SE 1</option>
+                                <option value="SE 2">SE 2</option>
+                                <option value="SE 3">SE 3</option>
+                                <option value="SE 4">SE 4</option>
+                                <option value="week">Week</option>
+                            </select>
+                            <div class="pickWeek">
+                                <input type="text" id="week" name="week" class="inputField week">
+                            </div>
+                        </div>
                     </div>
-                </div>                
+                </div>
             </div>
+
 
             <div>
                 <div>Subdomein:</div>
@@ -48,10 +61,11 @@
                             <option value="praktisch">Praktisch</option>
                             <option value="anders">Anders</option>
                         </select>
-                            <div class="explanationDiv">
-                                Toelichting:
-                                <textarea oninput="adjustTextareaHeight(this)" class="autoExpandTextarea afnamevormAnders"></textarea>
-                            </div>
+                        <div class="explanationDiv">
+                            Toelichting:
+                            <textarea oninput="adjustTextareaHeight(this)"
+                                class="autoExpandTextarea afnamevormAnders"></textarea>
+                        </div>
                     </div>
                 </div>
                 <div class="flexNaastElkaar">
@@ -68,7 +82,8 @@
                         </select>
                         <div class="explanationDiv">
                             Toelichting:
-                            <textarea oninput="adjustTextareaHeight(this)" class="autoExpandTextarea tijdAnders"></textarea>
+                            <textarea oninput="adjustTextareaHeight(this)"
+                                class="autoExpandTextarea tijdAnders"></textarea>
                         </div>
                     </div>
                 </div>

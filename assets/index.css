@@ -638,3 +638,22 @@ ul.selectedTools li {
     height: 2px;
     box-shadow: none;
 }
+
+.jaarEnWeek {
+    display: flex;
+	flex-direction: row-reverse;
+	justify-content: space-between;
+}
+
+.naastElkaar {
+    display: flex;
+}
+
+.toetsContainer .weekSelect {
+    width: 70px;
+}
+
+#week {
+    margin-left: 10px;
+    width: 30px;
+}
