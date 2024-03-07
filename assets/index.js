@@ -891,3 +891,13 @@ function bewerkWeeknummer() {
     ]);
     document.body.appendChild(modal);
 }
+
+function toggleExplanation(selectElement) {
+    var explanationDiv = selectElement.parentElement.querySelector('.explanationDiv');
+
+    if (selectElement.value === 'anders') {
+        explanationDiv.classList.add('visible');
+    } else {
+        explanationDiv.classList.remove('visible');
+    }
+}

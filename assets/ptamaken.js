@@ -108,15 +108,7 @@ function getWeekNumber(d) {
     return weekNo;
 }
 
-function toggleExplanation(selectElement) {
-    var explanationDiv = selectElement.parentElement.querySelector('.explanationDiv');
 
-    if (selectElement.value === 'anders') {
-        explanationDiv.classList.add('visible');
-    } else {
-        explanationDiv.classList.remove('visible');
-    }
-}
 
 let tools = [];
 
