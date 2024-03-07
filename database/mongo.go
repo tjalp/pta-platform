@@ -3,7 +3,6 @@ package database
 import (
 	"context"
 	"fmt"
-	"os"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -22,7 +21,7 @@ func (s MongoDatabase) Start() error {
 	fmt.Println("Opening MongoDB connection...")
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-	client, err := mongo.Connect(ctx, options.Client().ApplyURI(os.Getenv("MONGODB_CONNECT_URL")))
+	client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb+srv://tjalpnet:vQAiZJatK3BdS494@cluster0.9h5k0p3.mongodb.net/?retryWrites=true&w=majority"))
 	if err != nil {
 		return err
 	}
