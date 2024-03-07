@@ -658,3 +658,8 @@ ul.selectedTools li {
     margin-left: 10px;
     width: 30px;
 }
+
+.hulpmiddelen li:hover {
+    text-decoration: line-through;
+    cursor: pointer;
+}
