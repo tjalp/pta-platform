@@ -569,7 +569,6 @@ function setPercentages() {
 /*
 TOETSEN GENEREREN
 */
-let toetsNummers = ['601', '602', '603', '604', '605'];
 
 function leesPtaData() {
     fetch('/api/pta/all')
@@ -581,8 +580,7 @@ function leesPtaData() {
 
 function genereerToetsen() {
     //leesPtaData();
-    maakTabs();
-    initialiseerVasteTabs();
+    maakTabs(ptaData);
 }
 
 function initialiseerVasteTabs() {
@@ -601,36 +599,20 @@ function initialiseerVasteTabs() {
 }
 
 
-function maakTabs() {
+function maakTabs(ptaData) {
     let tabsContainer = document.querySelector('.tabs');
     let contentContainer = document.querySelector('.tabContent');
 
-    toetsNummers.forEach(nummer => {
-        maakTab(nummer, tabsContainer, contentContainer);
+    // Initialiseer vaste tabs
+    initialiseerVasteTabs();
+
+    // Maak dynamische tabs voor elke toets in ptaData
+    ptaData.tests.forEach(test => {
+        maakTab(test.id.toString(), test.id.toString(), tabsContainer, contentContainer);
     });
 
     // Activeer standaard de 'Wegingen' tab
     toonTabInhoud('wegingenContent');
-}
-
-function maakTab(nummer, tabsContainer, contentContainer) {
-    let tab = document.createElement('div');
-    tab.textContent = nummer;
-    tab.className = 'tab';
-    tab.dataset.tab = 'toets' + nummer; // Voeg 'toets' toe voor de data-tab
-    tabsContainer.appendChild(tab);
-
-    let contentPane = document.createElement('div');
-    contentPane.id = 'toets' + nummer; // ID is 'toets' gevolgd door het nummer
-    contentPane.className = 'contentPane';
-    contentPane.style.display = 'none';
-    contentContainer.appendChild(contentPane);
-
-    tab.onclick = () => {
-        toonTabInhoud('toets' + nummer); // Gebruik 'toets' + nummer om de ID te krijgen
-        laadToetsInhoud(nummer);
-        setEditRights();
-    };
 }
 
 function genereerOverzichtInhoud() {
@@ -659,7 +641,22 @@ function getPtaData(toetsNummer) {
 
     if (!toets) {
         console.error(`Toets met nummer ${toetsNummer} niet gevonden.`);
-        return null;
+        return {
+            id: toetsNummer,
+            jaarPeriode: "",
+            week: "",
+            subdomain: "",
+            description: "",
+            afnamevorm: "",
+            afnamevormAnders: "",
+            beoordeling: "",
+            tijd: "",
+            tijdAnders: "",
+            herkansbaar: "",
+            pod: "",
+            pta: "",
+            hulpmiddelen: ""
+        };
     }
 
     return {
@@ -703,7 +700,7 @@ function setEditRights() {
         invulVelden.forEach(veld => {
             veld.disabled = true;
         });
-        const iconen = document.querySelectorAll('.edit-icon');
+        const iconen = document.querySelectorAll('.icon');
         iconen.forEach(icoon => {
             icoon.style.display = 'none';
         });
@@ -713,7 +710,7 @@ function setEditRights() {
     invulVelden.forEach(veld => {
         veld.disabled = false;
     });
-    const iconen = document.querySelectorAll('.edit-icon');
+    const iconen = document.querySelectorAll('.icon');
     iconen.forEach(icoon => {
         icoon.style.display = 'inline-block';
     });
@@ -903,3 +900,94 @@ function bewerkWeeknummer() {
     ]);
     document.body.appendChild(modal);
 }
+
+function maakTab(tabId, tabNummer, tabsContainer, contentContainer) {
+    // Maak de tab
+    let tab = document.createElement('div');
+    tab.className = 'tab';
+    tab.id = 'tab' + tabId;
+    tab.dataset.tab = 'toets' + tabId;
+    tab.textContent = tabNummer;
+
+    // Prullenbak icoon toevoegen
+    let deleteIcon = document.createElement('span');
+    deleteIcon.classList.add('icon', 'delete-icon');
+    deleteIcon.textContent = 'X';
+    deleteIcon.onclick = (e) => {
+        e.stopPropagation();
+        if (window.confirm(`Weet u zeker dat u tab ${tabNummer} wilt verwijderen?`)) {
+            verwijderTab(tabId, tabsContainer, contentContainer);
+        }
+    };
+
+    tab.appendChild(deleteIcon);
+
+    // Inhoudspaneel maken
+    let contentPane = document.createElement('div');
+    contentPane.id = 'toets' + tabId;
+    contentPane.className = 'contentPane';
+    contentPane.style.display = 'none';
+    contentContainer.appendChild(contentPane);
+
+    // Tab klik event
+    tab.onclick = () => {
+        toonTabInhoud('toets' + tabId);
+        laadToetsInhoud(tabId);
+        setEditRights();
+    };
+
+    let tabToevoegenKnop = document.getElementById('voegTabToe');
+    tabsContainer.insertBefore(tab, tabToevoegenKnop);
+
+}
+
+function verwijderTab(tabNummer, tabsContainer) {
+    let tabOmTeVerwijderen = document.getElementById(`tab${tabNummer}`);
+    if (!tabOmTeVerwijderen) {
+        console.error(`Tab met ID tab${tabNummer} niet gevonden`);
+        return;
+    }
+
+    let naburigeTab = tabOmTeVerwijderen.nextElementSibling || tabOmTeVerwijderen.previousElementSibling;
+
+    tabsContainer.removeChild(tabOmTeVerwijderen);
+    console.log(`Tab tab${tabNummer} succesvol verwijderd`);
+
+    // Pas de zichtbare nummering van de volgende tabs aan
+    let dynamischeTabs = tabsContainer.querySelectorAll('.tab:not(.tab-toevoegen-knop):not(#tabWegingen):not(#tabOverzicht)');
+    let huidigTabNummer = parseInt(tabOmTeVerwijderen.textContent);
+    dynamischeTabs.forEach(tab => {
+        let tabNummer = parseInt(tab.textContent);
+        if (tabNummer > huidigTabNummer) {
+            tab.firstChild.nodeValue = `${tabNummer - 1} `;
+        }
+    });
+
+    if (naburigeTab && naburigeTab.classList.contains('tab')) {
+        naburigeTab.click();
+    }
+}
+
+let totaalTabsToegevoegd = ptaData.tests.length; // Houd het totaal aantal toegevoegde tabs bij
+
+function voegNieuweTabToe() {
+    let tabsContainer = document.querySelector('.tabs');
+    if (!tabsContainer) {
+        console.error("Tabs container niet gevonden");
+        return;
+    }
+
+    totaalTabsToegevoegd++; // Verhoog het totaal aantal toegevoegde tabs
+    let nieuweTabId = 600 + totaalTabsToegevoegd;
+
+    // Bepaal het nummer voor de zichtbare tekst
+    let bestaandeTabsAantal = tabsContainer.querySelectorAll('.tab:not(.tab-toevoegen-knop)').length - 2;
+    let nieuweTabNummer = 601 + bestaandeTabsAantal;
+
+    maakTab(nieuweTabId.toString(), nieuweTabNummer, tabsContainer, document.querySelector('.tabContent'));
+}
+
+
+
+document.getElementById('voegTabToe').onclick = voegNieuweTabToe;
+

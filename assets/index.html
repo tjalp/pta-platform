@@ -41,7 +41,7 @@
                     <label for="afnamevorm">Afnamevorm:</label>
                     <div class="flexItemNaastElkaar">
                         <select onchange="toggleExplanation(this)" class="inputField afnamevormSelect">
-                            <option hidden disabled selected value>Selecteer een optie</option>
+                            <option hidden disabled selected value></option>
                             <option value="schriftelijk">Schriftelijk</option>
                             <option value="mondeling">Mondeling</option>
                             <option value="digitaal">Digitaal</option>
@@ -58,7 +58,7 @@
                     <label for="tijd">Tijd:</label>
                     <div class="flexItemNaastElkaar">
                         <select onchange="toggleExplanation(this)" class="inputField tijdSelect">
-                            <option hidden disabled selected value>Selecteer een optie</option>
+                            <option hidden disabled selected value></option>
                             <option value="0">0 min.</option>
                             <option value="50">50 min.</option>
                             <option value="100">100 min.</option>
@@ -77,7 +77,7 @@
                 <div class="flexItem">
                     <label for="beoordeling">Beoordeling:</label>
                     <select class="inputField beoordelingSelect">
-                        <option hidden disabled selected value>Selecteer een optie</option>
+                        <option hidden disabled selected value></option>
                         <option value="cijfer">Cijfer</option>
                         <option value="o/v/g">O/V/G</option>
                     </select>
@@ -93,7 +93,7 @@
                 <div class="flexItem">
                     <label for="resitable">Herkansbaar:</label>
                     <select id="resitable" name="resitable" class="inputField herkansbaarSelect">
-                        <option hidden disabled selected value>Selecteer een optie</option>
+                        <option hidden disabled selected value></option>
                         <option value="Ja">Ja</option>
                         <option value="Nee">Nee</option>
                     </select>
@@ -113,6 +113,7 @@
             <div id="tabWegingen" class="tab" data-tab="wegingenContent">Wegingen</div>
             <div id="tabOverzicht" class="tab" data-tab="overzichtContent">Overzicht</div>
             <!-- De tabs voor toetsNummers worden hier gegenereerd door de JavaScript -->
+            <div id="voegTabToe" class="tab-toevoegen-knop"><span class="icon circle plus"></span></div>
         </div>
 
         <div id="right">
