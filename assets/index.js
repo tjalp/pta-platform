@@ -558,7 +558,7 @@ function setPercentages() {
 /*
 TOETSEN GENEREREN
 */
-let toetsNummers;
+let toetsNummers = ['601', '602', '603', '604', '605'];
 
 function leesPtaData() {
     fetch('/api/pta/all')
@@ -569,7 +569,7 @@ function leesPtaData() {
 }
 
 function genereerToetsen() {
-    leesPtaData();
+    //leesPtaData();
     maakTabs();
     initialiseerVasteTabs();
 }
@@ -741,7 +741,8 @@ function adjustTextareaHeights(element) {
 
 function adjustTextareaHeight(textarea) {
     textarea.style.height = 'auto';
-    textarea.style.height = (textarea.scrollHeight) + 'px';
+    let height = textarea.scrollHeight == 0 ? 30 : textarea.scrollHeight
+    textarea.style.height = (height) + 'px';
 }
 
 window.addEventListener('resize', () => {
