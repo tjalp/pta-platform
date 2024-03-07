@@ -8,6 +8,17 @@ let prevNiveau = "";
 let selectedNiveau = "";
 let isDynamicButtonClicked = false;
 
+
+function toggleExplanation(selectElement) {
+    var explanationDiv = selectElement.parentElement.querySelector('.explanationDiv');
+
+    if (selectElement.value === 'anders') {
+        explanationDiv.classList.add('visible');
+    } else {
+        explanationDiv.classList.remove('visible');
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function () {
     start();
     genereerToetsen();
@@ -399,7 +410,7 @@ let havoWegingen = { '4 havo': 50, '5 havo': 50 };
 let oefenOpties = ['Optie 1', 'Optie 2', 'Optie 3'];
 let vakkenOpties = ['Aardrijkskunde', 'Informatica', 'Wiskunde A'];
 let niveauOpties = ['4 havo', '5 havo', '4 vwo', '5 vwo', '6 vwo'];
-let jaarOpties = ['2021/2022', '2022/2023', '2023/2024', '2024/2025'];
+let jaarOpties = ['2024/2025', '2023/2024', '2022/2023', '2021/2022'];
 let bewerkJaar = '2025' // De te bewerken jaar
 let opSlot = false; // Als Admin op slot gooit
 
@@ -890,14 +901,4 @@ function bewerkWeeknummer() {
         { type: 'div', id: 'test' }
     ]);
     document.body.appendChild(modal);
-}
-
-function toggleExplanation(selectElement) {
-    var explanationDiv = selectElement.parentElement.querySelector('.explanationDiv');
-
-    if (selectElement.value === 'anders') {
-        explanationDiv.classList.add('visible');
-    } else {
-        explanationDiv.classList.remove('visible');
-    }
 }

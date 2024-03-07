@@ -462,6 +462,11 @@ ul.selectedTools li {
     margin-bottom: 5px;
 }
 
+.toetsContainer .afnamevormSelect,
+.toetsContainer .tijdSelect {
+    width: auto;
+}
+
 .toetsContainer input[type="text"], 
 .toetsContainer .autoExpandTextarea, 
 .toetsContainer select {
@@ -469,6 +474,7 @@ ul.selectedTools li {
     padding: 5px;
     border-radius: 4px;
     margin-bottom: 5px;
+    border: 1px solid #ccc;
 }
 
 .toetsContainer input[type="text"]:focus, 
