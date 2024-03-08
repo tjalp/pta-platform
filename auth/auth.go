@@ -16,6 +16,8 @@ var tokens []string
 func Authentication(db database.Database) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		Authenticate(c, db)
+
+		c.Next()
 	}
 }
 
@@ -35,6 +37,8 @@ func Authenticate(c *gin.Context, db database.Database) bool {
 		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": "unauthorized"})
 		return false
 	}
+
+	c.Header("Authorization", "Bearer "+reqToken)
 
 	return true
 }
