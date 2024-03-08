@@ -542,7 +542,7 @@ function docentenPtaOpslaan(){
     console.log(veldenArray);
 
     fetch('/api/defaults/subjects', {
-        method: 'POST',
+        method: 'PUT',
         headers: {
             'Content-Type': 'application/json'
         },

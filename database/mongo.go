@@ -170,6 +170,11 @@ func (s MongoDatabase) SetSubjects(subjects []Subject) {
 	if err != nil {
 		panic(err)
 	}
+
+	if len(subjects) == 0 {
+		return
+	}
+
 	var documents []interface{}
 	for _, subject := range subjects {
 		documents = append(documents, subject)
