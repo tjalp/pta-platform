@@ -161,6 +161,7 @@ function vakkenLaden(){
         inputDocent.setAttribute('vak', volledigeNaam[i].name)
         inputDocent.setAttribute('id', 'docent_' + i);
         inputDocent.setAttribute('name', 'docent_'+ i);
+        inputDocent.setAttribute('value', volledigeNaam[i].responsible)
 
         var div = document.createElement('div');
         div.setAttribute('id', volledigeNaam[i].name + + numberPart + textPart)
@@ -285,6 +286,11 @@ function vakToevoegen(){
                 var label = document.createElement('label');
                 label.textContent = vaknaam + " ("  + i + ' '  + niveaus[j]+ "): ";
                 label.setAttribute('for', vaknaam + '_' + niveaus[j] + '_' + i)
+                var icon = document.createElement('img')
+                icon.setAttribute('src', '/prullenbak.png')
+                icon.setAttribute('width', 25)
+                icon.setAttribute('height', 25)
+                icon.setAttribute('onclick', 'verwijderVak(' + vaknaam + '_' + niveau + '_' + i + ')')
                 var inputDocent = document.createElement('input');
                 inputDocent.setAttribute('type', 'text');
                 inputDocent.setAttribute('id', vaknaam + '_' + niveaus[j] + '_' + i);
@@ -295,6 +301,7 @@ function vakToevoegen(){
                 inputDocent.setAttribute('name', 'docent_' + vaknaam.replace(/\s+/g, '') + '_' + niveaus[j] + '_' + i); // Maak een unieke naam gebaseerd op vaknaam, niveau en jaarlaag
                 var div = document.createElement('div')
                 div.appendChild(label);
+                div.appendChild(icon);
                 div.appendChild(inputDocent);
                 if(bestaandeVakken.length > 0 ){
                     if (VakkenControleren(i, niveau[j], vaknaam, bestaandeVakken)) {
@@ -312,6 +319,11 @@ function vakToevoegen(){
             var label = document.createElement('label');
             label.textContent = vaknaam + " ("  + i + ' '  + niveaus[j]+ "): ";
             label.setAttribute('for', vaknaam + '_' + niveaus[j] + '_' + i)
+            var icon = document.createElement('img')
+            icon.setAttribute('src', '/prullenbak.png')
+            icon.setAttribute('width', 25)
+            icon.setAttribute('height', 25)
+            icon.setAttribute('onclick', 'verwijderVak(' + vaknaam + '_' + niveau + '_' + i + ')')
             var inputDocent = document.createElement('input');
             inputDocent.setAttribute('type', 'text');
             inputDocent.setAttribute('id', vaknaam + '_' + niveaus[j] + '_' + i);
@@ -322,6 +334,7 @@ function vakToevoegen(){
             inputDocent.setAttribute('name', 'docent_' + vaknaam.replace(/\s+/g, '') + '_' + niveaus[j] + '_' + i); // Maak een unieke naam gebaseerd op vaknaam, niveau en jaarlaag
             var div = document.createElement('div')
             div.appendChild(label);
+            div.appendChild(icon);
             div.appendChild(inputDocent);
             if(bestaandeVakken.length > 0 ){ 
                 if (VakkenControleren(i, niveau[j], vaknaam, bestaandeVakken)) {
@@ -339,6 +352,11 @@ function vakToevoegen(){
             var label = document.createElement('label');
             label.textContent = vaknaam + " ("  + i + ' '  + niveaus[j]+ "): ";
             label.setAttribute('for', vaknaam + '_' + niveaus[j] + '_' + i)
+            var icon = document.createElement('img')
+            icon.setAttribute('src', '/prullenbak.png')
+            icon.setAttribute('width', 25)
+            icon.setAttribute('height', 25)
+            icon.setAttribute('onclick', 'verwijderVak(' + vaknaam + '_' + niveau + '_' + i + ')')
             var inputDocent = document.createElement('input');
             inputDocent.setAttribute('type', 'text');
             inputDocent.setAttribute('id', vaknaam + '_' + niveaus[j] + '_' + i);
@@ -349,6 +367,7 @@ function vakToevoegen(){
             inputDocent.setAttribute('name', 'docent_' + vaknaam.replace(/\s+/g, '') + '_' + niveaus[j] + '_' + i); // Maak een unieke naam gebaseerd op vaknaam, niveau en jaarlaag
             var div = document.createElement('div')
             div.appendChild(label);
+            div.appendChild(icon)
             div.appendChild(inputDocent);
             if(bestaandeVakken.length > 0 ){
                 if (VakkenControleren(i, niveau[j], vaknaam, bestaandeVakken)) {
@@ -491,6 +510,11 @@ function vakToevoegen(){
     var label = document.createElement('label');
     label.textContent = vaknaam + " ("  + jaarlaag + ' '  + niveau+ "): ";
     label.setAttribute('for', vaknaam + '_' + niveau + '_' + jaarlaag)
+    var icon = document.createElement('img')
+    icon.setAttribute('src', '/prullenbak.png')
+    icon.setAttribute('width', 25)
+    icon.setAttribute('height', 25)
+    icon.setAttribute('onclick', 'verwijderVak(' + vaknaam + '_' + niveau + '_' + i + ')')
     var inputDocent = document.createElement('input');
     inputDocent.setAttribute('type', 'text');
     inputDocent.setAttribute('id', vaknaam + '_' + niveau + '_' + jaarlaag);
@@ -502,6 +526,7 @@ function vakToevoegen(){
     var div = document.createElement('div')
     div.appendChild(label);
     div.appendChild(inputDocent);
+    div.appendChild(icon);
     formDocentenPta.appendChild(div);
 
 }
