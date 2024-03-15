@@ -10,7 +10,6 @@ import (
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	"github.com/tjalp/pta-platform/auth"
 	"github.com/tjalp/pta-platform/database"
 	"github.com/tjalp/pta-platform/export/pdf"
 	"github.com/xuri/excelize/v2"
@@ -84,7 +83,7 @@ func StartServer() {
 		})
 
 	apiGroup.Group("/pta").
-		Use(auth.Authentication(data)).
+		//Use(auth.Authentication(data)).
 		GET("/:id", getPta).
 		DELETE("/:id", deletePta).
 		POST("/create", createPta).
@@ -95,11 +94,11 @@ func StartServer() {
 		POST("/upload", uploadPta)
 
 	apiGroup.Group("/user").
-		Use(auth.Authentication(data)).
+		//Use(auth.Authentication(data)).
 		GET("/:id", getUser)
 
 	apiGroup.Group("/defaults").
-		Use(auth.Authentication(data)).
+		//Use(auth.Authentication(data)).
 		GET("/tools", getTools).
 		POST("/tools", addTools).
 		PUT("/tools", setTools).
