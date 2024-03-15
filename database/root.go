@@ -13,6 +13,10 @@ type Database interface {
 	SetTools([]string)
 	GetSubjects() []Subject
 	SetSubjects([]Subject)
+	GetTypes() []string
+	SetTypes([]string)
+	GetPeriods() []Period
+	SetPeriods([]Period)
 	GetUser(string) *User
 	FindUser(map[string][]string) *User
 	SaveUser(User) User
@@ -32,6 +36,11 @@ type Subject struct {
 	Name        string `json:"name" form:"name"`
 	Level       string `json:"level" form:"level"`
 	Responsible string `json:"responsible" form:"responsible"`
+}
+
+type Period struct {
+	StartWeek int `json:"start_week" form:"start_week"`
+	EndWeek   int `json:"end_week" form:"end_week"`
 }
 
 type User struct {

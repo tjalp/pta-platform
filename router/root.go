@@ -105,7 +105,18 @@ func StartServer() {
 		PUT("/tools", setTools).
 		GET("/subjects", getSubjects).
 		POST("/subjects", addSubjects).
-		PUT("/subjects", setSubjects)
+		PUT("/subjects", setSubjects).
+		GET("/types", getTypes).
+		POST("/types", addTypes).
+		PUT("/types", setTypes).
+		GET("/periods", getPeriods).
+		PUT("/periods", setPeriods).
+		GET("/durations", getDurations).
+		POST("/durations", addDurations).
+		PUT("/durations", setDurations).
+		GET("/cohorts", getCohorts).
+		POST("/cohorts", addCohorts).
+		PUT("/cohorts", setCohorts)
 
 	err = router.Run()
 	if err != nil {
@@ -335,4 +346,83 @@ func uploadPta(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "file uploaded"})
+}
+
+func getTypes(c *gin.Context) {
+	c.JSON(http.StatusOK, data.GetTypes())
+}
+
+func addTypes(c *gin.Context) {
+	var typesToAdd []string
+
+	err := c.Bind(&typesToAdd)
+
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+		return
+	}
+
+	types := append(data.GetTypes(), typesToAdd...)
+
+	data.SetTypes(types)
+
+	c.JSON(http.StatusOK, types)
+}
+
+func setTypes(c *gin.Context) {
+	var types []string
+
+	err := c.Bind(&types)
+
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+		return
+	}
+
+	data.SetTypes(types)
+
+	c.JSON(http.StatusOK, types)
+}
+
+func getPeriods(c *gin.Context) {
+	c.JSON(http.StatusOK, data.GetPeriods())
+}
+
+func setPeriods(c *gin.Context) {
+	var periods []database.Period
+
+	err := c.Bind(&periods)
+
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+		return
+	}
+
+	data.SetPeriods(periods)
+
+	c.JSON(http.StatusOK, periods)
+}
+
+func getDurations(c *gin.Context) {
+
+}
+
+func addDurations(c *gin.Context) {
+
+}
+
+func setDurations(c *gin.Context) {
+
+}
+
+func getCohorts(c *gin.Context) {
+
+}
+
+func addCohorts(c *gin.Context) {
+
+}
+
+func setCohorts(c *gin.Context) {
+
 }

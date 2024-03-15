@@ -144,6 +144,87 @@ func (s MongoDatabase) SetTools(tools []string) {
 	}
 }
 
+func (s MongoDatabase) GetTypes() []string {
+	collection := mongodb.Collection("types")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	cursor, err := collection.Find(ctx, bson.D{})
+	if err != nil {
+		panic(err)
+	}
+	defer cursor.Close(ctx)
+	var result []struct{ Name string }
+	err = cursor.All(ctx, &result)
+	if err != nil {
+		panic(err)
+	}
+	var types []string
+	for _, tool := range result {
+		types = append(types, tool.Name)
+	}
+	return types
+}
+
+func (s MongoDatabase) SetTypes(types []string) {
+	collection := mongodb.Collection("types")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	_, err := collection.DeleteMany(ctx, bson.D{})
+	if err != nil {
+		panic(err)
+	}
+	var documents []interface{}
+	for _, tool := range types {
+		documents = append(documents, bson.D{{"name", tool}})
+	}
+	_, err = collection.InsertMany(ctx, documents)
+	if err != nil {
+		panic(err)
+	}
+}
+
+func (s MongoDatabase) GetPeriods() []Period {
+	collection := mongodb.Collection("periods")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	cursor, err := collection.Find(ctx, bson.D{})
+	if err != nil {
+		panic(err)
+	}
+	defer cursor.Close(ctx)
+	var result []Period
+	err = cursor.All(ctx, &result)
+	if err != nil {
+		panic(err)
+	}
+	return result
+}
+
+func (s MongoDatabase) SetPeriods(periods []Period) {
+	collection := mongodb.Collection("periods")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	_, err := collection.DeleteMany(ctx, bson.D{})
+	if err != nil {
+		panic(err)
+	}
+
+	if len(periods) == 0 {
+		return
+	}
+
+	var documents []interface{}
+	for _, period := range periods {
+		documents = append(documents, period)
+	}
+	_, err = collection.InsertMany(ctx, documents)
+	if err != nil {
+		panic(err)
+	}
+}
+
 func (s MongoDatabase) GetSubjects() []Subject {
 	collection := mongodb.Collection("subjects")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
