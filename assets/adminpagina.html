@@ -9,7 +9,7 @@
 
 <body>
     <button type="button" onclick="PaginaTerug()">terug</button>
-    <form id="AanpassingenVoorDropdown" onsubmit="dataVersturen(event)">        
+    <form id="AanpassingenVoorDropdown" onsubmit="toetssoortenVersturen()">        
         <h2>Soorten toetsen</h2>
         <div id="kloonbareVeld1">
             <div>
@@ -17,17 +17,20 @@
             <input type ="text" class="adminveld" id="toetsSoortVeld">
             </div>
         </div>
-        <button type="button" onclick="voegExtraVeldToe('kloonbareVeld1')">voeg een extra veld toe</button>
+        <button type="button" onclick="voegExtraVeldToe('kloonbareVeld1', 'text')">voeg een extra veld toe</button>
         <button type="button" onclick="verwijderVeld('kloonbareVeld1')">Haal een veld weg</button>
+
+        </form>
+        <form id="tijdsModgelijkheden" onsubmit="TijdsmogelijkhedenVersturen()">
 
         <h2>Tijdsmogelijkheden</h2>
         <div id="kloonbareVeld2">
             <div>
             <label for="TijdsMogelijkhedenVeld">Mogelijkheid 1:</label>
-            <input type="text" class="adminveld" id="TijdsMogelijkhedenVeld">
+            <input type="number" class="adminveld" id="TijdsMogelijkhedenVeld">
             </div>
         </div>
-        <button type="button" onclick="voegExtraVeldToe('kloonbareVeld2')">voeg een extra veld toe</button>
+        <button type="button" onclick="voegExtraVeldToe('kloonbareVeld2', 'number')">voeg een extra veld toe</button>
         <button type="button" onclick="verwijderVeld('kloonbareVeld2')">Haal een veld weg</button>
 
         <input type="submit" class="button" value="lever de aanpassingen in">
@@ -37,7 +40,7 @@
         <div id="kloonbareVeld3">
         </div>
         </form>
-        <button type="button" onclick="voegExtraVeldToe('kloonbareVeld3')">voeg een extra veld toe</button>
+        <button type="button" onclick="voegExtraVeldToe('kloonbareVeld3', 'text')">voeg een extra veld toe</button>
         <button type="button" onclick="verwijderVeld('kloonbareVeld3')">Haal een veld weg</button>
         <button type="button" onclick="hulpmiddelenOpslaan()">Sla de hulpmiddelen op</button>
 
@@ -47,30 +50,24 @@
     <label for="periode1">Periode 1:</label>
     <div id="periode1">
         <label class="adminlabel" for="startPeriode1">Start periode 1</label>
-        <input type ="text" class="adminveld" id="startPeriode1">
+        <input type ="number" class="adminveld" id="startPeriode1" placeholder="weeknummer">
         <label class="adminlabel" for="eindPeriode1">Eind periode 1</label>
-        <input type ="text" class="adminveld" id="eindPeriode1">
+        <input type ="number" class="adminveld" id="eindPeriode1" placeholder="weeknummer">
     </div>
     <label for="periode2">Periode 2:</label>
     <div id="periode2">
-        <label class="adminlabel" for="startPeriode2">Start periode 2</label>
-        <input type ="text" class="adminveld" id="startPeriode2">
         <label class="adminlabel" for="eindPeriode2">Eind periode 2</label>
-        <input type ="text" class="adminveld" id="eindPeriode2">
+        <input type ="number" class="adminveld" id="eindPeriode2" placeholder="weeknummer">
     </div>
     <label for="periode3">Periode 3:</label>
     <div id="periode3">
-        <label class="adminlabel" for="startPeriode3">Start periode 3</label>
-        <input type ="text" class="adminveld" id="startPeriode3">
         <label class="adminlabel" for="eindPeriode3">Eind periode 3</label>
-        <input type ="text" class="adminveld" id="eindPeriode3">
+        <input type ="number" class="adminveld" id="eindPeriode3" placeholder="weeknummer">
     </div>
     <label for="periode4">Periode 4:</label>
     <div id="periode4">
-        <label class="adminlabel" for="startPeriode4">Start periode 4</label>
-        <input type ="text" class="adminveld" id="startPeriode4">
         <label class="adminlabel" for="eindPeriode4">Eind periode 4</label>
-        <input type ="text" class="adminveld" id="eindPeriode4">
+        <input type ="number" class="adminveld" id="eindPeriode4" placeholder="weeknummer">
     </div>
     <input type="submit" value="periodes opslaan">
     </form>
@@ -95,7 +92,7 @@
         </select>
         <button type="submit" onclick="vakToevoegen()">Vak(ken) toevoegen</button>
     </form>
-    <h2>Docenten</h2>
+    <h2>Vakken</h2>
     <form id="VerantwoordelijkeDocentenPta">
     </form>
     <button type="button" onclick="docentenPtaOpslaan()">Lever de docenten in</button>

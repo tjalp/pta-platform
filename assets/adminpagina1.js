@@ -1,4 +1,4 @@
-function voegExtraVeldToe(containerId) {
+function voegExtraVeldToe(containerId, type) {
     var container = document.getElementById(containerId);
     var newFieldNumber = container.children.length + 1;
 
@@ -10,7 +10,7 @@ function voegExtraVeldToe(containerId) {
     label.textContent = 'Mogelijkheid ' + newFieldNumber + ':';
 
     var input = document.createElement('input');
-    input.setAttribute('type', 'text');
+    input.setAttribute('type', type);
     input.setAttribute('id', containerId + '_field' + newFieldNumber);
     input.setAttribute('name', containerId + '_field' + newFieldNumber);
 
@@ -30,8 +30,7 @@ function dataVersturen(event){
     var data = {};
     inputs.forEach(function(input, index) {
         data[input.name] = input.value; // Voeg de naam en waarde van elk veld toe aan het data object
-    });
-    console.log(data); // Log de verzamelde data naar de console
+    }); // Log de verzamelde data naar de console
 
     // Hier kan je de data versturen naar een server of iets anders doen met de data
 }
@@ -116,7 +115,6 @@ function vakkenPtaOpslaan(){
 }
 
 function vakkenOphalen(){
-    console.log("help ik wil opgehaald worden uit smallland")
     fetch(`/api/defaults/subjects`)
     .then(response => {
             if (!response.ok) {
@@ -136,13 +134,11 @@ function vakkenOphalen(){
 function vakkenLaden(){
     const formDocentenPta = document.getElementById('VerantwoordelijkeDocentenPta');
     const volledigeNaam = Array.from(vakken).sort((a, b) => a.name.localeCompare(b.name));
-    console.log(vakken)
     for(i = 0; i < volledigeNaam.length; i ++){
         var str = vakken[i].level;
         var parts = str.split(/\s+/); // Splits de string op één of meer spaties
         var numberPart = parts[0];
         var textPart = parts[1];
-        console.log(numberPart + textPart)  
 
         var label = document.createElement('label');
         label.textContent = volledigeNaam[i].name + " (" + volledigeNaam[i].level + ")" + ':';
@@ -152,7 +148,7 @@ function vakkenLaden(){
         icon.setAttribute('src', '/prullenbak.png')
         icon.setAttribute('width', 25)
         icon.setAttribute('height', 25)
-        icon.setAttribute('onclick', 'verwijderVak(' + volledigeNaam[i].name + + numberPart + textPart + ')')
+        icon.setAttribute('onclick', 'verwijderVak(' + volledigeNaam[i].name + numberPart + textPart + ')')
         var inputDocent = document.createElement('input');
         inputDocent.setAttribute('type', 'text');
         inputDocent.setAttribute('niveau', textPart)
@@ -160,9 +156,9 @@ function vakkenLaden(){
         inputDocent.setAttribute('maxlength', 3)
         inputDocent.setAttribute('vak', volledigeNaam[i].name)
         inputDocent.setAttribute('id', 'docent_' + i);
+        inputDocent.setAttribute('placeholder', 'afkorting docent')
         inputDocent.setAttribute('name', 'docent_'+ i);
         inputDocent.setAttribute('value', volledigeNaam[i].responsible)
-
         var div = document.createElement('div');
         div.setAttribute('id', volledigeNaam[i].name + + numberPart + textPart)
         div.appendChild(label);
@@ -177,27 +173,26 @@ function periodesOpslaan(event) {
     event.preventDefault(); // Prevent the default form submission
 
     // Gather data from the form
-    var periodesData = {
-        periode1: {
-            start: document.getElementById("startPeriode1").value,
-            eind: document.getElementById("eindPeriode1").value
+    var periodesData = [
+        {
+            start_week: parseInt(document.getElementById("startPeriode1").value),
+            end_week: parseInt(document.getElementById("eindPeriode1").value)
         },
-        periode2: {
-            start: document.getElementById("startPeriode2").value,
-            eind: document.getElementById("eindPeriode2").value
+        {
+            start_week: parseInt(document.getElementById("eindPeriode1").value) + 1,
+            end_week: parseInt(document.getElementById("eindPeriode2").value)
         },
-        periode3: {
-            start: document.getElementById("startPeriode3").value,
-            eind: document.getElementById("eindPeriode3").value
+        {
+            start_week: parseInt(document.getElementById("eindPeriode2").value) + 1,
+            end_week: parseInt(document.getElementById("eindPeriode3").value)
         },
-        periode4: {
-            start: document.getElementById("startPeriode4").value,
-            eind: document.getElementById("eindPeriode4").value
+        {
+            start_week: parseInt(document.getElementById("eindPeriode3").value) + 1,
+            end_week: parseInt(document.getElementById("eindPeriode4").value)
         }
-    };
+    ];
 
     // Send the data to your backend using fetch
-    console.log(periodesData)
 
     fetch('/api/defaults/periodes', {
         method: 'PUT', // Or 'PUT', 'PATCH', etc. depending on your backend
@@ -267,13 +262,11 @@ function vakToevoegen(){
       alert("geef bij alle altijd alle jaarlagen aan")
       return
     } 
-    // Controleer of het vak al bestaat in het form VerantwoordelijkeDocentenPta
     var bestaandeVakken = document.querySelectorAll('#VerantwoordelijkeDocentenPta input[type="text"]');
     for (var i = 0; i < bestaandeVakken.length; i++) {
-        console.log(bestaandeVakken[i])
         if (bestaandeVakken[i].getAttribute('vak') === vaknaam && bestaandeVakken[i].getAttribute('niveau') === niveau && bestaandeVakken[i].getAttribute('jaarlaag') === jaarlaag) {
             alert('Dit vak is al toegevoegd.');
-            return; // Stop de functie als het vak al bestaat
+            return;
         }
     }
 
@@ -296,6 +289,7 @@ function vakToevoegen(){
                 inputDocent.setAttribute('id', vaknaam + '_' + niveaus[j] + '_' + i);
                 inputDocent.setAttribute('jaarlaag', i);
                 inputDocent.setAttribute('maxlength', 3)
+                inputDocent.setAttribute('placeholder', 'afkorting docent')
                 inputDocent.setAttribute('vak', vaknaam);
                 inputDocent.setAttribute('niveau', niveaus[j]);
                 inputDocent.setAttribute('name', 'docent_' + vaknaam.replace(/\s+/g, '') + '_' + niveaus[j] + '_' + i); // Maak een unieke naam gebaseerd op vaknaam, niveau en jaarlaag
@@ -305,7 +299,7 @@ function vakToevoegen(){
                 div.appendChild(inputDocent);
                 if(bestaandeVakken.length > 0 ){
                     if (VakkenControleren(i, niveau[j], vaknaam, bestaandeVakken)) {
-                        console.log('Dit vak is al toegevoegd.');
+                        alert('Dit vak is al toegevoegd.');
                     }else{
                         formDocentenPta.appendChild(div);
                     }
@@ -329,6 +323,7 @@ function vakToevoegen(){
             inputDocent.setAttribute('id', vaknaam + '_' + niveaus[j] + '_' + i);
             inputDocent.setAttribute('jaarlaag', i);
             inputDocent.setAttribute('maxlength', 3)
+            inputDocent.setAttribute('placeholder', 'afkorting docent')
             inputDocent.setAttribute('vak', vaknaam);
             inputDocent.setAttribute('niveau', niveaus[j]);
             inputDocent.setAttribute('name', 'docent_' + vaknaam.replace(/\s+/g, '') + '_' + niveaus[j] + '_' + i); // Maak een unieke naam gebaseerd op vaknaam, niveau en jaarlaag
@@ -338,7 +333,7 @@ function vakToevoegen(){
             div.appendChild(inputDocent);
             if(bestaandeVakken.length > 0 ){ 
                 if (VakkenControleren(i, niveau[j], vaknaam, bestaandeVakken)) {
-                    console.log('Dit vak is al toegevoegd.');
+                    alert('Dit vak is al toegevoegd.');
                 }else{
                     formDocentenPta.appendChild(div);
                 }
@@ -362,6 +357,7 @@ function vakToevoegen(){
             inputDocent.setAttribute('id', vaknaam + '_' + niveaus[j] + '_' + i);
             inputDocent.setAttribute('jaarlaag', i);
             inputDocent.setAttribute('maxlength', 3)
+            inputDocent.setAttribute('placeholder', 'afkorting docent')
             inputDocent.setAttribute('vak', vaknaam);
             inputDocent.setAttribute('niveau', niveaus[j]);
             inputDocent.setAttribute('name', 'docent_' + vaknaam.replace(/\s+/g, '') + '_' + niveaus[j] + '_' + i); // Maak een unieke naam gebaseerd op vaknaam, niveau en jaarlaag
@@ -371,7 +367,7 @@ function vakToevoegen(){
             div.appendChild(inputDocent);
             if(bestaandeVakken.length > 0 ){
                 if (VakkenControleren(i, niveau[j], vaknaam, bestaandeVakken)) {
-                    console.log('Dit vak is al toegevoegd.');
+                    alert('Dit vak is al toegevoegd.');
                 }else{
                     formDocentenPta.appendChild(div);
                 }
@@ -397,10 +393,8 @@ function vakToevoegen(){
     }
 
     if(jaarlaag == "alle jaarlagen"){
-      console.log("help")
         if(niveau == 'Vwo'){
             for(let i = 4; i < 7; i ++){
-                console.log("help" + i + "3")
                 var formDocentenPta = document.getElementById('VerantwoordelijkeDocentenPta');
                 var label = document.createElement('label');
                 label.textContent = vaknaam + " ("  + i + ' '  + niveau+ "): ";
@@ -415,6 +409,7 @@ function vakToevoegen(){
                 inputDocent.setAttribute('type', 'text');
                 inputDocent.setAttribute('maxlength', 3)
                 inputDocent.setAttribute('vak', vaknaam);
+                inputDocent.setAttribute('placeholder', 'afkorting docent')
                 inputDocent.setAttribute('id', vaknaam + '_' + niveau + '_' + jaarlaag);
                 inputDocent.setAttribute('name', 'docent_' + vaknaam.replace(/\s+/g, '') + '_' + niveau + '_' + i); // Maak een unieke naam gebaseerd op vaknaam, niveau en jaarlaag
                 var div = document.createElement('div')
@@ -424,7 +419,7 @@ function vakToevoegen(){
                 div.appendChild(icon)
                 if(bestaandeVakken.length > 0 ){
                     if (VakkenControleren(i, "Vwo", vaknaam, bestaandeVakken)) {
-                        console.log('Dit vak is al toegevoegd.');
+                        alert('Dit vak is al toegevoegd.');
                     }else{
                         formDocentenPta.appendChild(div);
                     }
@@ -448,6 +443,7 @@ function vakToevoegen(){
                 inputDocent.setAttribute('type', 'text');
                 inputDocent.setAttribute('maxlength', 3)
                 inputDocent.setAttribute('vak', vaknaam);
+                inputDocent.setAttribute('placeholder', 'afkorting docent')
                 inputDocent.setAttribute('id', vaknaam + '_' + niveau + '_' + jaarlaag);
                 inputDocent.setAttribute('name', 'docent_' + vaknaam.replace(/\s+/g, '') + '_' + niveau + '_' + i); // Maak een unieke naam gebaseerd op vaknaam, niveau en jaarlaag
                 var div = document.createElement('div')
@@ -457,7 +453,7 @@ function vakToevoegen(){
                 div.appendChild(icon)
                 if(bestaandeVakken.length > 0 ){
                     if (VakkenControleren(i, "Havo", vaknaam, bestaandeVakken)) {
-                        console.log('Dit vak is al toegevoegd.');
+                        alert('Dit vak is al toegevoegd.');
                     }else{
                         formDocentenPta.appendChild(div);
                     }
@@ -482,6 +478,7 @@ function vakToevoegen(){
                 inputDocent.setAttribute('id', vaknaam + '_' + niveau + '_' + jaarlaag);
                 inputDocent.setAttribute('jaarlaag', jaarlaag);
                 inputDocent.setAttribute('vak', vaknaam);
+                inputDocent.setAttribute('placeholder', 'afkorting docent')
                 inputDocent.setAttribute('maxlength', 3)
                 inputDocent.setAttribute('niveau', i);
                 inputDocent.setAttribute('name', 'docent_' + vaknaam.replace(/\s+/g, '') + '_' + niveau + '_' + i); // Maak een unieke naam gebaseerd op vaknaam, niveau en jaarlaag
@@ -492,7 +489,7 @@ function vakToevoegen(){
                 div.appendChild(icon)
                 if(bestaandeVakken.length > 0 ){
                     if (VakkenControleren(i, 'Mavo', vaknaam, bestaandeVakken)) {
-                        console.log('Dit vak is al toegevoegd.');
+                        alert('Dit vak is al toegevoegd.');
                     }else{
                         formDocentenPta.appendChild(div);
                     }
@@ -522,6 +519,7 @@ function vakToevoegen(){
     inputDocent.setAttribute('vak', vaknaam);
     inputDocent.setAttribute('maxlength', 3)
     inputDocent.setAttribute('niveau', niveau);
+    inputDocent.setAttribute('placeholder', 'afkorting docent')
     inputDocent.setAttribute('name', 'docent_' + vaknaam.replace(/\s+/g, '') + '_' + niveau + '_' + jaarlaag); // Maak een unieke naam gebaseerd op vaknaam, niveau en jaarlaag
     var div = document.createElement('div')
     div.appendChild(label);
@@ -532,8 +530,6 @@ function vakToevoegen(){
 }
 
 function VakkenControleren(fi, fniveau, fvaknaam,  fbestaandeVakken){
-    console.log(fi + fniveau + fvaknaam)
-    console.log(fbestaandeVakken)
     for(i = 0; i < fbestaandeVakken.length; i ++){
         if(fbestaandeVakken[i].getAttribute('vak') == fvaknaam && fbestaandeVakken[i].getAttribute('niveau') == fniveau && fbestaandeVakken[i].getAttribute('jaarlaag') == fi){
             return true
@@ -552,8 +548,6 @@ function hulpmiddelenOpslaan(){
     inputs.forEach((input) => {
         data.push(input.value); 
     });
-
-    console.log("Verzonden data:", data); // Controleer de data die wordt verzonden
 
     fetch('/api/defaults/tools', {
         method: 'PUT',
@@ -594,8 +588,6 @@ function docentenPtaOpslaan(){
         veldenArray.push(veldObject);
     });
 
-    console.log(veldenArray);
-
     fetch('/api/defaults/subjects', {
         method: 'PUT',
         headers: {
@@ -618,8 +610,69 @@ function docentenPtaOpslaan(){
 }
 
 function verwijderVak(divId){
-    console.log(divId)
     divId.remove()
+}
+
+function TijdsmogelijkhedenVersturen() {
+    event.preventDefault();
+
+    var tijdsmogelijkheden = [];
+    var velden = document.querySelectorAll('#kloonbareVeld2 input'); 
+
+
+    velden.forEach(function(veld) {
+        tijdsmogelijkheden.push(parseInt(veld.value));
+    });
+    fetch('/api/defaults/durations', {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(tijdsmogelijkheden) // Verzend de array als JSON
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`Network response was not ok, status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Data sent successfully:', data);
+    })
+    .catch(error => {
+        console.error('Error sending data:', error);
+    });
+}
+
+function toetssoortenVersturen() {
+    event.preventDefault();
+
+    var tijdsmogelijkheden = [];
+    var velden = document.querySelectorAll('#kloonbareVeld1 input'); 
+
+
+    velden.forEach(function(veld) {
+        tijdsmogelijkheden.push(veld.value);
+    });
+    fetch('/api/defaults/types', {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(tijdsmogelijkheden) // Verzend de array als JSON
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`Network response was not ok, status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Data sent successfully:', data);
+    })
+    .catch(error => {
+        console.error('Error sending data:', error);
+    });
 }
 
 vakkenOphalen()
