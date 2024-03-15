@@ -25,6 +25,7 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 function start() {
+    fetchFromDatabase();
     isDynamicButtonClicked = false;
     removeExistingModals();
     const modal = createModal('Wilt u PTAs bekijken of bewerken?', [
@@ -80,7 +81,7 @@ function bevestigVakkeuze() {
     }
 
     setPercentages();
-    laadPercentages();
+    laadAlles()
 
     updateDynamicButtonValue('Vak', selectedVak);
 }
@@ -232,6 +233,13 @@ const foutDiv = document.getElementById('errorPercentages');
 
 function laadAlles() {
     laadPercentages();
+
+    fetch(`/api/pta/search?name=${selectedVak}&level=${selectedNiveau}`)
+        .then(response => response.json())
+        .then(data => {
+            ptaData = data[0];
+        })
+        .catch(error => console.error(error));
 }
 
 function laadPercentages() {
@@ -409,10 +417,19 @@ let vwoWegingen = { '4 vwo': 0, '5 vwo': 10, '6 vwo': 90 };
 let havoWegingen = { '4 havo': 50, '5 havo': 50 };
 let oefenOpties = ['Optie 1', 'Optie 2', 'Optie 3'];
 let vakkenOpties = ['Aardrijkskunde', 'Informatica', 'Wiskunde A'];
-let niveauOpties = ['4 havo', '5 havo', '4 vwo', '5 vwo', '6 vwo'];
+let niveauOpties = ['4 HAVO', '5 HAVO', '4 VWO', '5 VWO', '6 VWO'];
 let jaarOpties = ['2024/2025', '2023/2024', '2022/2023', '2021/2022'];
 let bewerkJaar = '2025' // De te bewerken jaar
 let opSlot = false; // Als Admin op slot gooit
+
+function fetchFromDatabase() {
+    fetch('/api/defaults/subjects')
+        .then(response => response.json())
+        .then(data => {
+            vakkenOpties = data.map(subject => subject.name);
+        })
+        .catch(error => console.error(error));
+}
 
 let ptaData = {
     "id": "d15690",
@@ -571,10 +588,10 @@ TOETSEN GENEREREN
 */
 
 function leesPtaData() {
-    fetch('/api/pta/all')
-        .then(response => response.json())
-        .then(data => ptaData = data[3])
-        .catch(error => console.error(error));
+    // fetch('/api/pta/all')
+    //     .then(response => response.json())
+    //     .then(data => ptaData = data[3])
+    //     .catch(error => console.error(error));
     toetsNummers = ptaData.tests.map(test => test.id.toString());
 }
 
