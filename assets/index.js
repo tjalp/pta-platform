@@ -767,42 +767,45 @@ function laadToetsInhoud(toetsNummer) {
     }
 }
 
-function setEditRights() {
+function setDisabledState(elements, disabled) {
+    elements.forEach(element => {
+      element.disabled = disabled;
+    });
+  }
+  
+  function setDisplayStyle(elements, displayStyle) {
+    elements.forEach(element => {
+      element.style.display = displayStyle;
+    });
+  }
+  
+  function setEditRights() {
+    const heeftBewerkingsRechten = isBewerker && selectedJaar.includes(bewerkJaar) && !opSlot;
     const invulVelden = document.querySelectorAll('.tabContent input, .tabContent select, .tabContent textarea');
-    if (!isBewerker || !selectedJaar.includes(bewerkJaar) || opSlot) {
-        invulVelden.forEach(veld => {
-            veld.disabled = true;
-        });
-        const buttons = document.querySelectorAll('.tabContent button');
-        buttons.forEach(button => {
-            button.disabled = true;
-        });
-        const iconen = document.querySelectorAll('.icon');
-        iconen.forEach(icoon => {
-            icoon.style.display = 'none';
-        });
-        return;
-    }
-    invulVelden.forEach(veld => {
-        veld.disabled = false;
-    });
     const buttons = document.querySelectorAll('.tabContent button');
-    buttons.forEach(button => {
-        button.disabled = false;
-    });
     const iconen = document.querySelectorAll('.icon');
-    iconen.forEach(icoon => {
-        icoon.style.display = 'inline-block';
+    const verwijderbareItems = document.querySelectorAll('.tabContent li');
+  
+    setDisabledState(invulVelden, !heeftBewerkingsRechten);
+    setDisabledState(buttons, !heeftBewerkingsRechten);
+    setDisplayStyle(iconen, heeftBewerkingsRechten ? 'inline-block' : 'none');
+  
+    verwijderbareItems.forEach(item => {
+      item.style.pointerEvents = heeftBewerkingsRechten ? 'auto' : 'none';
     });
-    input4vwo.disabled = selectedNiveau === '5 vwo' || selectedNiveau === '6 vwo';
-    input5vwo.disabled = selectedNiveau === '6 vwo';
+  
+    // Speciale regels voor bepaalde inputs
+    if (heeftBewerkingsRechten) {
+      input4vwo.disabled = selectedNiveau === '5 vwo' || selectedNiveau === '6 vwo';
+      input5vwo.disabled = selectedNiveau === '6 vwo';
+      input4havo.disabled = selectedNiveau === '5 havo';
+    }
+  
+    // Deze velden zijn altijd disabled
     input6vwo.disabled = true;
-
-    input4havo.disabled = selectedNiveau === '5 havo';
     input5havo.disabled = true;
-
-}
-
+  }
+  
 function vulToetsInhoud(toetsData) {
     try {
         const template = document.getElementById('toetsTemplate');
