@@ -528,7 +528,7 @@ let ptaData = {
             "time": 100,
             "time_else": null,
             "resitable": true,
-            "weight_pod": 0,
+            "weight_pod": 3,
             "weight_pta": 2,
             "tools": [
                 0,
@@ -548,7 +548,7 @@ let ptaData = {
             "time": 'anders',
             "time_else": '???',
             "resitable": true,
-            "weight_pod": 0,
+            "weight_pod": 5,
             "weight_pta": 2,
             "tools": [
                 0
@@ -566,7 +566,7 @@ let ptaData = {
             "time": 0,
             "time_else": 'Project',
             "resitable": true,
-            "weight_pod": 0,
+            "weight_pod": 9,
             "weight_pta": 0,
             "tools": [
 
@@ -584,7 +584,7 @@ let ptaData = {
             "time": 50,
             "time_else": null,
             "resitable": true,
-            "weight_pod": 0,
+            "weight_pod": 10,
             "weight_pta": 2,
             "tools": [
                 0
@@ -602,7 +602,7 @@ let ptaData = {
             "time": 100,
             "time_else": null,
             "resitable": true,
-            "weight_pod": 0,
+            "weight_pod": 1,
             "weight_pta": 2,
             "tools": [
                 0
@@ -725,17 +725,43 @@ function vulOverzichtTabel() {
             cell.textContent = text; // Alles als tekst
         });
     });
+    updateGewogenGemiddelden();
 }
+
+function updateGewogenGemiddelden() {
+    const tabelBody = document.querySelector('.overzichtTabel tbody');
+    const rijen = tabelBody.querySelectorAll('tr');
+
+    let totaalPOD = 0;
+    let totaalPTA = 0;
+
+    // Eerst de totalen berekenen
+    rijen.forEach(rij => {
+        const pod = parseInt(rij.cells[3].textContent, 10);
+        const pta = parseInt(rij.cells[4].textContent, 10);
+
+        totaalPOD += pod;
+        totaalPTA += pta;
+    });
+
+    // Vervolgens het gewogen gemiddelde berekenen en toevoegen
+    rijen.forEach(rij => {
+        const pod = parseInt(rij.cells[3].textContent, 10);
+        const pta = parseInt(rij.cells[4].textContent, 10);
+
+        const podPercentage = totaalPOD ? (pod / totaalPOD * 100).toFixed(0) : 0;
+        const ptaPercentage = totaalPTA ? (pta / totaalPTA * 100).toFixed(0) : 0;
+
+        rij.cells[3].innerHTML = `${pod}<br>(${podPercentage}%)`;
+        rij.cells[4].innerHTML = `${pta}<br>(${ptaPercentage}%)`;
+    });
+}
+
 
 
 function genereerOverzichtInhoud() {
     let contentPane = document.getElementById("overzichtContent");
     contentPane.innerHTML = ''; // Maak de inhoud van het paneel leeg
-
-    let sorteerKnop = document.createElement('button');
-    sorteerKnop.textContent = 'Sorteer Tabs';
-    sorteerKnop.addEventListener('click', sorteerTabs);
-    contentPane.appendChild(sorteerKnop);
 
     let tabel = document.createElement('table');
     tabel.setAttribute('class', 'overzichtTabel');
@@ -752,6 +778,17 @@ function genereerOverzichtInhoud() {
     tabel.createTBody();
 
     contentPane.appendChild(tabel);
+
+    let verversKnop = document.createElement('button');
+    verversKnop.textContent = '🔄';
+    verversKnop.addEventListener('click', updatePtaData);
+    contentPane.appendChild(verversKnop);
+
+    let sorteerKnop = document.createElement('button');
+    sorteerKnop.textContent = 'Sorteer Toetsen';
+    sorteerKnop.addEventListener('click', sorteerTabs);
+    contentPane.appendChild(sorteerKnop);
+
     vulOverzichtTabel(); // Zorg dat deze functie wordt aangeroepen na het opzetten van de tabel
 }
 
@@ -1241,3 +1278,27 @@ function valideerNumberInput(e) {
     e.target.value = waarde > 100 ? 100 : waarde;
 }
 
+function updatePtaData(veld, nieuweWaarde) {
+    // Vind de actieve tab en haal de toetsId ervan af
+    let actieveTab = document.querySelector('.tab.active');
+    if (!actieveTab) {
+        console.error('Geen actieve tab gevonden');
+        return;
+    }
+
+    // De ID van de toets wordt opgeslagen in de data-tab attribuut van de actieve tab,
+    // we moeten "toets" verwijderen uit de ID om het juiste toetsId te krijgen
+    let toetsId = actieveTab.getAttribute('data-tab').replace('toets', '');
+
+    // Zoek de juiste toets in ptaData.tests op basis van toetsId
+    let toets = ptaData.tests.find(test => test.id === parseInt(toetsId));
+    if (!toets) {
+        console.error('Toets niet gevonden met ID:', toetsId);
+        return;
+    }
+
+    // Update het specifieke veld van de toets met de nieuwe waarde
+    toets[veld] = nieuweWaarde;
+
+    // HIER KAN TUSSENTIJDS WORDEN OPGESLAGEN NAAR SERVER
+}
