@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 function start() {
-    fetchFromDatabase();
+    //fetchFromDatabase();
     isDynamicButtonClicked = false;
     removeExistingModals();
     const modal = createModal('Wilt u PTAs bekijken of bewerken?', [
@@ -234,12 +234,12 @@ const foutDiv = document.getElementById('errorPercentages');
 function laadAlles() {
     laadPercentages();
 
-    fetch(`/api/pta/search?name=${selectedVak}&level=${selectedNiveau}`)
-        .then(response => response.json())
-        .then(data => {
-            ptaData = data[0];
-        })
-        .catch(error => console.error(error));
+    // fetch(`/api/pta/search?name=${selectedVak}&level=${selectedNiveau}`)
+    //     .then(response => response.json())
+    //     .then(data => {
+    //         ptaData = data[0];
+    //     })
+    //     .catch(error => console.error(error));
 }
 
 function laadPercentages() {
@@ -589,15 +589,15 @@ TOETSEN GENEREREN
 */
 
 function leesPtaData() {
-    // fetch('/api/pta/all')
-    //     .then(response => response.json())
-    //     .then(data => ptaData = data[3])
-    //     .catch(error => console.error(error));
+    fetch('/api/pta/all')
+        .then(response => response.json())
+        .then(data => ptaData = data[3])
+        .catch(error => console.error(error));
     toetsNummers = ptaData.tests.map(test => test.id.toString());
 }
 
 function genereerToetsen() {
-    //leesPtaData();
+    leesPtaData();
     maakTabs(ptaData);
 }
 
