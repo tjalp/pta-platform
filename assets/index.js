@@ -768,7 +768,7 @@ function genereerOverzichtInhoud() {
     
     let thead = tabel.createTHead();
     let headerRow = thead.insertRow();
-    ['Tab', 'Week', 'Beschrijving', 'POD', 'PTA'].forEach(text => {
+    ['#', 'Week', 'Beschrijving', 'POD', 'PTA'].forEach(text => {
         let th = document.createElement('th');
         th.textContent = text;
         headerRow.appendChild(th);
@@ -1170,6 +1170,8 @@ function voegNieuweTabToe() {
     let nieuweTabNummer = 601 + bestaandeTabsAantal;
 
     maakTab(nieuweTabId.toString(), nieuweTabNummer, tabsContainer, document.querySelector('.tabContent'));
+    laadToetsInhoud(nieuweTabNummer);
+    toonTabInhoud(`toets${nieuweTabNummer}`);
 }
 
 document.getElementById('voegTabToe').onclick = voegNieuweTabToe;
@@ -1278,27 +1280,44 @@ function valideerNumberInput(e) {
     e.target.value = waarde > 100 ? 100 : waarde;
 }
 
-function updatePtaData(veld, nieuweWaarde) {
-    // Vind de actieve tab en haal de toetsId ervan af
-    let actieveTab = document.querySelector('.tab.active');
-    if (!actieveTab) {
-        console.error('Geen actieve tab gevonden');
-        return;
+function updatePtaData() {
+    const tabs = document.querySelectorAll('.tab');
+    const updatedTests = [];
+    const existingTestIds = new Set(ptaData.tests.map(test => test.id));
+
+    // Begin bij de derde tab om 'Overzicht' en 'Wegingen' over te slaan
+    for (let i = 2; i < tabs.length; i++) {
+        const tab = tabs[i];
+        const tabNummer = parseInt(tab.innerText.trim().split(' ')[0], 10);
+
+        // Check of de tabContent geladen is
+        const tabContent = document.getElementById('toets' + tabNummer);
+        if (tabContent && tabContent.dataset.isLoaded === 'true') {
+            const testIndex = ptaData.tests.findIndex(test => test.id === tabNummer);
+
+            if (testIndex !== -1) {
+                // Update de volgorde van bestaande tests in ptaData
+                updatedTests.push(ptaData.tests[testIndex]);
+                existingTestIds.delete(tabNummer);
+            } else {
+                // Behandel nieuwe tabs die toegevoegd zijn en nog niet in ptaData voorkomen
+                console.log(`Nieuwe test ontdekt: ${tabNummer}. Overweeg deze toe te voegen aan ptaData.`);
+                // Voeg logica hier toe om nieuwe tests toe te voegen indien nodig
+            }
+        }
     }
 
-    // De ID van de toets wordt opgeslagen in de data-tab attribuut van de actieve tab,
-    // we moeten "toets" verwijderen uit de ID om het juiste toetsId te krijgen
-    let toetsId = actieveTab.getAttribute('data-tab').replace('toets', '');
+    // Verwijder tests die niet langer in de tabs voorkomen
+    existingTestIds.forEach(id => {
+        const indexToRemove = ptaData.tests.findIndex(test => test.id === id);
+        if (indexToRemove !== -1) {
+            console.log(`Verwijderde test gedetecteerd: ${id}. Wordt verwijderd uit ptaData.`);
+            ptaData.tests.splice(indexToRemove, 1);
+        }
+    });
 
-    // Zoek de juiste toets in ptaData.tests op basis van toetsId
-    let toets = ptaData.tests.find(test => test.id === parseInt(toetsId));
-    if (!toets) {
-        console.error('Toets niet gevonden met ID:', toetsId);
-        return;
-    }
+    // Update ptaData.tests met de nieuwe volgorde en eventuele wijzigingen
+    ptaData.tests = updatedTests.concat(ptaData.tests.filter(test => existingTestIds.has(test.id)));
 
-    // Update het specifieke veld van de toets met de nieuwe waarde
-    toets[veld] = nieuweWaarde;
-
-    // HIER KAN TUSSENTIJDS WORDEN OPGESLAGEN NAAR SERVER
+    // Optioneel: Sla ptaData op of synchroniseer met een server
 }
