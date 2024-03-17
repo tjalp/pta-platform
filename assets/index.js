@@ -1,11 +1,9 @@
 // Globale variabelen
 let isBewerker = false;
 let selectedBewerkerOfBekijker = "";
-let prevVak = "";
-let selectedVak = "";
-let selectedJaar = "";
-let prevNiveau = "";
-let selectedNiveau = "";
+let selectedVak = null;
+let selectedJaar = null;
+let selectedNiveau = null;
 let isDynamicButtonClicked = false;
 let isEersteKeer = true;
 
@@ -64,18 +62,18 @@ function bevestigBewerken() {
     vakkeuze();
 }
 
-function initialiseerKeuzeModal(keuzeType, opties, bevestigingsActie, terugActie) {
+function initialiseerKeuzeModal(keuzeType, opties, bevestigingsActie, terugActie, selectOptie = []) {
     try {
         removeExistingModals();
 
-        console.log(`Opening modal voor: ${keuzeType}`);
+        console.log(`Opening modal voor: ${keuzeType} met ${selectOptie}`);
         createSearchModal(
             `Voor welk ${keuzeType.toLowerCase()} wilt u PTAs ${isBewerker ? 'bewerken' : 'bekijken'}?`,
             opties,
             (geselecteerdeOpties) => bevestigKeuze(keuzeType, geselecteerdeOpties),
             terugActie, // Terug actie
             false, // Meervoudige selectie niet toegestaan
-            []
+            selectOptie
         );
     } catch (error) {
         console.error(`Fout bij het initialiseren van keuzeModal voor ${keuzeType}:`, error);
@@ -95,9 +93,9 @@ function bevestigKeuze(keuzeType, geselecteerdeOpties) {
         // Ga naar de volgende keuze of maak dynamische knoppen aan
         if (isEersteKeer) {
             switch (keuzeType) {
-                case 'Vak': jaarkeuze(); break;
-                case 'Jaar': niveaukeuze(); break;
-                case 'Niveau':
+                case 'Vak': niveaukeuze(); break;
+                case 'Niveau': jaarkeuze(); break;
+                case 'Jaar':
                     createDynamicButtons();
                     isEersteKeer = false; // Stop de initiële reeks
                     break;
@@ -106,22 +104,23 @@ function bevestigKeuze(keuzeType, geselecteerdeOpties) {
     } catch (error) {
         console.error(`Fout bij bevestiging van ${keuzeType}:`, error);
     } finally {
-        if (!isEersteKeer) {
+        if (!isEersteKeer) { // Ook geladen nadat jaar is aangeroepen
+            laadPercentages();
             removeExistingModals();
         }
     }
 }
 
 function vakkeuze() {
-    initialiseerKeuzeModal('Vak', vakkenOpties, (opties) => bevestigKeuze('Vak', opties), start);
-}
-
-function jaarkeuze() {
-    initialiseerKeuzeModal('Jaar', jaarOpties, (opties) => bevestigKeuze('Jaar', opties), vakkeuze);
+    initialiseerKeuzeModal('Vak', vakkenOpties, (opties) => bevestigKeuze('Vak', opties), start, selectedVak ? [selectedVak] : []);
 }
 
 function niveaukeuze() {
-    initialiseerKeuzeModal('Niveau', niveauOpties, (opties) => bevestigKeuze('Niveau', opties), jaarkeuze);
+    initialiseerKeuzeModal('Niveau', niveauOpties, (opties) => bevestigKeuze('Niveau', opties), vakkeuze, selectedNiveau ? [selectedNiveau] : []);
+}
+
+function jaarkeuze() {
+    initialiseerKeuzeModal('Jaar', jaarOpties, (opties) => bevestigKeuze('Jaar', opties), niveaukeuze, selectedJaar ? [selectedJaar] : []);
 }
 
 function updateSelection(keuzeType, selected) {
@@ -134,38 +133,40 @@ function updateSelection(keuzeType, selected) {
     updateDynamicButtonValue(keuzeType, selected);
 }
 
-function createButton(text, clickAction) {
+function createButton(text, clickAction, name) {
     const button = document.createElement('button');
     button.textContent = text;
     button.addEventListener('click', clickAction);
+    if (name) {
+        button.setAttribute('name', name); // Voeg het 'name' attribuut toe
+    }
     return button;
 }
+
 
 function createDynamicButtons() {
     const buttonContainer = document.getElementById('dynamicButtons');
     if (!buttonContainer) {
-        console.error('Button container niet gevonden');
-        return;
+      console.error('Button container niet gevonden');
+      return;
     }
-
+  
     buttonContainer.innerHTML = ''; // Bestaande knoppen verwijderen
-
-    // Definieer de knoppen met hun tekst en acties
+  
     const buttons = [
-        { text: selectedBewerkerOfBekijker, action: start },
-        { text: selectedVak || 'Selecteer Vak', action: vakkeuze },
-        { text: selectedNiveau || 'Selecteer Niveau', action: niveaukeuze },
-        { text: selectedJaar || 'Selecteer Jaar', action: jaarkeuze },
+      { text: selectedBewerkerOfBekijker, action: start, name: 'BewerkerOfBekijker' },
+      { text: selectedVak || 'Selecteer Vak', action: vakkeuze, name: 'Vak' },
+      { text: selectedNiveau || 'Selecteer Niveau', action: niveaukeuze, name: 'Niveau' },
+      { text: selectedJaar || 'Selecteer Jaar', action: jaarkeuze, name: 'Jaar' },
     ];
-
+  
     // Creëer en voeg elke knop toe aan de container
-    buttons.forEach(({ text, action }) => {
-        const button = createButton(text, action);
-        buttonContainer.appendChild(button);
+    buttons.forEach(({ text, action, name }) => {
+      const button = createButton(text, action, name);
+      buttonContainer.appendChild(button);
     });
-
-    isDynamicButtonClicked = false; // Reset deze variabele
-}
+  }
+  
 
 
 function createModal(title, elements) {
@@ -195,7 +196,6 @@ function createModal(title, elements) {
 
 function updateDynamicButtonValue(buttonType, value) {
     isDynamicButtonClicked = false;
-
     // Gebruik de 'name' attribuut om de juiste knop te vinden
     const button = document.querySelector(`#dynamicButtons button[name="${buttonType}"]`);
     if (button) {
@@ -213,29 +213,6 @@ function removeExistingModals() {
         existingSearchModal.remove();
     }
 }
-
-function handleDynamicButtonClick(buttonType) {
-    // Zet de variabele op true zodra er op een knop wordt geklikt
-    isDynamicButtonClicked = true;
-    // Afhandelen van de knopklik gebaseerd op het type
-    switch (buttonType) {
-        case 'Rol':
-            start();
-            break;
-        case 'Vak':
-            vakkeuze();
-            break;
-        case 'Niveau':
-            niveaukeuze();
-            break;
-        case 'Jaar':
-            jaarkeuze();
-            break;
-        default:
-            break;
-    }
-}
-
 
 /*
 CODE VOOR PERCENTAGES
@@ -261,6 +238,7 @@ function laadAlles() {
 }
 
 function laadPercentages() {
+    console.log('percentages laden')
     vwoVelden.style.display = selectedNiveau.toLowerCase().includes('vwo') ? 'block' : 'none';
     havoVelden.style.display = selectedNiveau.toLowerCase().includes('havo') ? 'block' : 'none';
 
@@ -1162,7 +1140,7 @@ function openToolModal() {
     const actieveTabId = document.querySelector('.tab.active').getAttribute('data-tab');
     const hulpmiddelenList = document.getElementById(actieveTabId).querySelector('.hulpmiddelen');
     const geselecteerdeHulpmiddelen = hulpmiddelenList ? Array.from(hulpmiddelenList.querySelectorAll('li')).map(li => li.textContent) : [];
-    
+
     // Correcte verwerking van geselecteerde hulpmiddelen
     const voorbewerkteTools = voorbewerkTools(ptaData.tools);
 
