@@ -714,9 +714,12 @@ function laadToetsInhoud(toetsNummer) {
 function setEditRights() {
     const invulVelden = document.querySelectorAll('.tabContent input, .tabContent select, .tabContent textarea');
     if (!isBewerker || !selectedJaar.includes(bewerkJaar) || opSlot) {
-        console.log('nee')
         invulVelden.forEach(veld => {
             veld.disabled = true;
+        });
+        const buttons = document.querySelectorAll('.tabContent button');
+        buttons.forEach(button => {
+            button.disabled = true;
         });
         const iconen = document.querySelectorAll('.icon');
         iconen.forEach(icoon => {
@@ -724,9 +727,12 @@ function setEditRights() {
         });
         return;
     }
-    console.log('ja')
     invulVelden.forEach(veld => {
         veld.disabled = false;
+    });
+    const buttons = document.querySelectorAll('.tabContent button');
+    buttons.forEach(button => {
+        button.disabled = false;
     });
     const iconen = document.querySelectorAll('.icon');
     iconen.forEach(icoon => {
@@ -906,7 +912,7 @@ function vulHulpmiddelenList(ulElement, hulpmiddelenString) {
     hulpmiddelenArray.forEach(hulpmiddel => {
         const li = document.createElement('li');
         li.textContent = hulpmiddel.trim();
-        li.addEventListener('click', () => verwijderHulpmiddel(li));
+        //li.addEventListener('click', () => verwijderHulpmiddel(li));
         ulElement.appendChild(li);
     });
 }
@@ -1056,4 +1062,8 @@ function togglePickWeek(selectElement) {
     }
     let weekWaarde = selectElement.value == 'week' ? "" : selectElement.value
     toggleWeekInputEnBijwerkenJaarPeriode(selectElement, weekInputField, jaarPeriodeSpan, weekWaarde);
+}
+
+function openToolModal() {
+    
 }

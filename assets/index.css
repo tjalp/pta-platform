@@ -659,10 +659,10 @@ ul.selectedTools li {
     width: 30px;
 }
 
-.hulpmiddelen li:hover {
+/* .hulpmiddelen li:hover {
     text-decoration: line-through;
     cursor: pointer;
-}
+} */
 
 .nieuwHulpmiddelInput {
     display: none;
