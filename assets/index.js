@@ -708,10 +708,51 @@ function maakTabs(ptaData) {
     toonTabInhoud('wegingenContent');
 }
 
+function vulOverzichtTabel() {
+    let tabelBody = document.querySelector('.overzichtTabel tbody');
+    tabelBody.innerHTML = ''; // Zorg ervoor dat de tabel leeg is voordat je deze vult
+
+    ptaData.tests.forEach(test => {
+        let rij = tabelBody.insertRow();
+
+        let eerste10Woorden = test.description.split(/\s+/).slice(0, 10).join(' ');
+
+        // Gebruik de letterlijke test.week waarde voor de Week Select kolom
+        let weekWaarde = test.week;
+
+        [test.id, weekWaarde, eerste10Woorden, test.weight_pod, test.weight_pta].forEach(text => {
+            let cell = rij.insertCell();
+            cell.textContent = text; // Alles als tekst
+        });
+    });
+}
+
+
 function genereerOverzichtInhoud() {
     let contentPane = document.getElementById("overzichtContent");
-    contentPane.textContent = "Inhoud voor Overzicht";
-    // Voeg specifieke logica toe voor het genereren van inhoud voor 'Overzicht'
+    contentPane.innerHTML = ''; // Maak de inhoud van het paneel leeg
+
+    let sorteerKnop = document.createElement('button');
+    sorteerKnop.textContent = 'Sorteer Tabs';
+    sorteerKnop.addEventListener('click', sorteerTabs);
+    contentPane.appendChild(sorteerKnop);
+
+    let tabel = document.createElement('table');
+    tabel.setAttribute('class', 'overzichtTabel');
+    
+    let thead = tabel.createTHead();
+    let headerRow = thead.insertRow();
+    ['Tab', 'Week', 'Beschrijving', 'POD', 'PTA'].forEach(text => {
+        let th = document.createElement('th');
+        th.textContent = text;
+        headerRow.appendChild(th);
+    });
+
+    // Voeg tbody toe aan de tabel, waar de testgegevens zullen worden ingevoegd
+    tabel.createTBody();
+
+    contentPane.appendChild(tabel);
+    vulOverzichtTabel(); // Zorg dat deze functie wordt aangeroepen na het opzetten van de tabel
 }
 
 function toonTabInhoud(tabId) {
@@ -727,6 +768,10 @@ function toonTabInhoud(tabId) {
     if (activeTab) {
         activeTab.classList.add('active');
     }
+}
+
+function sorteerTabs() {
+    // TODO
 }
 
 function getPtaData(toetsNummer) {
