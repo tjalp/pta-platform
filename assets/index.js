@@ -672,7 +672,7 @@ function leesPtaData() {
 }
 
 function genereerToetsen() {
-    leesPtaData();
+    //leesPtaData();
     maakTabs(ptaData);
 }
 
