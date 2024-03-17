@@ -390,16 +390,35 @@ function filterOptions(ul, searchOptions, searchTerm, geselecteerdeOpties, meerv
         option.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    filteredOptions.forEach(option => {
-        let li = document.createElement('li');
-        li.textContent = option;
-        li.onclick = () => selectOption(li, geselecteerdeOpties, meervoudigeSelectie, ul, searchOptions);
+    if (filteredOptions.length === 0 && meervoudigeSelectie) {
+        // Toon de optie om toe te voegen alleen bij meervoudige selectie
+        const li = document.createElement('li');
+        li.innerHTML = `'<strong>${searchTerm}</strong>' niet gevonden, klik om toe te voegen.`;
+        li.addEventListener('click', () => voegNieuwHulpmiddelToe(searchTerm, ul, searchOptions, geselecteerdeOpties, meervoudigeSelectie));
         ul.appendChild(li);
+    } else {
+        filteredOptions.forEach(option => {
+            const li = document.createElement('li');
+            li.textContent = option;
+            li.addEventListener('click', () => selectOption(li, geselecteerdeOpties, meervoudigeSelectie));
+            ul.appendChild(li);
+            if (geselecteerdeOpties.includes(option)) {
+                li.classList.add('selected');
+            }
+        });
+    }
+}
 
-        if (geselecteerdeOpties.includes(option)) {
-            li.classList.add('selected');
-        }
-    });
+function voegNieuwHulpmiddelToe(searchTerm, ul, searchOptions, geselecteerdeOpties, meervoudigeSelectie) {
+    if (!searchOptions.includes(searchTerm)) {
+        searchOptions.push(searchTerm); // Voeg toe aan de algemene lijst
+        ptaData.tools.push(searchTerm); // Voor de consistentie, afhankelijk van hoe ptaData.tools wordt gebruikt
+    }
+    if (!geselecteerdeOpties.includes(searchTerm)) {
+        geselecteerdeOpties.push(searchTerm); // Voeg toe aan geselecteerde opties
+    }
+    // Update de lijst en selectie visueel
+    filterOptions(ul, searchOptions, '', geselecteerdeOpties, meervoudigeSelectie);
 }
 
 
