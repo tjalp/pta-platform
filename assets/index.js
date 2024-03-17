@@ -64,7 +64,7 @@ function bevestigBewerken() {
 function vakkeuze() {
     removeExistingModals();
     createSearchModal(
-        'Voor welk vak wilt u PTAs bekijken?',
+        `Voor welk vak wilt u PTAs ${isBewerker? 'bewerken': 'bekijken'}?`,
         vakkenOpties,
         bevestigVakkeuze,
         start,
@@ -89,7 +89,7 @@ function bevestigVakkeuze() {
 function niveaukeuze() {
     removeExistingModals();
     createSearchModal(
-        'Voor welk niveau wilt u PTAs bekijken?',
+        `Voor welk niveau wilt u PTAs ${isBewerker? 'bewerken': 'bekijken'}?`,
         niveauOpties,
         bevestigNiveaukeuze,
         vakkeuze,
@@ -115,7 +115,7 @@ function bevestigNiveaukeuze() {
 function jaarkeuze() {
     removeExistingModals();
     createSearchModal(
-        'Voor welk jaar wilt u PTAs bekijken?',
+        `Voor welk jaar wilt u PTAs ${isBewerker? 'bewerken': 'bekijken'}?`,
         jaarOpties,
         bevestigJaarkeuze,
         niveaukeuze,
@@ -1065,5 +1065,5 @@ function togglePickWeek(selectElement) {
 }
 
 function openToolModal() {
-    
+
 }
