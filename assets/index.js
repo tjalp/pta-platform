@@ -157,26 +157,26 @@ function createButton(text, clickAction, name) {
 function createDynamicButtons() {
     const buttonContainer = document.getElementById('dynamicButtons');
     if (!buttonContainer) {
-      console.error('Button container niet gevonden');
-      return;
+        console.error('Button container niet gevonden');
+        return;
     }
-  
+
     buttonContainer.innerHTML = ''; // Bestaande knoppen verwijderen
-  
+
     const buttons = [
-      { text: selectedBewerkerOfBekijker, action: start, name: 'BewerkerOfBekijker' },
-      { text: selectedVak || 'Selecteer Vak', action: vakkeuze, name: 'Vak' },
-      { text: selectedNiveau || 'Selecteer Niveau', action: niveaukeuze, name: 'Niveau' },
-      { text: selectedJaar || 'Selecteer Jaar', action: jaarkeuze, name: 'Jaar' },
+        { text: selectedBewerkerOfBekijker, action: start, name: 'BewerkerOfBekijker' },
+        { text: selectedVak || 'Selecteer Vak', action: vakkeuze, name: 'Vak' },
+        { text: selectedNiveau || 'Selecteer Niveau', action: niveaukeuze, name: 'Niveau' },
+        { text: selectedJaar || 'Selecteer Jaar', action: jaarkeuze, name: 'Jaar' },
     ];
-  
+
     // Creëer en voeg elke knop toe aan de container
     buttons.forEach(({ text, action, name }) => {
-      const button = createButton(text, action, name);
-      buttonContainer.appendChild(button);
+        const button = createButton(text, action, name);
+        buttonContainer.appendChild(button);
     });
-  }
-  
+}
+
 
 
 function createModal(title, elements) {
@@ -788,45 +788,45 @@ function laadToetsInhoud(toetsNummer) {
 
 function setDisabledState(elements, disabled) {
     elements.forEach(element => {
-      element.disabled = disabled;
+        element.disabled = disabled;
     });
-  }
-  
-  function setDisplayStyle(elements, displayStyle) {
+}
+
+function setDisplayStyle(elements, displayStyle) {
     elements.forEach(element => {
-      element.style.display = displayStyle;
+        element.style.display = displayStyle;
     });
-  }
-  
-  function setEditRights() {
+}
+
+function setEditRights() {
     const heeftBewerkingsRechten = isBewerker && selectedJaar.includes(bewerkJaar) && !opSlot;
     const invulVelden = document.querySelectorAll('.tabContent input, .tabContent select, .tabContent textarea');
     const buttons = document.querySelectorAll('.tabContent button');
     const iconen = document.querySelectorAll('.icon');
     const verwijderbareItems = document.querySelectorAll('.tabContent li');
-  
+
     setDisabledState(invulVelden, !heeftBewerkingsRechten);
     setDisabledState(buttons, !heeftBewerkingsRechten);
     setDisplayStyle(iconen, heeftBewerkingsRechten ? 'inline-block' : 'none');
-  
+
     verwijderbareItems.forEach(item => {
-      item.style.pointerEvents = heeftBewerkingsRechten ? 'auto' : 'none';
+        item.style.pointerEvents = heeftBewerkingsRechten ? 'auto' : 'none';
     });
-  
+
     // Speciale regels voor bepaalde inputs
     if (heeftBewerkingsRechten) {
-      input4vwo.disabled = selectedNiveau === '5 VWO' || selectedNiveau === '6 VWO';
-      input5vwo.disabled = selectedNiveau === '6 VWO';
-      input4havo.disabled = selectedNiveau === '5 HAVO';
-      input3mavo.disabled = selectedNiveau === '4 MAVO';
+        input4vwo.disabled = selectedNiveau === '5 VWO' || selectedNiveau === '6 VWO';
+        input5vwo.disabled = selectedNiveau === '6 VWO';
+        input4havo.disabled = selectedNiveau === '5 HAVO';
+        input3mavo.disabled = selectedNiveau === '4 MAVO';
     }
-  
+
     // Deze velden zijn altijd disabled
     input6vwo.disabled = true;
     input5havo.disabled = true;
     input4mavo.disabled = true;
-  }
-  
+}
+
 function vulToetsInhoud(toetsData) {
     try {
         const template = document.getElementById('toetsTemplate');
@@ -1184,3 +1184,15 @@ function bevestigTools(nieuweHulpmiddelen, actieveTabId) {
     vulHulpmiddelenList(hulpmiddelenList, nieuweHulpmiddelen);
     removeExistingModals(); // Sluit de modal
 }
+
+function valideerNumberInput(e) {
+    let invoer = e.target.value;
+    // Verwijder alles behalve numerieke waarden
+    let gefilterdeInvoer = invoer.replace(/[^0-9]/g, '');
+  
+    // Zet de gefilterde invoer om naar een integer, of 0 als het resultaat NaN is
+    let waarde = parseInt(gefilterdeInvoer, 10) || 0;
+    // Stel de waarde van het input veld in
+    e.target.value = waarde > 100 ? 100 : waarde;
+}
+
