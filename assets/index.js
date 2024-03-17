@@ -715,12 +715,14 @@ function vulOverzichtTabel() {
     ptaData.tests.forEach(test => {
         let rij = tabelBody.insertRow();
 
-        let eerste10Woorden = test.description.split(/\s+/).slice(0, 10).join(' ');
+        let eerste100Karakters = test.description.slice(0, 25);
+        eerste100Karakters += test.description.length > 25 ? "..." : "";
+
 
         // Gebruik de letterlijke test.week waarde voor de Week Select kolom
         let weekWaarde = test.week;
 
-        [test.id, weekWaarde, eerste10Woorden, test.weight_pod, test.weight_pta].forEach(text => {
+        [test.id, weekWaarde, eerste100Karakters, test.weight_pod, test.weight_pta].forEach(text => {
             let cell = rij.insertCell();
             cell.textContent = text; // Alles als tekst
         });
@@ -765,7 +767,7 @@ function genereerOverzichtInhoud() {
 
     let tabel = document.createElement('table');
     tabel.setAttribute('class', 'overzichtTabel');
-    
+
     let thead = tabel.createTHead();
     let headerRow = thead.insertRow();
     ['#', 'Week', 'Beschrijving', 'POD', 'PTA'].forEach(text => {
@@ -1170,8 +1172,8 @@ function voegNieuweTabToe() {
     let nieuweTabNummer = 601 + bestaandeTabsAantal;
 
     maakTab(nieuweTabId.toString(), nieuweTabNummer, tabsContainer, document.querySelector('.tabContent'));
-    laadToetsInhoud(nieuweTabNummer);
-    toonTabInhoud(`toets${nieuweTabNummer}`);
+    laadToetsInhoud(nieuweTabId);
+    toonTabInhoud(`toets${nieuweTabId}`);
 }
 
 document.getElementById('voegTabToe').onclick = voegNieuweTabToe;
@@ -1273,7 +1275,7 @@ function valideerNumberInput(e) {
     let invoer = e.target.value;
     // Verwijder alles behalve numerieke waarden
     let gefilterdeInvoer = invoer.replace(/[^0-9]/g, '');
-  
+
     // Zet de gefilterde invoer om naar een integer, of 0 als het resultaat NaN is
     let waarde = parseInt(gefilterdeInvoer, 10) || 0;
     // Stel de waarde van het input veld in
@@ -1281,43 +1283,97 @@ function valideerNumberInput(e) {
 }
 
 function updatePtaData() {
-    const tabs = document.querySelectorAll('.tab');
-    const updatedTests = [];
-    const existingTestIds = new Set(ptaData.tests.map(test => test.id));
+    const tabs = document.querySelectorAll('.tabs .tab:not(:nth-child(1)):not(:nth-child(2))');
+    const actieveTestIds = new Set(); // Bewaar alle ID's die we tegenkomen in de tabs
 
-    // Begin bij de derde tab om 'Overzicht' en 'Wegingen' over te slaan
-    for (let i = 2; i < tabs.length; i++) {
-        const tab = tabs[i];
-        const tabNummer = parseInt(tab.innerText.trim().split(' ')[0], 10);
+    verwerkDiscrepantiesInIds(tabs, actieveTestIds);
+    updateWeeknummersVoorGeladenTabs(tabs);
+    verwijderOntbrekendeTests(actieveTestIds); // Verwijder tests die niet langer voorkomen
+}
 
-        // Check of de tabContent geladen is
-        const tabContent = document.getElementById('toets' + tabNummer);
-        if (tabContent && tabContent.dataset.isLoaded === 'true') {
-            const testIndex = ptaData.tests.findIndex(test => test.id === tabNummer);
+function verwerkDiscrepantiesInIds(tabs, actieveTestIds) {
+    tabs.forEach(tab => {
+        const idNummer = tab.id.substring(3);
+        const textContentMatch = tab.textContent.trim().match(/\d+/);
+        const textContentNummer = textContentMatch ? textContentMatch[0] : null;
 
-            if (testIndex !== -1) {
-                // Update de volgorde van bestaande tests in ptaData
-                updatedTests.push(ptaData.tests[testIndex]);
-                existingTestIds.delete(tabNummer);
-            } else {
-                // Behandel nieuwe tabs die toegevoegd zijn en nog niet in ptaData voorkomen
-                console.log(`Nieuwe test ontdekt: ${tabNummer}. Overweeg deze toe te voegen aan ptaData.`);
-                // Voeg logica hier toe om nieuwe tests toe te voegen indien nodig
-            }
-        }
-    }
+        if (!textContentNummer) return;
 
-    // Verwijder tests die niet langer in de tabs voorkomen
-    existingTestIds.forEach(id => {
-        const indexToRemove = ptaData.tests.findIndex(test => test.id === id);
-        if (indexToRemove !== -1) {
-            console.log(`Verwijderde test gedetecteerd: ${id}. Wordt verwijderd uit ptaData.`);
-            ptaData.tests.splice(indexToRemove, 1);
+        actieveTestIds.add(textContentNummer); // Voeg dit ID toe aan de lijst van actieve IDs
+
+        if (!ptaData.tests.some(test => test.id.toString() === textContentNummer)) {
+            voegNieuweTestToe(textContentNummer);
+        } else if (idNummer !== textContentNummer) {
+            vervangTestGegevens(idNummer, textContentNummer);
         }
     });
+}
 
-    // Update ptaData.tests met de nieuwe volgorde en eventuele wijzigingen
-    ptaData.tests = updatedTests.concat(ptaData.tests.filter(test => existingTestIds.has(test.id)));
+function voegNieuweTestToe(testId) {
+    // Check eerst of de test al bestaat om duplicaten te voorkomen
+    const bestaatAl = ptaData.tests.some(test => test.id.toString() === testId);
+    if (!bestaatAl) {
+        const nieuweTest = {
+            id: parseInt(testId),
+            // Vul andere vereiste velden in als 'undefined' of lege strings
+            year_and_period: "",
+            week: "",
+            subdomain: "",
+            description: "",
+            type: "",
+            type_else: null,
+            result_type: "",
+            time: 0,
+            time_else: null,
+            resitable: false,
+            weight_pod: 0,
+            weight_pta: 0,
+            tools: [],
+        };
+        ptaData.tests.push(nieuweTest);
+        console.log(`Nieuwe test toegevoegd: ${testId}`);
+    }
+}
 
-    // Optioneel: Sla ptaData op of synchroniseer met een server
+function updateWeeknummersVoorGeladenTabs(tabs) {
+    tabs.forEach(tab => {
+        const idNummer = tab.id.substring(3);
+        const tabContent = document.getElementById('toets' + idNummer);
+
+        if (tabContent && tabContent.dataset.isLoaded === 'true') {
+            const weekSelect = tabContent.querySelector('.weekSelect');
+            const weekNummer = weekSelect.value === 'week' ? tabContent.querySelector('.inputField.week').value : weekSelect.value;
+
+            const testIndex = ptaData.tests.findIndex(test => test.id.toString() === idNummer);
+            if (testIndex !== -1) {
+                ptaData.tests[testIndex].week = weekNummer;
+                console.log(`Weeknummer bijgewerkt voor test ${idNummer} naar ${weekNummer}`);
+            } else {
+                console.warn(`Content geladen maar geen overeenkomende test gevonden in ptaData voor id ${idNummer}`);
+            }
+        } else {
+            console.log(`Content voor tab ${idNummer} is nog niet geladen.`);
+        }
+    });
+}
+
+function verwijderOntbrekendeTests(actieveTestIds) {
+    ptaData.tests = ptaData.tests.filter(test => actieveTestIds.has(test.id.toString()));
+    console.log('Ontbrekende tests verwijderd uit ptaData.');
+  }
+
+function vervangTestGegevens(idNummer, textContentNummer) {
+    const bronTestIndex = ptaData.tests.findIndex(test => test.id.toString() === idNummer);
+    const doelTestIndex = ptaData.tests.findIndex(test => test.id.toString() === textContentNummer);
+
+    if (bronTestIndex !== -1 && doelTestIndex !== -1) {
+        // Vervang de gegevens van de doelTest met die van de bronTest
+        const nieuweGegevens = { ...ptaData.tests[bronTestIndex] };
+        nieuweGegevens.id = parseInt(textContentNummer); // Zorg dat we de ID correct bijwerken
+        ptaData.tests[doelTestIndex] = nieuweGegevens;
+
+        console.log(`Gegevens van test met ID ${idNummer} vervangen door test met ID ${textContentNummer}`);
+    } else {
+        console.error(`Fout bij het vervangen van gegevens: ID ${idNummer} of ${textContentNummer} niet gevonden.`);
+    }
 }
