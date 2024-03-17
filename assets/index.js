@@ -243,8 +243,9 @@ function laadAlles() {
 }
 
 function laadPercentages() {
-    vwoVelden.style.display = selectedNiveau.includes('vwo') ? 'block' : 'none';
-    havoVelden.style.display = selectedNiveau.includes('havo') ? 'block' : 'none';
+    vwoVelden.style.display = selectedNiveau.toLowerCase().includes('vwo') ? 'block' : 'none';
+    havoVelden.style.display = selectedNiveau.toLowerCase().includes('havo') ? 'block' : 'none';
+    
 
     getPercentages();
 
@@ -261,7 +262,7 @@ function wisFout() {
 }
 
 function berekenPercentage() {
-    if (selectedNiveau.includes('vwo')) {
+    if (selectedNiveau.toLowerCase().includes('vwo')) {
         let weging4vwo = parseInt(input4vwo.value) || 0;
         let weging5vwo = parseInt(input5vwo.value) || 0;
 
@@ -275,7 +276,7 @@ function berekenPercentage() {
             input6vwo.value = weging6vwo >= 0 ? weging6vwo : '';
         }
     }
-    else if (selectedNiveau.includes('havo')) {
+    else if (selectedNiveau.toLowerCase().includes('havo')) {
         let weging4havo = parseInt(input4havo.value) || 0;
 
         if (weging4havo <= 100) {
@@ -541,11 +542,11 @@ let ptaData = {
 
 
 function getPercentages() {
-    if (selectedNiveau.includes('vwo')) {
+    if (selectedNiveau.toLowerCase().includes('vwo')) {
         input4vwo.value = vwoWegingen['4 vwo'];
         input5vwo.value = vwoWegingen['5 vwo'];
         input6vwo.value = vwoWegingen['6 vwo'];
-    } else if (selectedNiveau.includes('havo')) {
+    } else if (selectedNiveau.toLowerCase().includes('havo')) {
         input4havo.value = havoWegingen['4 havo'];
         input5havo.value = havoWegingen['5 havo'];
     }
@@ -567,14 +568,14 @@ function setPercentages() {
     }
 
     console.log('Opslaan naar de database:');
-    if (prevNiveau.includes('vwo')) {
+    if (prevNiveau.toLowerCase().includes('vwo')) {
         vwoWegingen = {
             '4 vwo': input4vwo.value,
             '5 vwo': input5vwo.value,
             '6 vwo': input6vwo.value
         };
         console.log('vwo-wegingen:', vwoWegingen);
-    } else if (prevNiveau.includes('havo')) {
+    } else if (prevNiveau.toLowerCase().includes('havo')) {
         havoWegingen = {
             '4 havo': input4havo.value,
             '5 havo': input5havo.value
