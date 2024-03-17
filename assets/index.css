@@ -411,6 +411,7 @@ ul.selectedTools li {
     margin-top: 0px; /* Ruimte tussen input en ul */
     padding: 0;
     overflow-y: auto;
+    min-height: 300px;
     max-height: 300px;
     border: 1px solid #ddd;
     border-radius: 5px;
