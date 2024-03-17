@@ -345,7 +345,7 @@ ul.selectedTools li {
     margin-bottom: 10px
 }
 
-#havoVelden {
+#vwoVelden, #havoVelden, #mavoVelden {
     display: none;
 }
 .searchModal {

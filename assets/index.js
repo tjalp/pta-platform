@@ -82,7 +82,7 @@ function initialiseerKeuzeModal(keuzeType, opties, bevestigingsActie, terugActie
 
 function bevestigKeuze(keuzeType, geselecteerdeOpties) {
     try {
-        const selected = geselecteerdeOpties.length > 0 ? geselecteerdeOpties[0] : null;
+        let selected = geselecteerdeOpties.length > 0 ? geselecteerdeOpties[0] : null;
         if (!selected) {
             throw new Error(`Geen ${keuzeType.toLowerCase()} geselecteerd.`);
         }
@@ -132,6 +132,16 @@ function updateSelection(keuzeType, selected) {
     }
     updateDynamicButtonValue(keuzeType, selected);
 }
+
+function updateDynamicButtonValue(buttonType, value) {
+    isDynamicButtonClicked = false;
+    // Gebruik de 'name' attribuut om de juiste knop te vinden
+    const button = document.querySelector(`#dynamicButtons button[name="${buttonType}"]`);
+    if (button) {
+        button.textContent = value;
+    }
+}
+
 
 function createButton(text, clickAction, name) {
     const button = document.createElement('button');
@@ -194,15 +204,6 @@ function createModal(title, elements) {
     return modal;
 }
 
-function updateDynamicButtonValue(buttonType, value) {
-    isDynamicButtonClicked = false;
-    // Gebruik de 'name' attribuut om de juiste knop te vinden
-    const button = document.querySelector(`#dynamicButtons button[name="${buttonType}"]`);
-    if (button) {
-        button.textContent = value;
-    }
-}
-
 function removeExistingModals() {
     const existingModal = document.querySelector('.modal');
     if (existingModal) {
@@ -219,11 +220,14 @@ CODE VOOR PERCENTAGES
 */
 const vwoVelden = document.getElementById('vwoVelden');
 const havoVelden = document.getElementById('havoVelden');
+const mavoVelden = document.getElementById('mavoVelden');
 const input4vwo = document.getElementById('percentage4vwo');
 const input5vwo = document.getElementById('percentage5vwo');
 const input6vwo = document.getElementById('percentage6vwo');
 const input4havo = document.getElementById('percentage4havo');
 const input5havo = document.getElementById('percentage5havo');
+const input3mavo = document.getElementById('percentage3mavo');
+const input4mavo = document.getElementById('percentage4mavo');
 const foutDiv = document.getElementById('errorPercentages');
 
 function laadAlles() {
@@ -239,8 +243,9 @@ function laadAlles() {
 
 function laadPercentages() {
     console.log('percentages laden')
-    vwoVelden.style.display = selectedNiveau.toLowerCase().includes('vwo') ? 'block' : 'none';
-    havoVelden.style.display = selectedNiveau.toLowerCase().includes('havo') ? 'block' : 'none';
+    vwoVelden.style.display = selectedNiveau.includes('VWO') ? 'block' : 'none';
+    havoVelden.style.display = selectedNiveau.includes('HAVO') ? 'block' : 'none';
+    mavoVelden.style.display = selectedNiveau.includes('MAVO') ? 'block' : 'none';
 
 
     getPercentages();
@@ -258,7 +263,7 @@ function wisFout() {
 }
 
 function berekenPercentage() {
-    if (selectedNiveau.toLowerCase().includes('vwo')) {
+    if (selectedNiveau.includes('VWO')) {
         let weging4vwo = parseInt(input4vwo.value) || 0;
         let weging5vwo = parseInt(input5vwo.value) || 0;
 
@@ -272,12 +277,20 @@ function berekenPercentage() {
             input6vwo.value = weging6vwo >= 0 ? weging6vwo : '';
         }
     }
-    else if (selectedNiveau.toLowerCase().includes('havo')) {
+    else if (selectedNiveau.includes('HAVO')) {
         let weging4havo = parseInt(input4havo.value) || 0;
 
         if (weging4havo <= 100) {
             let weging5havo = 100 - weging4havo;
             input5havo.value = weging5havo >= 0 ? weging5havo : '';
+        }
+    }
+    else if (selectedNiveau.includes('MAVO')) {
+        let weging3mavo = parseInt(input3mavo.value) || 0;
+
+        if (weging3mavo <= 100) {
+            let weging4mavo = 100 - weging3mavo;
+            input4mavo.value = weging4mavo >= 0 ? weging4mavo : '';
         }
     }
 }
@@ -295,6 +308,7 @@ function valideerInvoer(event) {
 input4vwo.addEventListener('input', valideerInvoer);
 input5vwo.addEventListener('input', valideerInvoer);
 input4havo.addEventListener('input', valideerInvoer);
+input3mavo.addEventListener('input', valideerInvoer);
 
 
 /*
@@ -470,11 +484,12 @@ GET & SET FUNCTIES VOOR DATABASE
 */
 
 // Ophalen uit DB
-let vwoWegingen = { '4 vwo': 0, '5 vwo': 10, '6 vwo': 90 };
-let havoWegingen = { '4 havo': 50, '5 havo': 50 };
+let vwoWegingen = { '4 VWO': 0, '5 VWO': 10, '6 VWO': 90 };
+let havoWegingen = { '4 HAVO': 50, '5 HAVO': 50 };
+let mavoWegingen = { '3 MAVO': 15, '4 MAVO': 85 };
 let oefenOpties = ['Optie 1', 'Optie 2', 'Optie 3'];
 let vakkenOpties = ['Aardrijkskunde', 'Informatica', 'Wiskunde A'];
-let niveauOpties = ['4 HAVO', '5 HAVO', '4 VWO', '5 VWO', '6 VWO'];
+let niveauOpties = ['3 MAVO', '4 MAVO', '4 HAVO', '5 HAVO', '4 VWO', '5 VWO', '6 VWO'];
 let jaarOpties = ['2024/2025', '2023/2024', '2022/2023', '2021/2022'];
 let bewerkJaar = '2025' // De te bewerken jaar
 let opSlot = false; // Als Admin op slot gooit
@@ -598,17 +613,21 @@ let ptaData = {
 
 
 function getPercentages() {
-    if (selectedNiveau.toLowerCase().includes('vwo')) {
-        input4vwo.value = vwoWegingen['4 vwo'];
-        input5vwo.value = vwoWegingen['5 vwo'];
-        input6vwo.value = vwoWegingen['6 vwo'];
-    } else if (selectedNiveau.toLowerCase().includes('havo')) {
-        input4havo.value = havoWegingen['4 havo'];
-        input5havo.value = havoWegingen['5 havo'];
+    if (selectedNiveau.includes('VWO')) {
+        input4vwo.value = vwoWegingen['4 VWO'];
+        input5vwo.value = vwoWegingen['5 VWO'];
+        input6vwo.value = vwoWegingen['6 VWO'];
+    } else if (selectedNiveau.includes('HAVO')) {
+        input4havo.value = havoWegingen['4 HAVO'];
+        input5havo.value = havoWegingen['5 HAVO'];
+    } else if (selectedNiveau.includes('MAVO')) {
+        input3mavo.value = mavoWegingen['3 MAVO'];
+        input4mavo.value = mavoWegingen['4 MAVO'];
     }
     berekenPercentage();
 }
 
+// TODO
 function setPercentages() {
     if (!isBewerker) {
         console.log('Gebruiker is geen bewerker')
@@ -624,17 +643,17 @@ function setPercentages() {
     }
 
     console.log('Opslaan naar de database:');
-    if (prevNiveau.toLowerCase().includes('vwo')) {
+    if (prevNiveau.toLowerCase().includes('VWO')) {
         vwoWegingen = {
-            '4 vwo': input4vwo.value,
-            '5 vwo': input5vwo.value,
-            '6 vwo': input6vwo.value
+            '4 VWO': input4vwo.value,
+            '5 VWO': input5vwo.value,
+            '6 VWO': input6vwo.value
         };
         console.log('vwo-wegingen:', vwoWegingen);
-    } else if (prevNiveau.toLowerCase().includes('havo')) {
+    } else if (prevNiveau.toLowerCase().includes('HAVO')) {
         havoWegingen = {
-            '4 havo': input4havo.value,
-            '5 havo': input5havo.value
+            '4 HAVO': input4havo.value,
+            '5 HAVO': input5havo.value
         };
         console.log('havo-wegingen:', havoWegingen);
     }
@@ -796,14 +815,16 @@ function setDisabledState(elements, disabled) {
   
     // Speciale regels voor bepaalde inputs
     if (heeftBewerkingsRechten) {
-      input4vwo.disabled = selectedNiveau === '5 vwo' || selectedNiveau === '6 vwo';
-      input5vwo.disabled = selectedNiveau === '6 vwo';
-      input4havo.disabled = selectedNiveau === '5 havo';
+      input4vwo.disabled = selectedNiveau === '5 VWO' || selectedNiveau === '6 VWO';
+      input5vwo.disabled = selectedNiveau === '6 VWO';
+      input4havo.disabled = selectedNiveau === '5 HAVO';
+      input3mavo.disabled = selectedNiveau === '4 MAVO';
     }
   
     // Deze velden zijn altijd disabled
     input6vwo.disabled = true;
     input5havo.disabled = true;
+    input4mavo.disabled = true;
   }
   
 function vulToetsInhoud(toetsData) {
