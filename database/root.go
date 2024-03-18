@@ -5,7 +5,7 @@ import "time"
 type Database interface {
 	Start() error
 	Terminate()
-	SavePta(PtaData)
+	SavePta(PtaData) PtaData
 	LoadPta(id string) *PtaData
 	DeletePta(id string) bool
 	SearchPta(map[string][]string) []PtaData
@@ -23,7 +23,7 @@ type Database interface {
 }
 
 type PtaData struct {
-	Id          string   `json:"id" form:"id"`
+	Id          string   `json:"id" form:"id" bson:"_id,omitempty"`
 	Name        string   `json:"name" form:"name"`
 	Level       string   `json:"level" form:"level"`
 	Cohort      string   `json:"cohort" form:"cohort"`

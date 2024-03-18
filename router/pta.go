@@ -4,19 +4,19 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/google/uuid"
 	"github.com/tjalp/pta-platform/database"
 )
 
 func ReadRows(rows [][]string) database.PtaData {
 	pta := database.PtaData{}
-	pta.Id = uuid.NewString()[0:6]
+	//pta.Id = uuid.NewString()[0:6]
 	pta.Name = rows[0][0]
 
 	toolsIndexStart := 0
+	elseIndexStart := 0
 	testsIndexStart := 0
-	podColumn := 0
-	ptaColumn := 0
+	podColumn := -1
+	ptaColumn := -1
 
 	for rowIndex, row := range rows {
 		for index, cell := range row {
@@ -46,7 +46,9 @@ func ReadRows(rows [][]string) database.PtaData {
 			}
 			if cell == "HULPMIDDELEN" {
 				toolsIndexStart = rowIndex + 1
-				pta.Tools = rows[rowIndex+1][index:]
+			}
+			if strings.ToLower(cell) == "toelichting bij 'anders'" {
+				elseIndexStart = rowIndex + 2
 			}
 			if cell == "toetsnummer" {
 				testsIndexStart = rowIndex + 2
@@ -75,14 +77,31 @@ func ReadRows(rows [][]string) database.PtaData {
 			break
 		}
 		id, _ := strconv.Atoi(rows[i][0])
-		timeString, _ := strings.CutSuffix(rows[i][10], " min.")
-		time, _ := strconv.Atoi(timeString)
+
+		var time int
+		var elseTime string
+		if rows[i][10] == "anders" {
+			_, elseTime = findElseData(elseIndexStart, id, rows)
+		} else {
+			timeString, _ := strings.CutSuffix(rows[i][10], " min.")
+			time, _ = strconv.Atoi(timeString)
+		}
+		var elseType string
+		if rows[i][8] == "anders" {
+			elseType, _ = findElseData(elseIndexStart, id, rows)
+		}
 		resitable := false
 		if strings.ToLower(rows[i][11]) == "ja" {
 			resitable = true
 		}
-		podWeight, _ := strconv.Atoi(rows[i][podColumn])
-		ptaWeight, _ := strconv.Atoi(rows[i][ptaColumn])
+		var podWeight int
+		if podColumn != -1 {
+			podWeight, _ = strconv.Atoi(rows[i][podColumn])
+		}
+		var ptaWeight int
+		if ptaColumn != -1 {
+			ptaWeight, _ = strconv.Atoi(rows[i][ptaColumn])
+		}
 		testToolsString := rows[i][14]
 		testTools := []int{}
 
@@ -118,8 +137,10 @@ func ReadRows(rows [][]string) database.PtaData {
 			Subdomain:     rows[i][3],
 			Description:   rows[i][4],
 			Type:          rows[i][8],
+			TypeElse:      elseType,
 			ResultType:    rows[i][9],
 			Time:          time,
+			TimeElse:      elseTime,
 			Resitable:     resitable,
 			PodWeight:     podWeight,
 			PtaWeight:     ptaWeight,
@@ -138,4 +159,20 @@ func firstMatchAfterIndex(s []string, start int, condition func(string) bool) (s
 		}
 	}
 	return "", false
+}
+
+func findElseData(startIndex int, testId int, rows [][]string) (string, string) {
+	var elseType string
+	var elseTime string
+	for i := startIndex; i < len(rows); i += 1 {
+		if len(rows[i]) < 7 || rows[i][4] == "" {
+			break
+		}
+		if rows[i][4] != strconv.Itoa(testId) {
+			continue
+		}
+		elseType = rows[i][5]
+		elseTime = rows[i][6]
+	}
+	return elseType, elseTime
 }

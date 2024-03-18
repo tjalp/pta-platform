@@ -46,14 +46,18 @@ func (s MongoDatabase) Terminate() {
 	}
 }
 
-func (s MongoDatabase) SavePta(data PtaData) {
+func (s MongoDatabase) SavePta(data PtaData) PtaData {
 	collection := mongodb.Collection("ptas")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	_, err := collection.ReplaceOne(ctx, bson.D{{"id", data.Id}}, data, options.Replace().SetUpsert(true))
+	result, err := collection.ReplaceOne(ctx, bson.D{{"id", data.Id}}, data, options.Replace().SetUpsert(true))
 	if err != nil {
 		panic(err)
 	}
+	if data.Id != "" && result.UpsertedID != nil {
+		data.Id = result.UpsertedID.(primitive.ObjectID).Hex()
+	}
+	return data
 }
 
 func (s MongoDatabase) LoadPta(id string) *PtaData {

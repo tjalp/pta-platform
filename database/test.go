@@ -10,7 +10,7 @@ type Test struct {
 	TypeElse      string `json:"type_else"`
 	ResultType    string `json:"result_type"`
 	Time          int    `json:"time"`
-	TimeElse      int    `json:"time_else"`
+	TimeElse      string `json:"time_else"`
 	Resitable     bool   `json:"resitable"`
 	PtaWeight     int    `json:"pta_weight"`
 	PodWeight     int    `json:"pod_weight"`

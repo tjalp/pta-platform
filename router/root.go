@@ -9,7 +9,6 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 	"github.com/tjalp/pta-platform/database"
 	"github.com/tjalp/pta-platform/export/pdf"
 	"github.com/xuri/excelize/v2"
@@ -149,9 +148,9 @@ func createPta(c *gin.Context) {
 		return
 	}
 
-	pta.Id = uuid.NewString()[0:6]
+	//pta.Id = uuid.NewString()[0:6]
 
-	data.SavePta(pta)
+	pta = data.SavePta(pta)
 
 	c.JSON(http.StatusCreated, pta)
 }
