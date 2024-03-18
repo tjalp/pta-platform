@@ -31,7 +31,7 @@ var ptaData = []PtaData{
 				ResultType:    "cijfer",
 				Time:          100,
 				Resitable:     true,
-				Weight:        15,
+				PtaWeight:     15,
 				Tools:         []int{0, 1, 2, 3},
 			},
 		},

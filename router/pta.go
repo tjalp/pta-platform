@@ -15,6 +15,8 @@ func ReadRows(rows [][]string) database.PtaData {
 
 	toolsIndexStart := 0
 	testsIndexStart := 0
+	podColumn := 0
+	ptaColumn := 0
 
 	for rowIndex, row := range rows {
 		for index, cell := range row {
@@ -49,10 +51,16 @@ func ReadRows(rows [][]string) database.PtaData {
 			if cell == "toetsnummer" {
 				testsIndexStart = rowIndex + 2
 			}
+			if cell == "POD" {
+				podColumn = index
+			}
+			if cell == "PTA" {
+				ptaColumn = index
+			}
 		}
 	}
 
-	tools := []string{}
+	var tools []string
 	for i := toolsIndexStart; i < len(rows); i += 1 {
 		if len(rows[i]) < 2 || rows[i][1] == "" {
 			break
@@ -61,7 +69,7 @@ func ReadRows(rows [][]string) database.PtaData {
 	}
 	pta.Tools = tools
 
-	tests := []database.Test{}
+	var tests []database.Test
 	for i := testsIndexStart; i < len(rows); i += 1 {
 		if len(rows[i]) < 15 || rows[i][1] == "" {
 			break
@@ -73,7 +81,8 @@ func ReadRows(rows [][]string) database.PtaData {
 		if strings.ToLower(rows[i][11]) == "ja" {
 			resitable = true
 		}
-		weight, _ := strconv.Atoi(rows[i][12])
+		podWeight, _ := strconv.Atoi(rows[i][podColumn])
+		ptaWeight, _ := strconv.Atoi(rows[i][ptaColumn])
 		testToolsString := rows[i][14]
 		testTools := []int{}
 
@@ -112,7 +121,8 @@ func ReadRows(rows [][]string) database.PtaData {
 			ResultType:    rows[i][9],
 			Time:          time,
 			Resitable:     resitable,
-			Weight:        weight,
+			PodWeight:     podWeight,
+			PtaWeight:     ptaWeight,
 			Tools:         testTools,
 		})
 	}

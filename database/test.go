@@ -7,9 +7,12 @@ type Test struct {
 	Subdomain     string `json:"subdomain"`
 	Description   string `json:"description"`
 	Type          string `json:"type"`
+	TypeElse      string `json:"type_else"`
 	ResultType    string `json:"result_type"`
 	Time          int    `json:"time"`
+	TimeElse      int    `json:"time_else"`
 	Resitable     bool   `json:"resitable"`
-	Weight        int    `json:"weight"`
+	PtaWeight     int    `json:"pta_weight"`
+	PodWeight     int    `json:"pod_weight"`
 	Tools         []int  `json:"tools"`
 }
