@@ -783,7 +783,7 @@ function genereerOverzichtInhoud() {
 
     let verversKnop = document.createElement('button');
     verversKnop.textContent = '🔄';
-    verversKnop.addEventListener('click', updatePtaData);
+    verversKnop.addEventListener('click', refreshData);
     contentPane.appendChild(verversKnop);
 
     let sorteerKnop = document.createElement('button');
@@ -858,7 +858,7 @@ function getPtaData(toetsNummer) {
 function laadToetsInhoud(toetsNummer) {
     try {
         const tabContent = document.getElementById('toets' + toetsNummer);
-        if (tabContent && !tabContent.dataset.isLoaded) {
+        if (tabContent) { // && !tabContent.dataset.isLoaded
             vulToetsInhoud(getPtaData(toetsNummer));
             tabContent.dataset.isLoaded = 'true';
         } else if (!tabContent) {
@@ -1102,8 +1102,10 @@ function maakTab(tabId, tabNummer, tabsContainer, contentContainer) {
     deleteIcon.textContent = 'X';
     deleteIcon.onclick = (e) => {
         e.stopPropagation();
+        // Haal de huidige tab ID dynamisch op
+        const huidigeTabId = tab.id.substring(3);
         if (window.confirm(`Weet u zeker dat u tab ${tabNummer} wilt verwijderen?`)) {
-            verwijderTab(tabId, tabsContainer, contentContainer);
+            verwijderTab(huidigeTabId, tabsContainer, contentContainer);
         }
     };
 
@@ -1118,8 +1120,10 @@ function maakTab(tabId, tabNummer, tabsContainer, contentContainer) {
 
     // Tab klik event
     tab.onclick = () => {
-        toonTabInhoud('toets' + tabId);
-        laadToetsInhoud(tabId);
+        // Haal de huidige tab ID dynamisch op
+        const huidigeTabId = tab.dataset.tab.substring(5);
+        toonTabInhoud('toets' + huidigeTabId);
+        laadToetsInhoud(huidigeTabId);
         setEditRights();
     };
 
@@ -1155,26 +1159,49 @@ function verwijderTab(tabNummer, tabsContainer) {
     }
 }
 
-let totaalTabsToegevoegd = ptaData.tests.length; // Houd het totaal aantal toegevoegde tabs bij
-
 function voegNieuweTabToe() {
     let tabsContainer = document.querySelector('.tabs');
-    if (!tabsContainer) {
-        console.error("Tabs container niet gevonden");
+    let contentContainer = document.querySelector('.tabContent');
+
+    if (!tabsContainer || !contentContainer) {
+        console.error("Tabs container of content container niet gevonden");
         return;
     }
 
-    totaalTabsToegevoegd++; // Verhoog het totaal aantal toegevoegde tabs
-    let nieuweTabId = 600 + totaalTabsToegevoegd;
+    // Bepaal het nieuwe ID gebaseerd op het hoogste bestaande ID in ptaData.tests plus één
+    let hoogsteId = ptaData.tests.reduce((acc, test) => Math.max(acc, test.id), 0);
+    let nieuweTabId = hoogsteId + 1;
 
-    // Bepaal het nummer voor de zichtbare tekst
-    let bestaandeTabsAantal = tabsContainer.querySelectorAll('.tab:not(.tab-toevoegen-knop)').length - 2;
-    let nieuweTabNummer = 601 + bestaandeTabsAantal;
+    // Vind het huidige laatste textContentNummer van de bestaande tabs en voeg 1 toe voor het nieuwe tabNummer
+    let laatsteTabNummer = Array.from(document.querySelectorAll('.tabs .tab'))
+        .map(tab => parseInt(tab.textContent.match(/\d+/) ? tab.textContent.match(/\d+/)[0] : 0))
+        .filter(nummer => !isNaN(nummer))
+        .reduce((max, huidigNummer) => Math.max(max, huidigNummer), 0);
+    let nieuweTabNummer = laatsteTabNummer + 1;
 
-    maakTab(nieuweTabId.toString(), nieuweTabNummer, tabsContainer, document.querySelector('.tabContent'));
+    // Voeg een nieuwe test toe aan ptaData.tests
+    ptaData.tests.push({
+        id: nieuweTabId,
+        year_and_period: "",
+        week: "",
+        subdomain: "",
+        description: "",
+        type: "",
+        type_else: null,
+        result_type: "",
+        time: 0,
+        time_else: null,
+        resitable: false,
+        weight_pod: 0,
+        weight_pta: 0,
+        tools: []
+    });
+
+    maakTab(nieuweTabId.toString(), nieuweTabNummer.toString(), tabsContainer, contentContainer);
     laadToetsInhoud(nieuweTabId);
     toonTabInhoud(`toets${nieuweTabId}`);
 }
+
 
 document.getElementById('voegTabToe').onclick = voegNieuweTabToe;
 
@@ -1282,98 +1309,100 @@ function valideerNumberInput(e) {
     e.target.value = waarde > 100 ? 100 : waarde;
 }
 
-function updatePtaData() {
-    const tabs = document.querySelectorAll('.tabs .tab:not(:nth-child(1)):not(:nth-child(2))');
-    const actieveTestIds = new Set(); // Bewaar alle ID's die we tegenkomen in de tabs
+let nieuwePtaData;
+function refreshData() {
+    nieuwePtaData = { ...ptaData, tests: [] };
+    getNieuwePtaData();
+    updateNieuwePtaData();
+    verversTabsIds()
+    ptaData = { ...nieuwePtaData };
+    console.log(ptaData);
 
-    verwerkDiscrepantiesInIds(tabs, actieveTestIds);
-    updateWeeknummersVoorGeladenTabs(tabs);
-    verwijderOntbrekendeTests(actieveTestIds); // Verwijder tests die niet langer voorkomen
 }
 
-function verwerkDiscrepantiesInIds(tabs, actieveTestIds) {
+function getNieuwePtaData() {
+    const tabs = document.querySelectorAll('.tabs .tab:not(:nth-child(1)):not(:nth-child(2))');
     tabs.forEach(tab => {
-        const idNummer = tab.id.substring(3);
-        const textContentMatch = tab.textContent.trim().match(/\d+/);
-        const textContentNummer = textContentMatch ? textContentMatch[0] : null;
+        const idNummer = parseInt(tab.id.substring(3), 10);
+        const textContentMatch = tab.textContent.match(/\d+/);
+        const textContentNummer = textContentMatch ? parseInt(textContentMatch[0], 10) : null;
+        if (textContentNummer === null) return;
 
-        if (!textContentNummer) return;
-
-        actieveTestIds.add(textContentNummer); // Voeg dit ID toe aan de lijst van actieve IDs
-
-        if (!ptaData.tests.some(test => test.id.toString() === textContentNummer)) {
-            voegNieuweTestToe(textContentNummer);
-        } else if (idNummer !== textContentNummer) {
-            vervangTestGegevens(idNummer, textContentNummer);
+        const origineleTest = ptaData.tests.find(test => test.id === idNummer);
+        if (origineleTest) {
+            const aangepasteTest = { ...origineleTest, id: textContentNummer };
+            nieuwePtaData.tests.push(aangepasteTest);
+        } else {
+            nieuwePtaData.tests.push({
+                id: textContentNummer,
+                year_and_period: "",
+                week: "",
+                subdomain: "",
+                description: "",
+                type: "",
+                type_else: null,
+                result_type: "",
+                time: 0,
+                time_else: null,
+                resitable: false,
+                weight_pod: 0,
+                weight_pta: 0,
+                tools: []
+            });
         }
     });
+
+    // Sorteer de tests in nieuwePtaData op basis van ID om ze in de juiste volgorde te hebben
+    nieuwePtaData.tests.sort((a, b) => a.id - b.id);
 }
 
-function voegNieuweTestToe(testId) {
-    // Check eerst of de test al bestaat om duplicaten te voorkomen
-    const bestaatAl = ptaData.tests.some(test => test.id.toString() === testId);
-    if (!bestaatAl) {
-        const nieuweTest = {
-            id: parseInt(testId),
-            // Vul andere vereiste velden in als 'undefined' of lege strings
-            year_and_period: "",
-            week: "",
-            subdomain: "",
-            description: "",
-            type: "",
-            type_else: null,
-            result_type: "",
-            time: 0,
-            time_else: null,
-            resitable: false,
-            weight_pod: 0,
-            weight_pta: 0,
-            tools: [],
-        };
-        ptaData.tests.push(nieuweTest);
-        console.log(`Nieuwe test toegevoegd: ${testId}`);
-    }
-}
 
-function updateWeeknummersVoorGeladenTabs(tabs) {
+function updateNieuwePtaData() {
+    const tabs = document.querySelectorAll('.tabs .tab:not(:nth-child(1)):not(:nth-child(2))');
     tabs.forEach(tab => {
-        const idNummer = tab.id.substring(3);
-        const tabContent = document.getElementById('toets' + idNummer);
+        const idNummer = parseInt(tab.id.substring(3), 10); // Gebruikt voor het ophalen van de tab-content
+        const textContentMatch = tab.textContent.match(/\d+/);
+        const textContentNummer = textContentMatch ? parseInt(textContentMatch[0], 10) : null; // Gebruikt voor het updaten van tests in nieuwePtaData
+        if (textContentNummer === null) return;
 
+        const tabContent = document.getElementById('toets' + idNummer);
         if (tabContent && tabContent.dataset.isLoaded === 'true') {
             const weekSelect = tabContent.querySelector('.weekSelect');
-            const weekNummer = weekSelect.value === 'week' ? tabContent.querySelector('.inputField.week').value : weekSelect.value;
-
-            const testIndex = ptaData.tests.findIndex(test => test.id.toString() === idNummer);
-            if (testIndex !== -1) {
-                ptaData.tests[testIndex].week = weekNummer;
-                console.log(`Weeknummer bijgewerkt voor test ${idNummer} naar ${weekNummer}`);
-            } else {
-                console.warn(`Content geladen maar geen overeenkomende test gevonden in ptaData voor id ${idNummer}`);
+            let weekNummer = weekSelect ? weekSelect.value : null;
+            if (weekNummer === 'week') {
+                const weekInput = tabContent.querySelector('.inputField.week');
+                weekNummer = weekInput ? weekInput.value : null;
             }
-        } else {
-            console.log(`Content voor tab ${idNummer} is nog niet geladen.`);
+
+            // Vind de corresponderende test in nieuwePtaData op basis van textContentNummer en update deze
+            const testIndex = nieuwePtaData.tests.findIndex(test => test.id === textContentNummer);
+            if (testIndex !== -1) {
+                nieuwePtaData.tests[testIndex].week = weekNummer;
+                // Voeg hier extra updates toe, zoals jaarPeriode, subdomein, etc.
+            }
         }
     });
+
+    // Overweeg hier ook de logica voor het bijwerken van eventuele lege nieuwe tests
 }
 
-function verwijderOntbrekendeTests(actieveTestIds) {
-    ptaData.tests = ptaData.tests.filter(test => actieveTestIds.has(test.id.toString()));
-    console.log('Ontbrekende tests verwijderd uit ptaData.');
-  }
+function verversTabsIds() {
+    // Verzamel alle tabs behalve de eerste twee
+    const tabs = document.querySelectorAll('.tabs .tab:not(:nth-child(1)):not(:nth-child(2))');
 
-function vervangTestGegevens(idNummer, textContentNummer) {
-    const bronTestIndex = ptaData.tests.findIndex(test => test.id.toString() === idNummer);
-    const doelTestIndex = ptaData.tests.findIndex(test => test.id.toString() === textContentNummer);
+    tabs.forEach(tab => {
+        const textContentMatch = tab.textContent.match(/\d+/);
+        const textContentNummer = textContentMatch ? textContentMatch[0] : null;
+        if (!textContentNummer) return;
 
-    if (bronTestIndex !== -1 && doelTestIndex !== -1) {
-        // Vervang de gegevens van de doelTest met die van de bronTest
-        const nieuweGegevens = { ...ptaData.tests[bronTestIndex] };
-        nieuweGegevens.id = parseInt(textContentNummer); // Zorg dat we de ID correct bijwerken
-        ptaData.tests[doelTestIndex] = nieuweGegevens;
+        // Update de id en data-tab attributen van de tab
+        tab.id = `tab${textContentNummer}`;
+        tab.setAttribute('data-tab', `toets${textContentNummer}`);
 
-        console.log(`Gegevens van test met ID ${idNummer} vervangen door test met ID ${textContentNummer}`);
-    } else {
-        console.error(`Fout bij het vervangen van gegevens: ID ${idNummer} of ${textContentNummer} niet gevonden.`);
-    }
+        // Vind de overeenkomende content div op basis van de originele id en update deze
+        const tabContent = document.querySelector(`.contentPane[id="${tab.getAttribute('data-tab')}"]`);
+        if (tabContent) {
+            tabContent.id = `toets${textContentNummer}`;
+        }
+    });
 }
