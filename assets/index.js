@@ -852,10 +852,13 @@ function getPtaData(toetsNummer) {
 }
 
 
-function laadToetsInhoud(toetsNummer) {
+function laadToetsInhoud(toetsNummer, force = false) {
     try {
         const tabContent = document.getElementById('toets' + toetsNummer);
-        if (tabContent) { //  && !tabContent.dataset.isLoaded
+        if (force) {
+            vulToetsInhoud(getPtaData(toetsNummer));
+        }
+        else if (tabContent && !tabContent.dataset.isLoaded) {
             vulToetsInhoud(getPtaData(toetsNummer));
             tabContent.dataset.isLoaded = 'true';
         } else if (!tabContent) {
@@ -1314,7 +1317,7 @@ function refreshData() {
     verversTabsIds()
     ptaData = { ...nieuwePtaData };
     ptaData.tests.forEach(test => {
-        laadToetsInhoud(test.id);
+        laadToetsInhoud(test.id, true);
     });
     console.log(ptaData);
 
@@ -1429,4 +1432,39 @@ function getPtaDataFromTab(contentPane) {
         }).filter(index => index !== -1)
     };
     return data;
+}
+
+const seWeekNaarWeekNummer = {
+    'SE 1': 41,
+    'SE 2': 51,
+    'SE 3': 10,
+    'SE 4': 26
+};
+
+function weekNaarUniformNummer(week) {
+    // Check of de week een SE-week is en converteer deze naar het juiste weeknummer
+    const weekNummer = seWeekNaarWeekNummer[week] || parseInt(week, 10);
+    // Behandel weken als doorgaand vanaf week 33 tot week 32 van het volgende jaar
+    return weekNummer >= 33 ? weekNummer - 33 : weekNummer + 20;
+}
+
+function herindexeerTestIDs() {
+    ptaData.tests.forEach((test, index) => {
+        test.id = 601 + index; // Begin bij 601 en ga verder
+    });
+}
+
+
+function sorteerTabs() {
+    ptaData.tests.sort((a, b) => {
+        const weekNummerA = weekNaarUniformNummer(a.week);
+        const weekNummerB = weekNaarUniformNummer(b.week);
+
+        return weekNummerA - weekNummerB;
+    });
+    herindexeerTestIDs();
+    ptaData.tests.forEach(test => {
+        laadToetsInhoud(test.id, true);
+    });
+    vulOverzichtTabel();
 }
