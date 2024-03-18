@@ -733,3 +733,7 @@ ul.selectedTools li {
 .overzichtTabel td {
     position: relative;
 }
+
+#sorteerKnop {
+    margin-top: 20px;
+}

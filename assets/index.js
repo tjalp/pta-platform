@@ -385,7 +385,7 @@ function filterOptions(ul, searchOptions, searchTerm, geselecteerdeOpties, meerv
     if (filteredOptions.length === 0 && meervoudigeSelectie) {
         // Toon de optie om toe te voegen alleen bij meervoudige selectie
         const li = document.createElement('li');
-        li.innerHTML = `'<strong>${searchTerm}</strong>' niet gevonden, klik om toe te voegen.`;
+        li.innerHTML = `'<strong>${searchTerm}</strong>' niet gevonden. Klik om toe te voegen.`;
         li.addEventListener('click', () => voegNieuwHulpmiddelToe(searchTerm, ul, searchOptions, geselecteerdeOpties, meervoudigeSelectie));
         ul.appendChild(li);
     } else {
@@ -762,6 +762,7 @@ function updateGewogenGemiddelden() {
 
 
 function genereerOverzichtInhoud() {
+    refreshData();
     let contentPane = document.getElementById("overzichtContent");
     contentPane.innerHTML = ''; // Maak de inhoud van het paneel leeg
 
@@ -781,12 +782,8 @@ function genereerOverzichtInhoud() {
 
     contentPane.appendChild(tabel);
 
-    let verversKnop = document.createElement('button');
-    verversKnop.textContent = '🔄';
-    verversKnop.addEventListener('click', refreshData);
-    contentPane.appendChild(verversKnop);
-
     let sorteerKnop = document.createElement('button');
+    sorteerKnop.id = 'sorteerKnop'
     sorteerKnop.textContent = 'Sorteer Toetsen';
     sorteerKnop.addEventListener('click', sorteerTabs);
     contentPane.appendChild(sorteerKnop);
@@ -858,7 +855,7 @@ function getPtaData(toetsNummer) {
 function laadToetsInhoud(toetsNummer) {
     try {
         const tabContent = document.getElementById('toets' + toetsNummer);
-        if (tabContent) { // && !tabContent.dataset.isLoaded
+        if (tabContent) { //  && !tabContent.dataset.isLoaded
             vulToetsInhoud(getPtaData(toetsNummer));
             tabContent.dataset.isLoaded = 'true';
         } else if (!tabContent) {
@@ -1316,6 +1313,9 @@ function refreshData() {
     updateNieuwePtaData();
     verversTabsIds()
     ptaData = { ...nieuwePtaData };
+    ptaData.tests.forEach(test => {
+        laadToetsInhoud(test.id);
+    });
     console.log(ptaData);
 
 }
@@ -1367,19 +1367,16 @@ function updateNieuwePtaData() {
 
         const tabContent = document.getElementById('toets' + idNummer);
         if (tabContent && tabContent.dataset.isLoaded === 'true') {
-            const weekSelect = tabContent.querySelector('.weekSelect');
-            let weekNummer = weekSelect ? weekSelect.value : null;
-            if (weekNummer === 'week') {
-                const weekInput = tabContent.querySelector('.inputField.week');
-                weekNummer = weekInput ? weekInput.value : null;
-            }
-
             // Vind de corresponderende test in nieuwePtaData op basis van textContentNummer en update deze
             const testIndex = nieuwePtaData.tests.findIndex(test => test.id === textContentNummer);
             if (testIndex !== -1) {
-                nieuwePtaData.tests[testIndex].week = weekNummer;
-                // Voeg hier extra updates toe, zoals jaarPeriode, subdomein, etc.
+                const contentPane = document.getElementById('toets' + idNummer);
+                const testData = getPtaDataFromTab(contentPane);
+
+                // Nu testData toewijzen aan de juiste test in nieuwePtaData
+                Object.assign(nieuwePtaData.tests[testIndex], testData);
             }
+
         }
     });
 
@@ -1405,4 +1402,31 @@ function verversTabsIds() {
             tabContent.id = `toets${textContentNummer}`;
         }
     });
+}
+
+function getPtaDataFromTab(contentPane) {
+    const data = {
+        week: contentPane.querySelector('.weekSelect').value === 'week'
+            ? contentPane.querySelector('.inputField.week').value
+            : contentPane.querySelector('.weekSelect').value,
+        year_and_period: contentPane.querySelector('.jaarPeriode').textContent,
+        subdomain: contentPane.querySelector('.subdomein').value,
+        description: contentPane.querySelector('.stofomschrijving').value,
+        type: contentPane.querySelector('.afnamevormSelect').value,
+        type_else: contentPane.querySelector('.afnamevormSelect').value === 'anders'
+            ? contentPane.querySelector('.afnamevormAnders').value
+            : null,
+        time: contentPane.querySelector('.tijdSelect').value,
+        time_else: contentPane.querySelector('.tijdSelect').value === 'anders'
+            ? contentPane.querySelector('.tijdAnders').value
+            : null,
+        result_type: contentPane.querySelector('.beoordelingSelect').value,
+        weight_pod: parseInt(contentPane.querySelector('.pod').value, 10),
+        weight_pta: parseInt(contentPane.querySelector('.pta').value, 10),
+        resitable: contentPane.querySelector('.herkansbaarSelect').value === 'Ja',
+        tools: Array.from(contentPane.querySelectorAll('.hulpmiddelen li')).map(li => {
+            return ptaData.tools.indexOf(li.textContent.trim());
+        }).filter(index => index !== -1)
+    };
+    return data;
 }
