@@ -1253,17 +1253,41 @@ function toggleWeekInputEnBijwerkenJaarPeriode(weekSelect, weekInputField, jaarP
 
     weekInputField.oninput = () => {
         let weekNummer = parseInt(weekInputField.value);
-        weekNummer = isNaN(weekNummer) ? 0 : Math.min(weekNummer, 52);
+        weekNummer = isNaN(weekNummer) ? 0 : Math.min(weekNummer, 53);
         weekInputField.value = weekNummer;
         jaarPeriodeSpan.textContent = berekenJaarPeriode(weekNummer);
     };
 }
 
 function berekenJaarPeriode(weekNummer) {
-    weekNummer = Math.max(1, Math.min(weekNummer, 52));
-    const periode = Math.ceil(weekNummer / (52 / 4));
-    return '6.' + periode;
-}
+    // Omzetten van weeknummer naar een getal indien het een string is
+    weekNummer = parseInt(weekNummer, 10);
+  
+    // Normaliseer weeknummers volgens de schoolkalender
+    let genormaliseerdWeekNummer = weekNummer >= 33 ? weekNummer - 32 : weekNummer + 20;
+  
+    // Omzetten van SE-weken naar de genormaliseerde schoolkalender
+    const genormaliseerdeSEWeekNummers = Object.keys(seWeekNaarWeekNummer).reduce((acc, key) => {
+      const value = seWeekNaarWeekNummer[key];
+      acc[key] = value >= 33 ? value - 32 : value + 20;
+      return acc;
+    }, {});
+  
+    // Bepaal de periode gebaseerd op het genormaliseerd weeknummer
+    if (genormaliseerdWeekNummer < genormaliseerdeSEWeekNummers['SE 1']) {
+      return '6.1';
+    } else if (genormaliseerdWeekNummer < genormaliseerdeSEWeekNummers['SE 2']) {
+      return '6.2';
+    } else if (genormaliseerdWeekNummer < genormaliseerdeSEWeekNummers['SE 3']) {
+      return '6.3';
+    } else if (genormaliseerdWeekNummer < genormaliseerdeSEWeekNummers['SE 4']) {
+      return '6.4';
+    } else { // Na SE 4 tot week 32
+      return '6.4';
+    }
+  }
+  
+  
 
 function togglePickWeek(selectElement) {
     var pickWeekDiv = selectElement.nextElementSibling;
