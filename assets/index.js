@@ -796,10 +796,18 @@ function genereerOverzichtInhoud() {
     contentPane.appendChild(tabel);
 
     let sorteerKnop = document.createElement('button');
-    sorteerKnop.id = 'sorteerKnop'
+    sorteerKnop.id = 'sorteerKnop';
     sorteerKnop.textContent = 'Sorteer Toetsen';
+    
+    // Bepaal de status van heeftBewerkingsRechten
+    let heeftBewerkingsRechten = isBewerker && selectedJaar.includes(bewerkJaar) && !opSlot;
+    
+    // Zet de disabled status van de knop op basis van heeftBewerkingsRechten
+    sorteerKnop.disabled = !heeftBewerkingsRechten;
+    
     sorteerKnop.addEventListener('click', sorteerTabs);
     contentPane.appendChild(sorteerKnop);
+    
 
     vulOverzichtTabel(); // Zorg dat deze functie wordt aangeroepen na het opzetten van de tabel
 }
