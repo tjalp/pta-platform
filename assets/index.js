@@ -168,6 +168,7 @@ function createDynamicButtons() {
         { text: selectedVak || 'Selecteer Vak', action: vakkeuze, name: 'Vak' },
         { text: selectedNiveau || 'Selecteer Niveau', action: niveaukeuze, name: 'Niveau' },
         { text: selectedJaar || 'Selecteer Jaar', action: jaarkeuze, name: 'Jaar' },
+        { text: '💾', action: opslaan, name: 'Opslaan' },
     ];
 
     // Creëer en voeg elke knop toe aan de container
@@ -482,6 +483,18 @@ function setupModal(modal, searchInput) {
 /*
 GET & SET FUNCTIES VOOR DATABASE
 */
+
+function opslaan() {
+    refreshData()
+    // TODO Wegingen nog updaten in ptaData
+    if (setLegeVelden()) {
+        console.log('Er zijn nog lege velden. Niet opslaan?')
+        return;
+    }
+    // TODO ptaData versturen naar DB
+    // TODO Goed testen of dit allemaal goed gaat
+    console.log('Data succesvol opgeslagen')
+}
 
 // Ophalen uit DB
 let vwoWegingen = { '4 VWO': 0, '5 VWO': 10, '6 VWO': 90 };
@@ -1139,7 +1152,11 @@ function verwijderTab(tabNummer, tabsContainer) {
         return;
     }
 
-    let naburigeTab = tabOmTeVerwijderen.nextElementSibling || tabOmTeVerwijderen.previousElementSibling;
+    // Eerst proberen de volgende sibling te krijgen, tenzij het de toevoegen-knop is
+    let naburigeTab = tabOmTeVerwijderen.nextElementSibling;
+    if (!naburigeTab || naburigeTab.id === 'voegTabToe') {
+        naburigeTab = tabOmTeVerwijderen.previousElementSibling;
+    }
 
     tabsContainer.removeChild(tabOmTeVerwijderen);
     console.log(`Tab tab${tabNummer} succesvol verwijderd`);
@@ -1154,10 +1171,12 @@ function verwijderTab(tabNummer, tabsContainer) {
         }
     });
 
+    // Activeren van de naburige tab indien beschikbaar
     if (naburigeTab && naburigeTab.classList.contains('tab')) {
         naburigeTab.click();
     }
 }
+
 
 function voegNieuweTabToe() {
     let tabsContainer = document.querySelector('.tabs');
@@ -1189,9 +1208,9 @@ function voegNieuweTabToe() {
         type: "",
         type_else: null,
         result_type: "",
-        time: 0,
+        time: "",
         time_else: null,
-        resitable: false,
+        resitable: null,
         weight_pod: 0,
         weight_pta: 0,
         tools: []
@@ -1319,8 +1338,6 @@ function refreshData() {
     ptaData.tests.forEach(test => {
         laadToetsInhoud(test.id, true);
     });
-    console.log(ptaData);
-
 }
 
 function getNieuwePtaData() {
@@ -1345,9 +1362,9 @@ function getNieuwePtaData() {
                 type: "",
                 type_else: null,
                 result_type: "",
-                time: 0,
+                time: "",
                 time_else: null,
-                resitable: false,
+                resitable: null,
                 weight_pod: 0,
                 weight_pta: 0,
                 tools: []
@@ -1456,6 +1473,7 @@ function herindexeerTestIDs() {
 
 
 function sorteerTabs() {
+    console.log('sorteren')
     ptaData.tests.sort((a, b) => {
         const weekNummerA = weekNaarUniformNummer(a.week);
         const weekNummerB = weekNaarUniformNummer(b.week);
@@ -1467,4 +1485,60 @@ function sorteerTabs() {
         laadToetsInhoud(test.id, true);
     });
     vulOverzichtTabel();
+}
+
+function setLegeVelden() {
+    let algemeneLegeVeldenGevonden = false;
+
+    // Reset alle markeringen
+    document.querySelectorAll('.tab').forEach(tab => {
+        tab.style.color = '';
+    });
+
+    document.querySelectorAll('.contentPane input, .contentPane select').forEach(element => {
+        element.style.borderColor = '';
+    });
+
+    ptaData.tests.forEach(test => {
+        let legeVeldenGevondenVoorDezeTest = false;
+        const tab = document.getElementById('tab' + test.id);
+        const contentPane = document.getElementById('toets' + test.id);
+
+        // Definieer de velden om te controleren
+        const veldenTeControleren = [
+            { sleutel: 'week', selectie: contentPane.querySelector('.weekSelect').value === 'week' ? '.inputField.week' : '.weekSelect' },
+            { sleutel: 'subdomain', selectie: '.subdomein' },
+            { sleutel: 'description', selectie: '.stofomschrijving' },
+            { sleutel: 'type', selectie: '.afnamevormSelect', anders: '.afnamevormAnders' },
+            { sleutel: 'time', selectie: '.tijdSelect', anders: '.tijdAnders' },
+            { sleutel: 'result_type', selectie: '.beoordelingSelect' },
+            { sleutel: 'resitable', selectie: '.herkansbaarSelect' }
+        ];
+
+        veldenTeControleren.forEach(veld => {
+            const element = contentPane.querySelector(veld.selectie);
+            const waarde = element ? element.value : null;
+            const elementAnders = veld.anders ? contentPane.querySelector(veld.anders) : null;
+            const waardeAnders = elementAnders ? elementAnders.value : null;
+
+            if ((veld.sleutel === 'type' || veld.sleutel === 'time') && waarde === 'anders' && (!waardeAnders || waardeAnders.trim() === '')) {
+                if (elementAnders) {
+                    elementAnders.style.borderColor = 'red';
+                    legeVeldenGevondenVoorDezeTest = true;
+                }
+            } else if (!waarde || waarde.trim() === '') {
+                if (element) {
+                    element.style.borderColor = 'red';
+                    legeVeldenGevondenVoorDezeTest = true;
+                }
+            }
+        });
+
+        if (legeVeldenGevondenVoorDezeTest) {
+            tab.style.color = 'red';
+            algemeneLegeVeldenGevonden = true;
+        }
+    });
+
+    return algemeneLegeVeldenGevonden;
 }

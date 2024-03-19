@@ -126,10 +126,6 @@ textarea:focus {
     background-color: #f8f8f8;
 }
 
-#dynamicButtons button {
-    font-size: 1em;
-}
-
 #percentages .weging-container {
     display: flex;
     align-items: center;
@@ -342,7 +338,11 @@ ul.selectedTools li {
 #dynamicButtons button,
 .modal button {
     margin-right: 10px;
-    margin-bottom: 10px
+    margin-bottom: 10px;
+    font-size: 1em;
+    max-height: 42px;
+    height: 42px;
+    white-space: nowrap;
 }
 
 #vwoVelden, #havoVelden, #mavoVelden {
@@ -493,8 +493,8 @@ ul.selectedTools li {
     border: 1px solid var(--primary-color);
     border-radius: 5px;
     background-color: #f8f8f8;
-    width: 50vw;
-    min-width: 50vw;
+    width: 553px;
+    min-width: 553px;
     margin-bottom: 20px;
 }
 
@@ -625,7 +625,7 @@ ul.selectedTools li {
     transition: background-color 0.3s ease;
 }
 
-.tab-toevoegen-knop {
+.toevoegen-knop {
     display: flex;
     align-items: center;
     justify-content: center;
