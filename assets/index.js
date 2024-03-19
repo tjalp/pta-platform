@@ -23,6 +23,16 @@ document.addEventListener('DOMContentLoaded', function () {
     genereerToetsen();
 });
 
+function updateJaarOpties(nieuwJaarOpties, bewerkJaar, opSlot) {
+    return nieuwJaarOpties.map(jaar => {
+      if (opSlot || jaar !== bewerkJaar || !isBewerker) {
+        return `🔒 ${jaar}`;
+      } else {
+        return jaar;
+      }
+    });
+  }
+
 function start() {
     //fetchFromDatabase();
     isEersteKeer = true;
@@ -96,6 +106,10 @@ function bevestigKeuze(keuzeType, geselecteerdeOpties) {
                 case 'Vak': niveaukeuze(); break;
                 case 'Niveau': jaarkeuze(); break;
                 case 'Jaar':
+                    if (selectedJaar === bewerkJaar) {
+                        // TODO mooier maken
+                        alert('Er is een kopie van het PTA van vorig jaar gemaakt. Deze kan je nu bewerken.')
+                    }
                     createDynamicButtons();
                     isEersteKeer = false; // Stop de initiële reeks
                     break;
@@ -120,7 +134,8 @@ function niveaukeuze() {
 }
 
 function jaarkeuze() {
-    initialiseerKeuzeModal('Jaar', jaarOpties, (opties) => bevestigKeuze('Jaar', opties), niveaukeuze, selectedJaar ? [selectedJaar] : []);
+    nieuwJaarOpties = updateJaarOpties(jaarOpties, bewerkJaar, opSlot);
+    initialiseerKeuzeModal('Jaar', nieuwJaarOpties, (opties) => bevestigKeuze('Jaar', opties), niveaukeuze, selectedJaar ? [selectedJaar] : []);
 }
 
 function updateSelection(keuzeType, selected) {
@@ -496,7 +511,10 @@ function opslaan() {
     console.log('Data succesvol opgeslagen')
 }
 
+
 // Ophalen uit DB
+let opSlot = false; // Als Admin op slot gooit
+let bewerkJaar = '2024/2025' // De te bewerken jaar
 let vwoWegingen = { '4 VWO': 0, '5 VWO': 10, '6 VWO': 90 };
 let havoWegingen = { '4 HAVO': 50, '5 HAVO': 50 };
 let mavoWegingen = { '3 MAVO': 15, '4 MAVO': 85 };
@@ -504,8 +522,6 @@ let oefenOpties = ['Optie 1', 'Optie 2', 'Optie 3'];
 let vakkenOpties = ['Aardrijkskunde', 'Informatica', 'Wiskunde A'];
 let niveauOpties = ['3 MAVO', '4 MAVO', '4 HAVO', '5 HAVO', '4 VWO', '5 VWO', '6 VWO'];
 let jaarOpties = ['2024/2025', '2023/2024', '2022/2023', '2021/2022'];
-let bewerkJaar = '2025' // De te bewerken jaar
-let opSlot = false; // Als Admin op slot gooit
 
 function fetchFromDatabase() {
     fetch('/api/defaults/subjects')
