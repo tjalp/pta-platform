@@ -506,7 +506,16 @@ function opslaan() {
         console.log('Er zijn nog lege velden. Niet opslaan?')
         return;
     }
-    // TODO ptaData versturen naar DB
+    fetch(`/api/pta/${ptaData.id}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(ptaData)
+    })
+        .then(response => response.json())
+        .then(data => ptaData = data)
+        .catch(error => console.error(error));
     // TODO Goed testen of dit allemaal goed gaat
     console.log('Data succesvol opgeslagen')
 }
@@ -533,7 +542,7 @@ function fetchFromDatabase() {
 }
 
 let ptaData = {
-    "id": "d15690",
+    "id": "65fc5b40905c19cf1422e971",
     "name": "Duits",
     "level": "6 VWO",
     "cohort": "2021 - 2024",
@@ -574,7 +583,7 @@ let ptaData = {
             "type": "mondeling",
             'type_else': null,
             "result_type": "cijfer",
-            "time": 'anders',
+            "time": 0,
             "time_else": '???',
             "resitable": true,
             "weight_pod": 5,
@@ -1232,7 +1241,7 @@ function voegNieuweTabToe() {
         type: "",
         type_else: null,
         result_type: "",
-        time: "",
+        time: 0,
         time_else: null,
         resitable: null,
         weight_pod: 0,
@@ -1410,7 +1419,7 @@ function getNieuwePtaData() {
                 type: "",
                 type_else: null,
                 result_type: "",
-                time: "",
+                time: 0,
                 time_else: null,
                 resitable: null,
                 weight_pod: 0,
@@ -1484,7 +1493,7 @@ function getPtaDataFromTab(contentPane) {
         type_else: contentPane.querySelector('.afnamevormSelect').value === 'anders'
             ? contentPane.querySelector('.afnamevormAnders').value
             : null,
-        time: contentPane.querySelector('.tijdSelect').value,
+        time: parseInt(contentPane.querySelector('.tijdSelect').value, 10),
         time_else: contentPane.querySelector('.tijdSelect').value === 'anders'
             ? contentPane.querySelector('.tijdAnders').value
             : null,

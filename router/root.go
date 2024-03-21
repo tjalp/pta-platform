@@ -138,8 +138,8 @@ func getPta(c *gin.Context) {
 func createPta(c *gin.Context) {
 	var pta database.PtaData
 
-	if err := c.Bind(&pta); err != nil {
-		panic(err)
+	if err := c.ShouldBind(&pta); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -178,8 +178,8 @@ func editPta(c *gin.Context) {
 		return
 	}
 
-	if err := c.Bind(&pta); err != nil {
-		c.AbortWithStatus(http.StatusInternalServerError)
+	if err := c.ShouldBind(&pta); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -234,10 +234,8 @@ func getTools(c *gin.Context) {
 func addTools(c *gin.Context) {
 	var toolsToAdd []string
 
-	err := c.Bind(&toolsToAdd)
-
-	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+	if err := c.ShouldBind(&toolsToAdd); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -251,10 +249,8 @@ func addTools(c *gin.Context) {
 func setTools(c *gin.Context) {
 	var tools []string
 
-	err := c.Bind(&tools)
-
-	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+	if err := c.Bind(&tools); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -270,10 +266,8 @@ func getSubjects(c *gin.Context) {
 func addSubjects(c *gin.Context) {
 	var subjectsToAdd []database.Subject
 
-	err := c.Bind(&subjectsToAdd)
-
-	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+	if err := c.Bind(&subjectsToAdd); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -287,10 +281,8 @@ func addSubjects(c *gin.Context) {
 func setSubjects(c *gin.Context) {
 	var subjects []database.Subject
 
-	err := c.Bind(&subjects)
-
-	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+	if err := c.Bind(&subjects); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -353,10 +345,8 @@ func getTypes(c *gin.Context) {
 func addTypes(c *gin.Context) {
 	var typesToAdd []string
 
-	err := c.Bind(&typesToAdd)
-
-	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+	if err := c.Bind(&typesToAdd); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -370,10 +360,8 @@ func addTypes(c *gin.Context) {
 func setTypes(c *gin.Context) {
 	var types []string
 
-	err := c.Bind(&types)
-
-	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+	if err := c.Bind(&types); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -389,10 +377,8 @@ func getPeriods(c *gin.Context) {
 func setPeriods(c *gin.Context) {
 	var periods []database.Period
 
-	err := c.Bind(&periods)
-
-	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+	if err := c.Bind(&periods); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 

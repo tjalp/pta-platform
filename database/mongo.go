@@ -48,24 +48,37 @@ func (s MongoDatabase) Terminate() {
 
 func (s MongoDatabase) SavePta(data PtaData) PtaData {
 	collection := mongodb.Collection("ptas")
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-	result, err := collection.ReplaceOne(ctx, bson.D{{"id", data.Id}}, data, options.Replace().SetUpsert(true))
+	id, err := objectIdFromHex(data.Id)
 	if err != nil {
 		panic(err)
 	}
-	if data.Id != "" && result.UpsertedID != nil {
-		data.Id = result.UpsertedID.(primitive.ObjectID).Hex()
+	data.Id = ""
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	result, err := collection.ReplaceOne(ctx, bson.D{{"_id", id}}, data, options.Replace().SetUpsert(true))
+	if err != nil {
+		panic(err)
+	}
+	if result.UpsertedID != nil {
+		objectId, ok := result.UpsertedID.(primitive.ObjectID)
+		if !ok {
+			panic("UpsertedID is not an ObjectID: " + result.UpsertedID.(string))
+		}
+		data.Id = objectId.Hex()
 	}
 	return data
 }
 
 func (s MongoDatabase) LoadPta(id string) *PtaData {
+	objectId, err := objectIdFromHex(id)
+	if err != nil {
+		panic(err)
+	}
 	collection := mongodb.Collection("ptas")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	var result PtaData
-	err := collection.FindOne(ctx, bson.D{{"id", id}}).Decode(&result)
+	err = collection.FindOne(ctx, bson.D{{"_id", objectId}}).Decode(&result)
 	if err != nil {
 		fmt.Println(err)
 		return nil
@@ -74,10 +87,14 @@ func (s MongoDatabase) LoadPta(id string) *PtaData {
 }
 
 func (s MongoDatabase) DeletePta(id string) bool {
+	objectId, err := objectIdFromHex(id)
+	if err != nil {
+		panic(err)
+	}
 	collection := mongodb.Collection("ptas")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	_, err := collection.DeleteOne(ctx, bson.D{{"id", id}})
+	_, err = collection.DeleteOne(ctx, bson.D{{"_id", objectId}})
 	if err != nil {
 		panic(err)
 		return false
@@ -319,4 +336,12 @@ func (s MongoDatabase) SaveUser(user User) User {
 		user.Id = result.InsertedID.(primitive.ObjectID).Hex()
 	}
 	return user
+}
+
+func objectIdFromHex(hex string) (*primitive.ObjectID, error) {
+	objectID, err := primitive.ObjectIDFromHex(hex)
+	if err != nil {
+		return nil, err
+	}
+	return &objectID, nil
 }
