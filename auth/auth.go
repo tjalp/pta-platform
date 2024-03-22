@@ -3,7 +3,9 @@ package auth
 import (
 	"crypto/rand"
 	"encoding/hex"
+	"github.com/golang-jwt/jwt"
 	"net/http"
+	"os"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -68,4 +70,32 @@ func GenerateToken(n int) (string, error) {
 
 func AddToken(token string) {
 	tokens = append(tokens, token)
+}
+
+func Auth(db database.Database) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		cookie, err := c.Cookie("token")
+		if err != nil {
+			//c.Header("WWW-Authenticate", "Basic realm=Authorization Required")
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": "unauthorized"})
+			return
+		}
+		err = validateToken(cookie)
+		if err != nil {
+			//c.Header("WWW-Authenticate", "Basic realm=Authorization Required")
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": "unauthorized"})
+			return
+		}
+		c.Next()
+	}
+}
+
+func validateToken(tokenString string) error {
+	_, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		return []byte(os.Getenv("JWT_SECRET")), nil
+	})
+	if err != nil {
+		return err
+	}
+	return nil
 }

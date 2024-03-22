@@ -2,7 +2,11 @@ package router
 
 import (
 	"fmt"
+	"github.com/golang-jwt/jwt"
+	"github.com/tjalp/pta-platform/auth"
+	"golang.org/x/crypto/bcrypt"
 	"net/http"
+	"os"
 	"strings"
 	"time"
 
@@ -81,7 +85,35 @@ func StartServer() {
 			c.JSON(http.StatusOK, user)
 		})
 
+	apiGroup.POST("/auth/login", func(c *gin.Context) {
+		var user database.User
+		if err := c.ShouldBind(&user); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		var existingUser = data.GetUser(user.Id)
+		if existingUser == nil {
+			c.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
+			return
+		}
+		err := bcrypt.CompareHashAndPassword([]byte(existingUser.HashedPassword), []byte(user.HashedPassword))
+		if err != nil {
+			//c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid password"})
+			//return
+		}
+		expirationTime := time.Now().Add(time.Hour * 12)
+		token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.StandardClaims{ExpiresAt: expirationTime.Unix()})
+		tokenString, err := token.SignedString([]byte(os.Getenv("JWT_SECRET")))
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "error generating token"})
+			return
+		}
+		c.SetCookie("token", tokenString, int(expirationTime.Unix()), "/", "", false, false)
+		c.JSON(http.StatusOK, gin.H{"message": "login successful"})
+	})
+
 	apiGroup.Group("/pta").
+		Use(auth.Auth(data)).
 		//Use(auth.Authentication(data)).
 		GET("/:id", getPta).
 		DELETE("/:id", deletePta).
