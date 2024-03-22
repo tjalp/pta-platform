@@ -73,6 +73,7 @@ function bevestigBewerken() {
 }
 
 function initialiseerKeuzeModal(keuzeType, opties, bevestigingsActie, terugActie, selectOptie = []) {
+    console.log('hier')
     try {
         removeExistingModals();
 
@@ -125,12 +126,44 @@ function bevestigKeuze(keuzeType, geselecteerdeOpties) {
     }
 }
 
+function vakZoeken(vak){
+    fetch(`/api/defaults/subjects`)
+    .then(response => {
+            if (!response.ok) {
+                throw new Error('Netwerkrespons was niet ok');
+            }
+            return response.json();
+    })
+    .then(data =>{
+        console.log(data)
+        zoekenNiveau(data, vak)
+        initialiseerKeuzeModal('Niveau', niveauOpties, (opties) => bevestigKeuze('Niveau', opties), vakkeuze, selectedNiveau ? [selectedNiveau] : []);
+    })
+    .catch(error => {
+            console.error('Fout bij het laden:', error);
+    });
+}
+
+function zoekenNiveau(vakkenlijst, vak){
+    niveauOpties = []
+    for(let i = 0; i < vakkenlijst.length; i ++){   
+        console.log(vakkenlijst[i].name == vak)
+        if(vakkenlijst[i].name == vak){
+            console.log(vakkenlijst[i].level)
+            niveauOpties.push(vakkenlijst[i].level)
+        }
+    }
+}   
+
 function vakkeuze() {
+    console.log('1' + selectedVak)
     initialiseerKeuzeModal('Vak', vakkenOpties, (opties) => bevestigKeuze('Vak', opties), start, selectedVak ? [selectedVak] : []);
 }
 
 function niveaukeuze() {
-    initialiseerKeuzeModal('Niveau', niveauOpties, (opties) => bevestigKeuze('Niveau', opties), vakkeuze, selectedNiveau ? [selectedNiveau] : []);
+    console.log('2' + selectedVak)
+    vakZoeken(selectedVak)
+    console.log(niveauOpties)
 }
 
 function jaarkeuze() {
@@ -139,12 +172,15 @@ function jaarkeuze() {
 }
 
 function updateSelection(keuzeType, selected) {
+    console.log('help')
     switch (keuzeType) {
-        case 'Vak': selectedVak = selected; break;
+        case 'Vak': selectedVak = selected;
+        console.log(selectedVak)
+        break;
         case 'Niveau': selectedNiveau = selected; break;
         case 'Jaar': selectedJaar = selected; break;
         default: throw new Error(`Onbekend keuzeType: ${keuzeType}`);
-    }
+    }   
     updateDynamicButtonValue(keuzeType, selected);
 }
 
@@ -518,6 +554,7 @@ function opslaan() {
         .catch(error => console.error(error));
     // TODO Goed testen of dit allemaal goed gaat
     console.log('Data succesvol opgeslagen')
+    console.log(ptaData)
 }
 
 
@@ -1599,3 +1636,41 @@ function setLegeVelden() {
 
     return algemeneLegeVeldenGevonden;
 }
+
+function OptiesUitDatabase(){
+    fetch(`/api/defaults/subjects`)
+    .then(response => {
+            if (!response.ok) {
+                throw new Error('Netwerkrespons was niet ok');
+            }
+            return response.json();
+    })
+    .then(data =>{
+        console.log(data)
+        vakkenJuistzetten(data)
+    })
+    .catch(error => {
+            console.error('Fout bij het laden:', error);
+    });
+}
+
+function vakkenJuistzetten(fdata){
+    vakkenOpties = []
+    for(let i = 0; i < fdata.length; i ++){
+        if(!chekkenOfHetzelfde(fdata[i].name, vakkenOpties)){
+        vakkenOpties.push(fdata[i].name)
+        }
+    }
+    console.log(vakkenOpties)
+}
+
+function chekkenOfHetzelfde(a, b){
+    for(i = 0; i < b.length; i ++){
+        if(a == b[i]){
+            return true
+        }
+    }
+    return false
+}
+
+OptiesUitDatabase()
