@@ -109,7 +109,12 @@ func (s MongoDatabase) SearchPta(params map[string][]string) []PtaData {
 
 	filter := bson.D{}
 	for k, v := range params {
-		filter = append(filter, bson.E{Key: k, Value: v[0]})
+		filter = append(filter, bson.E{
+			Key: k,
+			Value: bson.D{
+				{"$regex", "^" + v[0] + "$"},
+				{"$options", "i"},
+			}})
 	}
 
 	cursor, err := collection.Find(ctx, filter)

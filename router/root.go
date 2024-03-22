@@ -3,7 +3,6 @@ package router
 import (
 	"fmt"
 	"github.com/golang-jwt/jwt"
-	"github.com/tjalp/pta-platform/auth"
 	"golang.org/x/crypto/bcrypt"
 	"net/http"
 	"os"
@@ -113,7 +112,7 @@ func StartServer() {
 	})
 
 	apiGroup.Group("/pta").
-		Use(auth.Auth(data)).
+		//Use(auth.Auth(data)).
 		//Use(auth.Authentication(data)).
 		GET("/:id", getPta).
 		DELETE("/:id", deletePta).
