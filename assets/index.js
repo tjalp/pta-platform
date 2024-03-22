@@ -135,7 +135,6 @@ function vakZoeken(vak){
             return response.json();
     })
     .then(data =>{
-        console.log(data)
         zoekenNiveau(data, vak)
         initialiseerKeuzeModal('Niveau', niveauOpties, (opties) => bevestigKeuze('Niveau', opties), vakkeuze, selectedNiveau ? [selectedNiveau] : []);
     })
@@ -149,30 +148,27 @@ function zoekenNiveau(vakkenlijst, vak){
     for(let i = 0; i < vakkenlijst.length; i ++){   
         console.log(vakkenlijst[i].name == vak)
         if(vakkenlijst[i].name == vak){
-            console.log(vakkenlijst[i].level)
-            niveauOpties.push(vakkenlijst[i].level)
+            let b = vakkenlijst[i].level
+            b.toUpperCase()
+            niveauOpties.push(b)
         }
     }
 }   
 
 function vakkeuze() {
-    console.log('1' + selectedVak)
     initialiseerKeuzeModal('Vak', vakkenOpties, (opties) => bevestigKeuze('Vak', opties), start, selectedVak ? [selectedVak] : []);
 }
 
 function niveaukeuze() {
-    console.log('2' + selectedVak)
     vakZoeken(selectedVak)
-    console.log(niveauOpties)
 }
 
 function jaarkeuze() {
     nieuwJaarOpties = updateJaarOpties(jaarOpties, bewerkJaar, opSlot);
     initialiseerKeuzeModal('Jaar', nieuwJaarOpties, (opties) => bevestigKeuze('Jaar', opties), niveaukeuze, selectedJaar ? [selectedJaar] : []);
-}
+}   
 
 function updateSelection(keuzeType, selected) {
-    console.log('help')
     switch (keuzeType) {
         case 'Vak': selectedVak = selected;
         console.log(selectedVak)
@@ -1671,6 +1667,34 @@ function chekkenOfHetzelfde(a, b){
         }
     }
     return false
+}
+
+function laadPta(){
+    selectedNiveau = selectedNiveau.toUpperCase()
+    fetch(`/api/pta/search?level=`+ selectedNiveau + `&name=` + selectedVak)
+    .then(response => {
+            if (!response.ok) {
+                throw new Error('Netwerkrespons was niet ok');
+            }
+            return response.json();
+    })
+    .then(data =>{
+        console.log(data)
+        selecteerRecentstePta(data)
+        genereerToetsen()
+    })
+    .catch(error => {
+            console.error('Fout bij het laden:', error);
+    });
+}
+
+function selecteerRecentstePta(fptas){
+    const recentstePta = fptas.reduce((recentste, huidig) => {
+        const recentsteJaar = recentste.cohort.split(' - ')[1];
+        const huidigJaar = huidig.cohort.split(' - ')[1];
+        return recentsteJaar > huidigJaar ? recentste : huidig;
+    });
+    ptaData = recentstePta
 }
 
 OptiesUitDatabase()
