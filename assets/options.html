@@ -9,7 +9,7 @@
 <body>
     <form method="post" enctype="multipart/form-data" action="/api/pta/upload">
         <label for="file">File</label>
-        <input id="file" name="file" type="file" />
+        <input id="file" name="files[]" type="file" multiple />
         <button>Upload</button>
         </form>
 <button onclick="createPta()">PTA Aanmaken</button>

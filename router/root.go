@@ -366,37 +366,45 @@ func getUser(c *gin.Context) {
 }
 
 func uploadPta(c *gin.Context) {
-	fileHeader, err := c.FormFile("file")
+	form, err := c.MultipartForm()
+	files := form.File["files[]"]
 
-	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "no file provided"})
+	if err != nil || files == nil || len(files) == 0 {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "no files provided"})
 		return
 	}
 
-	file, err := fileHeader.Open()
-	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "error opening file"})
-		return
-	}
-	defer file.Close()
-	f, err := excelize.OpenReader(file)
-	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "error reading file"})
-		return
-	}
-	sheets := f.GetSheetList()
+	for _, fileHeader := range files {
+		fmt.Println("Processing file:", fileHeader.Filename)
+		// New function otherwise there may be a resource leak
+		func() {
+			file, err := fileHeader.Open()
+			if err != nil {
+				c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "error opening file:" + fileHeader.Filename})
+				return
+			}
+			defer file.Close()
+			f, err := excelize.OpenReader(file)
+			if err != nil {
+				c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "error reading file:" + fileHeader.Filename})
+				return
+			}
+			sheets := f.GetSheetList()
 
-	for _, sheetName := range sheets {
-		rows, err := f.GetRows(sheetName, excelize.Options{})
-		if err != nil {
-			fmt.Println("error reading sheet", sheetName, ":", err)
-			continue
-		}
-		pta := ReadRows(rows)
-		data.SavePta(pta)
+			for _, sheetName := range sheets {
+				rows, err := f.GetRows(sheetName, excelize.Options{})
+				if err != nil {
+					fmt.Println("error reading sheet", sheetName, ":", err)
+					continue
+				}
+				pta := ReadRows(rows)
+				fmt.Println("Saving PTA", pta.Name)
+				data.SavePta(pta)
+			}
+		}()
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "file uploaded"})
+	c.JSON(http.StatusOK, gin.H{"message": "files uploaded and processed"})
 }
 
 func getTypes(c *gin.Context) {

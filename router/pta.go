@@ -59,6 +59,15 @@ func ReadRows(rows [][]string) database.PtaData {
 			if cell == "PTA" {
 				ptaColumn = index
 			}
+			if strings.HasPrefix(cell, "% weging") {
+				weight, ok := firstMatchAfterIndex(row, index+1, func(cell string) bool {
+					return cell != "" && cell != row[index]
+				})
+				if ok {
+					weightInt, _ := strconv.Atoi(weight)
+					pta.Weights = append(pta.Weights, weightInt)
+				}
+			}
 		}
 	}
 

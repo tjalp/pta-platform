@@ -50,7 +50,8 @@ func (s MongoDatabase) SavePta(data PtaData) PtaData {
 	collection := mongodb.Collection("ptas")
 	id, err := objectIdFromHex(data.Id)
 	if err != nil {
-		panic(err)
+		objectId := primitive.NewObjectID()
+		id = &objectId
 	}
 	data.Id = ""
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
