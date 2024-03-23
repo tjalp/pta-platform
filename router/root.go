@@ -84,21 +84,51 @@ func StartServer() {
 			c.JSON(http.StatusOK, user)
 		})
 
+	apiGroup.POST("/auth/signup", func(c *gin.Context) {
+		var user database.User
+		if err := c.ShouldBind(&user); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		if user.Abbreviation == "" || user.Password == "" {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "abbreviation and password may not be empty"})
+			return
+		}
+		existingUser := data.FindUser(map[string][]string{"abbreviation": {user.Abbreviation}})
+		if existingUser != nil {
+			c.JSON(http.StatusConflict, gin.H{"error": "user already exists"})
+			return
+		}
+		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "error hashing password"})
+			return
+		}
+		user.Password = string(hashedPassword)
+		user.CreatedAt = time.Now()
+		user = data.SaveUser(user)
+		c.JSON(http.StatusCreated, user)
+	})
+
 	apiGroup.POST("/auth/login", func(c *gin.Context) {
 		var user database.User
 		if err := c.ShouldBind(&user); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
-		var existingUser = data.GetUser(user.Id)
+		if user.Abbreviation == "" || user.Password == "" {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "abbreviation and password may not be empty"})
+			return
+		}
+		var existingUser = data.FindUser(map[string][]string{"abbreviation": {user.Abbreviation}})
 		if existingUser == nil {
 			c.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
 			return
 		}
-		err := bcrypt.CompareHashAndPassword([]byte(existingUser.HashedPassword), []byte(user.HashedPassword))
+		err := bcrypt.CompareHashAndPassword([]byte(existingUser.Password), []byte(user.Password))
 		if err != nil {
-			//c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid password"})
-			//return
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid password"})
+			return
 		}
 		expirationTime := time.Now().Add(time.Hour * 12)
 		token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.StandardClaims{ExpiresAt: expirationTime.Unix()})
@@ -123,9 +153,9 @@ func StartServer() {
 		GET("/all", func(c *gin.Context) { searchPta(c, true) }).
 		POST("/upload", uploadPta)
 
-	apiGroup.Group("/user").
-		//Use(auth.Authentication(data)).
-		GET("/:id", getUser)
+	//apiGroup.Group("/user").
+	//Use(auth.Authentication(data)).
+	//GET("/:id", getUser)
 
 	apiGroup.Group("/defaults").
 		//Use(auth.Authentication(data)).

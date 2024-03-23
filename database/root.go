@@ -45,10 +45,10 @@ type Period struct {
 }
 
 type User struct {
-	Id             string    `json:"id" form:"id" bson:"_id,omitempty"`
-	Email          string    `json:"email" form:"email"`
-	CreatedAt      time.Time `json:"created_at" form:"created_at" bson:"created_at"`
-	GoogleUserId   string    `json:"google_user_id" form:"google_user_id" bson:"google_user_id"`
-	Abbreviation   string    `json:"abbreviation" form:"abbreviation"`
-	HashedPassword string    `json:"-,omitempty" form:"hashed_password"`
+	Id           string    `json:"id" form:"id" bson:"_id,omitempty"`
+	Email        string    `json:"email" form:"email"`
+	CreatedAt    time.Time `json:"created_at" form:"created_at" bson:"created_at"`
+	GoogleUserId string    `json:"google_user_id" form:"google_user_id" bson:"google_user_id"`
+	Abbreviation string    `json:"abbreviation" form:"abbreviation"`
+	Password     string    `json:"password,omitempty" form:"password"` // TODO DONT SEND THIS AS RESPONSE!!!
 }

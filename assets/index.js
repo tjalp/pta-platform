@@ -66,10 +66,32 @@ function bewerken() {
 }
 
 function bevestigBewerken() {
+    // TODO Doe dit alsjeblieft goed want ik heb geen idee hoe dit moet
+    let elements = document.querySelector('.modal').querySelectorAll('input');
+    let afkorting = elements[0].value;
+    let wachtwoord = elements[1].value;
     // Hier moet verificatie worden afgehandeld
-    isBewerker = true;
-    selectedBewerkerOfBekijker = "Bewerken";
-    vakkeuze();
+    fetch(`/api/auth/login`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ abbreviation: afkorting, password: wachtwoord })
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(response.statusText);
+            }
+            return response.json();
+        })
+        .then(data => {
+            isBewerker = true;
+            selectedBewerkerOfBekijker = "Bewerken";
+            vakkeuze();
+        })
+        .catch(error => {
+            console.error('Fout bij inloggen:', error);
+        });
 }
 
 function initialiseerKeuzeModal(keuzeType, opties, bevestigingsActie, terugActie, selectOptie = []) {
