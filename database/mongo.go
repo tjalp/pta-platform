@@ -311,35 +311,55 @@ func (s MongoDatabase) GetUser(id string) *User {
 	return &result
 }
 
-func (s MongoDatabase) FindUser(params map[string][]string) *User {
+func (s MongoDatabase) FindUsers(params map[string][]string) []User {
 	collection := mongodb.Collection("users")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	filter := bson.D{}
 	for k, v := range params {
-		filter = append(filter, bson.E{Key: k, Value: v[0]})
+		filter = append(filter, bson.E{
+			Key: k,
+			Value: bson.D{
+				{"$regex", "^" + v[0] + "$"},
+				{"$options", "i"},
+			}})
 	}
 
-	var result User
-	err := collection.FindOne(ctx, filter).Decode(&result)
+	var result []User
+	cursor, err := collection.Find(ctx, filter)
 	if err != nil {
 		fmt.Println(err)
 		return nil
 	}
-	return &result
+	err = cursor.All(ctx, &result)
+	if err != nil {
+		fmt.Println(err)
+		return nil
+	}
+	return result
 }
 
 func (s MongoDatabase) SaveUser(user User) User {
 	collection := mongodb.Collection("users")
+	id, err := objectIdFromHex(user.Id)
+	if err != nil {
+		objectId := primitive.NewObjectID()
+		id = &objectId
+	}
+	user.Id = ""
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	result, err := collection.InsertOne(ctx, user)
+	result, err := collection.ReplaceOne(ctx, bson.D{{"_id", id}}, user, options.Replace().SetUpsert(true))
 	if err != nil {
 		panic(err)
 	}
-	if user.Id == "" {
-		user.Id = result.InsertedID.(primitive.ObjectID).Hex()
+	if result.UpsertedID != nil {
+		objectId, ok := result.UpsertedID.(primitive.ObjectID)
+		if !ok {
+			panic("UpsertedID is not an ObjectID: " + result.UpsertedID.(string))
+		}
+		user.Id = objectId.Hex()
 	}
 	return user
 }

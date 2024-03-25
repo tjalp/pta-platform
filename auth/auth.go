@@ -33,7 +33,7 @@ func Authenticate(c *gin.Context, db database.Database) bool {
 	}
 
 	googleId := payload.Subject
-	user := db.FindUser(map[string][]string{"google_user_id": {googleId}})
+	user := db.FindUsers(map[string][]string{"google_user_id": {googleId}})
 
 	if user == nil {
 		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": "unauthorized"})
@@ -80,7 +80,7 @@ func Auth(db database.Database) gin.HandlerFunc {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": "unauthorized"})
 			return
 		}
-		err = validateToken(cookie)
+		_, _, err = ValidateToken(cookie)
 		if err != nil {
 			//c.Header("WWW-Authenticate", "Basic realm=Authorization Required")
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": "unauthorized"})
@@ -90,12 +90,13 @@ func Auth(db database.Database) gin.HandlerFunc {
 	}
 }
 
-func validateToken(tokenString string) error {
-	_, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+func ValidateToken(tokenString string) (*jwt.Token, *jwt.StandardClaims, error) {
+	claims := &jwt.StandardClaims{}
+	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
 		return []byte(os.Getenv("JWT_SECRET")), nil
 	})
 	if err != nil {
-		return err
+		return nil, nil, err
 	}
-	return nil
+	return token, claims, nil
 }

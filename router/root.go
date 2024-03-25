@@ -3,6 +3,7 @@ package router
 import (
 	"fmt"
 	"github.com/golang-jwt/jwt"
+	"github.com/tjalp/pta-platform/auth"
 	"golang.org/x/crypto/bcrypt"
 	"net/http"
 	"os"
@@ -38,7 +39,7 @@ func StartServer() {
 	// 	Email:     "test@example.com",
 	// 	CreatedAt: time.Unix(0, 0),
 	// }
-	// if data.FindUser(map[string]string{"id": "testId"}) == nil {
+	// if data.FindUsers(map[string]string{"id": "testId"}) == nil {
 	// 	fmt.Println("Creating test user")
 	// 	data.SaveUser(user)
 	// }
@@ -67,7 +68,11 @@ func StartServer() {
 				return
 			}
 			googleId := payload.Subject
-			user := data.FindUser(map[string][]string{"google_user_id": {googleId}})
+			users := data.FindUsers(map[string][]string{"google_user_id": {googleId}})
+			var user *database.User = nil
+			if users != nil {
+				user = &users[0]
+			}
 
 			if user == nil {
 				newUser := database.User{
@@ -94,7 +99,7 @@ func StartServer() {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "abbreviation and password may not be empty"})
 			return
 		}
-		existingUser := data.FindUser(map[string][]string{"abbreviation": {user.Abbreviation}})
+		existingUser := data.FindUsers(map[string][]string{"abbreviation": {user.Abbreviation}})
 		if existingUser != nil {
 			c.JSON(http.StatusConflict, gin.H{"error": "user already exists"})
 			return
@@ -120,7 +125,11 @@ func StartServer() {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "abbreviation and password may not be empty"})
 			return
 		}
-		var existingUser = data.FindUser(map[string][]string{"abbreviation": {user.Abbreviation}})
+		var existingUsers = data.FindUsers(map[string][]string{"abbreviation": {user.Abbreviation}})
+		var existingUser *database.User = nil
+		if existingUsers != nil {
+			existingUser = &existingUsers[0]
+		}
 		if existingUser == nil {
 			c.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
 			return
@@ -153,9 +162,12 @@ func StartServer() {
 		GET("/all", func(c *gin.Context) { searchPta(c, true) }).
 		POST("/upload", uploadPta)
 
-	//apiGroup.Group("/user").
-	//Use(auth.Authentication(data)).
-	//GET("/:id", getUser)
+	apiGroup.Group("/user").
+		//Use(auth.Authentication(data)).
+		GET("/:id", getUser).
+		PUT("/:id", setUser).
+		GET("/all", getAllUsers).
+		PUT("/password", setPassword)
 
 	apiGroup.Group("/defaults").
 		//Use(auth.Authentication(data)).
@@ -361,6 +373,82 @@ func getUser(c *gin.Context) {
 		c.AbortWithStatus(http.StatusNotFound)
 		return
 	}
+
+	c.JSON(http.StatusOK, user)
+}
+
+func setUser(c *gin.Context) {
+	id := c.Param("id")
+
+	user := data.GetUser(id)
+
+	if user == nil {
+		c.AbortWithStatus(http.StatusNotFound)
+		return
+	}
+
+	if err := c.ShouldBind(&user); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "error hashing password"})
+		return
+	}
+	user.Password = string(hashedPassword)
+	data.SaveUser(*user)
+
+	c.Status(http.StatusNoContent)
+}
+
+func getAllUsers(c *gin.Context) {
+	c.JSON(http.StatusOK, data.FindUsers(map[string][]string{}))
+}
+
+func setPassword(c *gin.Context) {
+	password := struct {
+		OldPassword string `json:"old_password" form:"old_password"`
+		NewPassword string `json:"password" form:"password"`
+	}{}
+
+	if err := c.ShouldBind(&password); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if password.OldPassword == "" || password.NewPassword == "" {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "'old_password' & 'new_password' cannot be empty"})
+		return
+	}
+	cookie, _ := c.Cookie("token")
+	_, claims, err := auth.ValidateToken(cookie) // is authenticated, so this cookie exists
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+	tempUser := data.GetUser(claims.Subject)
+	if tempUser == nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+	user := *tempUser
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password.OldPassword))
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid password"})
+		return
+	}
+
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "error hashing password"})
+		return
+	}
+
+	user.Password = string(hashedPassword)
+
+	data.SaveUser(user)
 
 	c.JSON(http.StatusOK, user)
 }

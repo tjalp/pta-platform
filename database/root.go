@@ -18,7 +18,7 @@ type Database interface {
 	GetPeriods() []Period
 	SetPeriods([]Period)
 	GetUser(string) *User
-	FindUser(map[string][]string) *User
+	FindUsers(map[string][]string) []User
 	SaveUser(User) User
 }
 

@@ -114,6 +114,75 @@ function vakkenPtaOpslaan(){
   });
 }
 
+function docentenOphalen() {
+    fetch('/api/user/all')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            docentenLaden(data);
+        })
+        .catch(error => {
+            console.error('Error loading data:', error);
+        });
+}
+
+function docentenLaden(data) {
+    const container = document.getElementById('DocentenAccounts');
+    data.forEach(function(docent) {
+        if (docent.abbreviation === '') {
+            return;
+        }
+        const label = document.createElement('label');
+        label.setAttribute('for', docent.id);
+        label.textContent = docent.abbreviation + ':';
+
+        const input = document.createElement('input');
+        input.setAttribute('type', 'text');
+        input.setAttribute('id', docent.id);
+        input.setAttribute('placeholder', 'wachtwoord');
+
+        const div = document.createElement('div');
+        div.appendChild(label);
+        div.appendChild(input);
+
+        container.appendChild(div);
+    });
+}
+
+function docentenAccountsOpslaan() {
+    event.preventDefault(); // Prevent the default form submission
+
+    // Gather data from the form
+    var docentenData = [];
+    var inputs = document.querySelectorAll('#DocentenAccounts input[type="text"]');
+    inputs.forEach(function(input) {
+        fetch(`/api/user/${input.id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ id: input.id, password: input.value })
+        }).then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        }).then(data => {
+            console.log('Data received:', data);
+        }).catch(error => {
+            console.error('Error sending data:', error);
+        })
+        docentenData.push({
+            id: input.id,
+            abbreviation: input.value
+        });
+    });
+}
+
 function vakkenOphalen(){
     fetch(`/api/defaults/subjects`)
     .then(response => {
@@ -676,6 +745,6 @@ function toetssoortenVersturen() {
 }
 
 vakkenOphalen()
-
+docentenOphalen()
 hulpmiddelenOphalen()
 
