@@ -57,6 +57,7 @@ function bekijken() {
 function bewerken() {
     removeExistingModals();
     const modal = createModal('Inloggen', [
+        { type: 'div', id: 'modalMessage' },
         { type: 'input', placeholder: 'Afkorting' },
         { type: 'input', placeholder: 'Wachtwoord', inputType: 'password' },
         { text: 'Terug', action: start },
@@ -70,6 +71,7 @@ function bevestigBewerken() {
     let elements = document.querySelector('.modal').querySelectorAll('input');
     let afkorting = elements[0].value;
     let wachtwoord = elements[1].value;
+    let messageField = document.getElementById('modalMessage');
     // Hier moet verificatie worden afgehandeld
     fetch(`/api/auth/login`, {
         method: 'POST',
@@ -80,7 +82,10 @@ function bevestigBewerken() {
     })
         .then(response => {
             if (!response.ok) {
-                throw new Error(response.statusText);
+                response.json().then(data => {
+                    messageField.textContent = data.error;
+                })
+                throw new Error('Netwerkrespons was niet ok');
             }
             return response.json();
         })
@@ -262,7 +267,7 @@ function createModal(title, elements) {
         } else if (el.type === 'input') {
             contentHtml += `<input type="${el.inputType || 'text'}" placeholder="${el.placeholder}">`;
         } else if (el.type === 'div') {
-            contentHtml += `<div ${el.id}></div>`;
+            contentHtml += `<div id="${el.id}"></div>`;
         }
         else {
             contentHtml += `<button onclick="${el.action.name}()">${el.text}</button>`;
