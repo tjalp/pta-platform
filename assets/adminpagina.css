@@ -20,9 +20,12 @@ h1 {
     color: var(--primary-color);
 }
 
-h2 {
-    margin-top: 20px;
+h2, h3, th {
     color: var(--primary-color);
+}
+
+h3, th {
+    font-style: italic;
 }
 
 label {
@@ -271,4 +274,30 @@ select {
 
 #dynamicButtons button, .modal button {
     margin: 10px;
+}
+
+.flex {
+    display: flex;
+	align-items: center;
+}
+
+button {
+    margin-left: 20px;
+}
+
+.plus {
+    margin-left: 0px;
+    margin-top: 20px;
+}
+
+.periodeContainer {
+    margin-bottom: 15px;
+}
+
+.periodeContainer h3 {
+    margin: 0 0 10px 0;
+}
+
+#hulpmiddelenform input {
+    width: 350px;
 }
