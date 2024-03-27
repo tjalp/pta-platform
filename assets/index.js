@@ -137,6 +137,7 @@ function bevestigKeuze(keuzeType, geselecteerdeOpties) {
                     if (selectedJaar === bewerkJaar) {
                         // TODO mooier maken
                         alert('Er is een kopie van het PTA van vorig jaar gemaakt. Deze kan je nu bewerken.')
+                        laadPta()
                     }
                     createDynamicButtons();
                     isEersteKeer = false; // Stop de initiële reeks

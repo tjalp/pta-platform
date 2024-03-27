@@ -643,12 +643,15 @@ function docentenPtaOpslaan(){
     var form = document.getElementById('VerantwoordelijkeDocentenPta');
     var veldenArray = [];
     var inputs = form.querySelectorAll('input[type="text"]'); 
-    
+    var docentenArray = []
     
     inputs.forEach(function(input) {
         var vak = input.getAttribute("vak");
         var niveau = input.getAttribute("niveau");
         var jaarlaag = input.getAttribute("jaarlaag");
+        if(!docentenArray.includes(input.value)){
+            docentenArray.push(input.value)
+        }
         var veldObject = {
             name: vak,  
             responsible : input.value,
@@ -656,6 +659,8 @@ function docentenPtaOpslaan(){
         };
         veldenArray.push(veldObject);
     });
+
+    wachtwoordveldenMaken(docentenArray)
 
     fetch('/api/defaults/subjects', {
         method: 'PUT',
@@ -676,6 +681,24 @@ function docentenPtaOpslaan(){
     .catch(error => {
         console.error('Error sending data:', error);
     });
+}
+
+function wachtwoordveldenMaken(verantwoordelijken){
+    let wachtwoordLocatie = document.getElementById('DocentenAccounts')
+    for(let i =0; i < verantwoordelijken.length; i ++){
+        var label = document.createElement('label')
+        label.htmlFor = 'wachtwoord' + verantwoordelijken[i]
+        label.innerText = 'Wachtwoord' + verantwoordelijken[i] + ':'
+        var input = document.createElement('input')
+        input.type = 'text'
+        input.id = 'wachtwoord' + verantwoordelijken[i]
+        input.responsible = verantwoordelijken[i]
+        var div = document.createElement('div')
+        div.id = 'wachtwoord' + verantwoordelijken[i] + 'div'
+        div.appendChild(label)
+        div.appendChild(input)
+        wachtwoordLocatie.appendChild(div)    
+    }
 }
 
 function verwijderVak(divId){
