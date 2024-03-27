@@ -685,6 +685,7 @@ function docentenPtaOpslaan(){
 
 function wachtwoordveldenMaken(verantwoordelijken){
     let wachtwoordLocatie = document.getElementById('DocentenAccounts')
+    wachtwoordLocatie = ''
     for(let i =0; i < verantwoordelijken.length; i ++){
         var label = document.createElement('label')
         label.htmlFor = 'wachtwoord' + verantwoordelijken[i]
@@ -767,7 +768,105 @@ function toetssoortenVersturen() {
     });
 }
 
+function toetsSoortenOphalen(){
+    fetch(`/api/defaults/types`)
+    .then(response => {
+            if (!response.ok) {
+                throw new Error('Netwerkrespons was niet ok');
+            }
+            return response.json();
+    })
+    .then(data =>{
+        let toetsSoorten = data;
+        toetssoortenLaden(toetsSoorten)
+    })
+    .catch(error => {
+            console.error('Fout bij het laden:', error);
+    });
+}
+
+function toetssoortenLaden(toetssen){
+    const locatie  = document.getElementById('kloonbareVeld1')
+    for(i = 0; i < toetssen.length; i ++){
+        var label = document.createElement('label');
+        label.setAttribute('for', i + 'toetssoort');
+        label.textContent = "Mogelijkheid " + (i+1) + ":";
+        var input = document.createElement('input');           
+        input.setAttribute('type', 'text'); 
+        input.setAttribute('id', i + 'toetssoort');
+        input.setAttribute('name', i);
+        input.setAttribute('value', toetssen[i])
+        var div = document.createElement('div');
+        div.appendChild(label);
+        div.appendChild(input);
+        locatie.appendChild(div);
+    }
+}
+
+function tijdsMogelijkhedenOphalen(){
+    fetch(`/api/defaults/durations`)
+    .then(response => {
+            if (!response.ok) {
+                throw new Error('Netwerkrespons was niet ok');
+            }
+            return response.json();
+    })
+    .then(data =>{
+        let tijdsmogelijkheden = data;
+        tijdsmogelijkhedenLaden(tijdsmogelijkheden)
+    })
+    .catch(error => {
+            console.error('Fout bij het laden:', error);
+    });
+}
+
+function tijdsmogelijkhedenLaden(tijden){
+    const locatie  = document.getElementById('kloonbareVeld2')
+    for(i = 0; i < tijden.length; i ++){
+        var label = document.createElement('label');
+        label.setAttribute('for', i + 'tijdsmogelijkheid');
+        label.textContent = "Mogelijkheid " + (i+1) + ":";
+        var input = document.createElement('input');           
+        input.setAttribute('type', 'number'); 
+        input.setAttribute('id', i + 'tijdsmogelijkheid');
+        input.setAttribute('name', i);
+        input.setAttribute('value', tijden[i])
+        var div = document.createElement('div');
+        div.appendChild(label);
+        div.appendChild(input);
+        locatie.appendChild(div);
+    }
+}
+
+function periodesophalen(){
+    fetch(`/api/defaults/periods`)
+    .then(response => {
+            if (!response.ok) {
+                throw new Error('Netwerkrespons was niet ok');
+            }
+            return response.json();
+    })
+    .then(data =>{
+        let periods = data;
+        periodesLaden(periods)
+    })
+    .catch(error => {
+            console.error('Fout bij het laden:', error);
+    });
+}
+
+function periodesLaden(periodes){
+    document.getElementById('startPeriode1').value = periodes[0].start_week
+    document.getElementById('eindPeriode1').value = periodes[0].end_week
+    document.getElementById('eindPeriode2').value = periodes[1].end_week
+    document.getElementById('eindPeriode3').value = periodes[2].end_week
+    document.getElementById('eindPeriode4').value = periodes[3].end_week
+}
+
+
 vakkenOphalen()
 docentenOphalen()
 hulpmiddelenOphalen()
-
+toetsSoortenOphalen()
+tijdsMogelijkhedenOphalen()
+periodesophalen()
