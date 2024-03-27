@@ -147,8 +147,10 @@ function bevestigKeuze(keuzeType, geselecteerdeOpties) {
         console.error(`Fout bij bevestiging van ${keuzeType}:`, error);
     } finally {
         if (!isEersteKeer) { // Ook geladen nadat jaar is aangeroepen
-            laadPercentages();
-            removeExistingModals();
+            laadPta().then(() => {
+                laadPercentages();
+                removeExistingModals();
+            });
         }
     }
 }
@@ -307,13 +309,6 @@ const foutDiv = document.getElementById('errorPercentages');
 
 function laadAlles() {
     laadPercentages();
-
-    // fetch(`/api/pta/search?name=${selectedVak}&level=${selectedNiveau}`)
-    //     .then(response => response.json())
-    //     .then(data => {
-    //         ptaData = data[0];
-    //     })
-    //     .catch(error => console.error(error));
 }
 
 function laadPercentages() {
@@ -559,7 +554,6 @@ GET & SET FUNCTIES VOOR DATABASE
 */
 
 function opslaan() {
-    refreshData()
     // TODO Wegingen nog updaten in ptaData
     if (setLegeVelden()) {
         console.log('Er zijn nog lege velden. Niet opslaan?')
@@ -573,11 +567,12 @@ function opslaan() {
         body: JSON.stringify(ptaData)
     })
         .then(response => response.json())
-        .then(data => ptaData = data)
+        .then(data => {
+            ptaData = data;
+            console.log('Data succesvol opgeslagen');
+            console.log(ptaData);
+        })
         .catch(error => console.error(error));
-    // TODO Goed testen of dit allemaal goed gaat
-    console.log('Data succesvol opgeslagen')
-    console.log(ptaData)
 }
 
 
@@ -794,6 +789,13 @@ function maakTabs(ptaData) {
     let tabsContainer = document.querySelector('.tabs');
     let contentContainer = document.querySelector('.tabContent');
 
+    // Verwijder alle toegevoegde tabs, behalve de vaste tabs
+    document.querySelectorAll('.tab').forEach(tab => {
+        if (tab.id !== 'tabWegingen' && tab.id !== 'tabOverzicht') {
+            tab.remove();
+        }
+    });
+
     // Initialiseer vaste tabs
     initialiseerVasteTabs();
 
@@ -883,16 +885,16 @@ function genereerOverzichtInhoud() {
     let sorteerKnop = document.createElement('button');
     sorteerKnop.id = 'sorteerKnop';
     sorteerKnop.textContent = 'Sorteer Toetsen';
-    
+
     // Bepaal de status van heeftBewerkingsRechten
     let heeftBewerkingsRechten = isBewerker && selectedJaar.includes(bewerkJaar) && !opSlot;
-    
+
     // Zet de disabled status van de knop op basis van heeftBewerkingsRechten
     sorteerKnop.disabled = !heeftBewerkingsRechten;
-    
+
     sorteerKnop.addEventListener('click', sorteerTabs);
     contentPane.appendChild(sorteerKnop);
-    
+
 
     vulOverzichtTabel(); // Zorg dat deze functie wordt aangeroepen na het opzetten van de tabel
 }
@@ -910,10 +912,6 @@ function toonTabInhoud(tabId) {
     if (activeTab) {
         activeTab.classList.add('active');
     }
-}
-
-function sorteerTabs() {
-    // TODO
 }
 
 function getPtaData(toetsNummer) {
@@ -951,8 +949,8 @@ function getPtaData(toetsNummer) {
         tijd: toets.time,
         tijdAnders: toets.time_else,
         herkansbaar: toets.resitable ? "Ja" : "Nee",
-        pod: toets.weight_pod,
-        pta: toets.weight_pta,
+        pod: toets.pod_weight,
+        pta: toets.pta_weight,
         hulpmiddelen: toets.tools.map(toolIndex => ptaData.tools[toolIndex]).join(", ")
     };
 }
@@ -1688,31 +1686,24 @@ function vakkenJuistzetten(fdata){
 }
 
 function chekkenOfHetzelfde(a, b){
-    for(i = 0; i < b.length; i ++){
-        if(a == b[i]){
+    for(let i = 0; i < b.length; i ++){
+        if(a === b[i]){
             return true
         }
     }
     return false
 }
 
-function laadPta(){
-    selectedNiveau = selectedNiveau.toUpperCase()
-    fetch(`/api/pta/search?level=`+ selectedNiveau + `&name=` + selectedVak)
-    .then(response => {
-            if (!response.ok) {
-                throw new Error('Netwerkrespons was niet ok');
-            }
-            return response.json();
-    })
-    .then(data =>{
-        console.log(data)
-        selecteerRecentstePta(data)
-        genereerToetsen()
-    })
-    .catch(error => {
-            console.error('Fout bij het laden:', error);
-    });
+async function laadPta(){
+    const response = await fetch(`/api/pta/search?name=${selectedVak}&level=${selectedNiveau}`)
+    if (!response.ok) {
+        throw new Error(`Netwerkrespons was niet ok`);
+    }
+    const data = await response.json();
+    ptaData = data[0]
+    // selecteerRecentstePta(data)
+    genereerToetsen()
+    refreshData()
 }
 
 function selecteerRecentstePta(fptas){
