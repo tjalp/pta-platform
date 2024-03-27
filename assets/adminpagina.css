@@ -301,3 +301,36 @@ button {
 #hulpmiddelenform input {
     width: 350px;
 }
+
+#VerantwoordelijkeDocentenPta div {
+    display: flex;
+    margin-bottom: 10px;
+    padding: 10px;
+  }
+  
+  #VerantwoordelijkeDocentenPta label {
+    margin-right: 10px;
+    width: 200px;
+  }
+  
+  #VerantwoordelijkeDocentenPta input[type="text"] {
+    margin-right: 10px;
+    padding: 5px;
+  }
+  
+  .form-container {
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 20px; /* Geeft wat ruimte tussen de formulieren */
+  }
+  
+  .form-container form, .form-container button.plus {
+    flex: 1 1 300px; /* Zorgt ervoor dat elke form zich aanpast maar niet kleiner wordt dan 300px */
+    margin: 10px; /* Voegt wat marge toe rond de formulieren */
+    padding: 20px;
+    border: 1px solid #ccc; /* Geeft een subtiele rand */
+    border-radius: 5px; /* Afgeronde hoeken voor esthetiek */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Een lichte schaduw voor diepte */
+  }
