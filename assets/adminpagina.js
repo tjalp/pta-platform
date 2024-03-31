@@ -148,7 +148,7 @@ function tijdsmogelijkhedenLaden(tijden) {
     locatie.innerHTML = ''; // Maak de container leeg voor nieuwe invoer
     tijden.forEach(tijd => {
         voegExtraVeldToe('kloonbareVeld2', 'number', tijd);
-    }); 
+    });
 }
 
 /* Hulpmiddelen */
@@ -206,10 +206,10 @@ function hulpmiddelenLaden(hulpmiddelen) {
     const locatie = document.getElementById('kloonbareVeld3');
     locatie.innerHTML = ''; // Zorg ervoor dat de container leeg is voor nieuwe invoer
     hulpmiddelen.forEach((hulpmiddel, index) => {
-      voegExtraVeldToe('kloonbareVeld3', 'text', hulpmiddel);
+        voegExtraVeldToe('kloonbareVeld3', 'text', hulpmiddel);
     });
-  }
-  
+}
+
 
 function dataVersturen(event) {
     event.preventDefault(); // Voorkomt dat het formulier echt wordt ingediend
@@ -306,93 +306,93 @@ function vakkenPtaOpslaan() {
 function genereerWachtwoord() {
     const wachtwoordInput = document.getElementById('wachtwoordInput');
     wachtwoordInput.value = wachtwoordGenereren(8);
-  }
-  
-  function wachtwoordGenereren(lengte) {
+}
+
+function wachtwoordGenereren(lengte) {
     const karakters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     let wachtwoord = '';
     for (let i = 0; i < lengte; i++) {
-      wachtwoord += karakters.charAt(Math.floor(Math.random() * karakters.length));
+        wachtwoord += karakters.charAt(Math.floor(Math.random() * karakters.length));
     }
     return wachtwoord;
-  }
-  
-  
-  function ophalenGebruikers() {
-    return fetch('/api/user/all').then(response => response.json());
-  }
-  
-  function gebruikerAanmaken(afkorting, wachtwoord) {
-    return fetch('/api/user/create', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ abbreviation: afkorting, password: wachtwoord })
-    });
-  }
-  
-  function gebruikerBijwerken(id, wachtwoord) {
-    return fetch(`/api/user/${id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ password: wachtwoord })
-    });
-  }
-  
-  let feedbackTimeout; 
+}
 
-  function toonFeedback(element, bericht, isSucces = true) {
-      const feedbackElement = document.getElementById(element);
-      feedbackElement.textContent = bericht;
-      feedbackElement.className = isSucces ? 'feedback success' : 'feedback error';
-  
-      if (feedbackTimeout) {
-          clearTimeout(feedbackTimeout);
-      }
-      feedbackTimeout = setTimeout(() => {
-          feedbackElement.textContent = '';
-          feedbackElement.className = 'feedback';
-          feedbackTimeout = null;
-      }, 5000);
-  }
-  
-  
-  function docentenAccountsOpslaan(event) {
+
+function ophalenGebruikers() {
+    return fetch('/api/user/all').then(response => response.json());
+}
+
+function gebruikerAanmaken(afkorting, wachtwoord) {
+    return fetch('/api/user/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ abbreviation: afkorting, password: wachtwoord })
+    });
+}
+
+function gebruikerBijwerken(id, wachtwoord) {
+    return fetch(`/api/user/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: wachtwoord })
+    });
+}
+
+let feedbackTimeout;
+
+function toonFeedback(element, bericht, isSucces = true) {
+    const feedbackElement = document.getElementById(element);
+    feedbackElement.textContent = bericht;
+    feedbackElement.className = isSucces ? 'feedback success' : 'feedback error';
+
+    if (feedbackTimeout) {
+        clearTimeout(feedbackTimeout);
+    }
+    feedbackTimeout = setTimeout(() => {
+        feedbackElement.textContent = '';
+        feedbackElement.className = 'feedback';
+        feedbackTimeout = null;
+    }, 5000);
+}
+
+
+function docentenAccountsOpslaan(event) {
     event.preventDefault();
-  
+
     const afkorting = document.getElementById('afkortingInput').value;
     const wachtwoord = document.getElementById('wachtwoordInput').value;
-  
+
     ophalenGebruikers().then(users => {
-      const gebruiker = users.find(user => user.abbreviation === afkorting);
-      if (!gebruiker) {
-        const bevestiging = confirm(`De afkorting ${afkorting} bestaat niet. Nieuwe gebruiker aanmaken?`);
-        if (bevestiging) {
-          gebruikerAanmaken(afkorting, wachtwoord)
-            .then(handleResponse)
-            .catch(error => toonFeedback('feedbackDocenten', error.message, false));
+        const gebruiker = users.find(user => user.abbreviation === afkorting);
+        if (!gebruiker) {
+            const bevestiging = confirm(`De afkorting ${afkorting} bestaat niet. Nieuwe gebruiker aanmaken?`);
+            if (bevestiging) {
+                gebruikerAanmaken(afkorting, wachtwoord)
+                    .then(handleResponse)
+                    .catch(error => toonFeedback('feedbackDocenten', error.message, false));
+            } else {
+                toonFeedback('feedbackDocenten', 'Nieuwe gebruiker aanmaken geannuleerd.', false);
+            }
         } else {
-          toonFeedback('feedbackDocenten', 'Nieuwe gebruiker aanmaken geannuleerd.', false);
+            gebruikerBijwerken(gebruiker.id, wachtwoord)
+                .then(handleResponse)
+                .catch(error => toonFeedback('feedbackDocenten', error.message, false));
         }
-      } else {
-        gebruikerBijwerken(gebruiker.id, wachtwoord)
-          .then(handleResponse)
-          .catch(error => toonFeedback('feedbackDocenten', error.message, false));
-      }
     }).catch(error => toonFeedback('feedbackDocenten', error.message, false));
-  }
-  
-  function handleResponse(response) {
+}
+
+function handleResponse(response) {
     if (!response.ok) {
-      throw new Error('Fout bij het bijwerken/aanmaken van de gebruiker.');
+        throw new Error('Fout bij het bijwerken/aanmaken van de gebruiker.');
     }
     return response.text().then(text => text ? JSON.parse(text) : {}).then(data => {
-      toonFeedback('feedbackDocenten', 'Wachtwoord succesvol opgeslagen.');
-      document.getElementById('DocentenAccounts').reset();
-      console.log('Data received:', data);
+        toonFeedback('feedbackDocenten', 'Wachtwoord succesvol opgeslagen.');
+        document.getElementById('DocentenAccounts').reset();
+        console.log('Data received:', data);
     });
-  }
-  
-  
+}
+
+
 
 function vakkenOphalen() {
     fetch(`/api/defaults/subjects`)
@@ -413,22 +413,22 @@ function vakkenOphalen() {
 
 function sorteerVakken(vakken) {
     const niveauGewicht = { 'mavo': 1, 'havo': 2, 'vwo': 3 };
-    
+
     return vakken.sort((a, b) => {
-      if (a.name === b.name) {
-        const niveauA = niveauGewicht[a.level.split(' ')[1].toLowerCase()];
-        const niveauB = niveauGewicht[b.level.split(' ')[1].toLowerCase()];
-        const jaarlaagA = parseInt(a.level.split(' ')[0]);
-        const jaarlaagB = parseInt(b.level.split(' ')[0]);
-  
-        if (niveauA === niveauB) {
-          return jaarlaagA - jaarlaagB; // Sorteer op jaarlaag als het niveau hetzelfde is
-        } 
-        return niveauA - niveauB; // Sorteer op niveau als de vaknaam hetzelfde is
-      }
-      return a.name.localeCompare(b.name); // Standaard sortering op vaknaam
+        if (a.name === b.name) {
+            const niveauA = niveauGewicht[a.level.split(' ')[1].toLowerCase()];
+            const niveauB = niveauGewicht[b.level.split(' ')[1].toLowerCase()];
+            const jaarlaagA = parseInt(a.level.split(' ')[0]);
+            const jaarlaagB = parseInt(b.level.split(' ')[0]);
+
+            if (niveauA === niveauB) {
+                return jaarlaagA - jaarlaagB; // Sorteer op jaarlaag als het niveau hetzelfde is
+            }
+            return niveauA - niveauB; // Sorteer op niveau als de vaknaam hetzelfde is
+        }
+        return a.name.localeCompare(b.name); // Standaard sortering op vaknaam
     });
-  }
+}
 
 function vakkenLaden() {
     const formDocentenPta = document.getElementById('VerantwoordelijkeDocentenPta');
@@ -495,21 +495,21 @@ function periodesOpslaan(event) {
         },
         body: JSON.stringify(periodesData)
     })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Serverfout bij het opslaan van periodes.');
-        }
-        return response.text();
-    })
-    .then(text => {
-        const data = text ? JSON.parse(text) : {};
-        console.log('Periodes succesvol opgeslagen:', data);
-        toonFeedback('feedbackPeriodes', 'Periodes succesvol opgeslagen.', true);
-    })
-    .catch(error => {
-        console.error('Fout bij het opslaan van periodes:', error);
-        toonFeedback('feedbackPeriodes', error.message, false);
-    });
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Serverfout bij het opslaan van periodes.');
+            }
+            return response.text();
+        })
+        .then(text => {
+            const data = text ? JSON.parse(text) : {};
+            console.log('Periodes succesvol opgeslagen:', data);
+            toonFeedback('feedbackPeriodes', 'Periodes succesvol opgeslagen.', true);
+        })
+        .catch(error => {
+            console.error('Fout bij het opslaan van periodes:', error);
+            toonFeedback('feedbackPeriodes', error.message, false);
+        });
 }
 
 
@@ -537,7 +537,7 @@ function vakToevoegen(event) {
 
 function voegVakVeldToe(vaknaam, niveau, jaarlaag) {
     const formDocentenPta = document.getElementById('VerantwoordelijkeDocentenPta');
-    
+
     // Controleer of het vak al bestaat
     if (document.querySelector(`input[vak="${vaknaam}"][niveau="${niveau}"][jaarlaag="${jaarlaag}"]`)) {
         alert('Dit vak is al toegevoegd voor de geselecteerde niveau en jaarlaag combinatie.');
@@ -566,11 +566,11 @@ function voegVakVeldToe(vaknaam, niveau, jaarlaag) {
     div.appendChild(label);
     div.appendChild(inputDocent);
     div.appendChild(verwijderKnop);
-    
+
     const header = formDocentenPta.querySelector('.pta-header');
-    
+
     formDocentenPta.insertBefore(div, header.nextSibling);
-    
+
 
 }
 
@@ -591,46 +591,46 @@ function docentenPtaOpslaan(e) {
     var veldenArray = [];
     var inputs = form.querySelectorAll('input[type="text"]');
     var docentenArray = [];
-  
-    inputs.forEach(function(input) {
-      var vak = input.getAttribute("vak");
-      var niveau = input.getAttribute("niveau");
-      var jaarlaag = input.getAttribute("jaarlaag");
-      if (!docentenArray.includes(input.value)) {
-        docentenArray.push(input.value);
-      }
-      var veldObject = {
-        name: vak,
-        responsible: input.value,
-        level: jaarlaag + ' ' + niveau
-      };
-      veldenArray.push(veldObject);
-    });
-  
-    // Opmerking: Implementeer wachtwoordveldenMaken(docentenArray) indien nodig
-  
-    fetch('/api/defaults/subjects', {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(veldenArray) // Verzend de array als JSON
-    })
-      .then(response => {
-        if (!response.ok) {
-          throw new Error(`Network response was not ok, status: ${response.status}`);
+
+    inputs.forEach(function (input) {
+        var vak = input.getAttribute("vak");
+        var niveau = input.getAttribute("niveau");
+        var jaarlaag = input.getAttribute("jaarlaag");
+        if (!docentenArray.includes(input.value)) {
+            docentenArray.push(input.value);
         }
-        return response.json();
-      })
-      .then(data => {
-        console.log('Data sent successfully:', data);
-        toonFeedback('feedbackVerantwoordelijken', 'Verantwoordelijken succesvol opgeslagen.', true);
-      })
-      .catch(error => {
-        console.error('Error sending data:', error);
-        toonFeedback('feedbackVerantwoordelijken', error.message, false);
-      });
-  }
+        var veldObject = {
+            name: vak,
+            responsible: input.value,
+            level: jaarlaag + ' ' + niveau
+        };
+        veldenArray.push(veldObject);
+    });
+
+    // Opmerking: Implementeer wachtwoordveldenMaken(docentenArray) indien nodig
+
+    fetch('/api/defaults/subjects', {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(veldenArray) // Verzend de array als JSON
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Network response was not ok, status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Data sent successfully:', data);
+            toonFeedback('feedbackVerantwoordelijken', 'Verantwoordelijken succesvol opgeslagen.', true);
+        })
+        .catch(error => {
+            console.error('Error sending data:', error);
+            toonFeedback('feedbackVerantwoordelijken', error.message, false);
+        });
+}
 
 function verwijderVak(divId) {
     divId.remove()
@@ -672,45 +672,64 @@ periodesophalen()
 
 async function overwriteSubjectsDatabaseHandlingDuplicates() {
     try {
-      const responsePTA = await fetch('/api/pta/all');
-      if (!responsePTA.ok) {
-        throw new Error(`Network response was not ok, status: ${responsePTA.status}`);
-      }
-      const ptaData = await responsePTA.json();
-  
-      // Een nieuwe Map om duplicaten te voorkomen, met een combinatie van name en level als key
-      const subjectsMap = new Map();
-  
-      ptaData.forEach(pta => {
-        const key = `${pta.name}-${pta.level}`;
-        if (!subjectsMap.has(key)) {
-          subjectsMap.set(key, {
-            name: pta.name,
-            level: pta.level,
-            responsible: pta.responsible
-          });
+        const responsePTA = await fetch('/api/pta/all');
+        if (!responsePTA.ok) {
+            throw new Error(`Network response was not ok, status: ${responsePTA.status}`);
         }
-      });
-  
-      // Transformeer de map terug naar een array
-      const transformedSubjects = Array.from(subjectsMap.values());
-  
-      // Verstuur de gefilterde en getransformeerde lijst naar de subjects database
-      const updateResponse = await fetch('/api/defaults/subjects', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(transformedSubjects)
-      });
-      if (!updateResponse.ok) {
-        throw new Error(`Network response was not ok, status: ${updateResponse.status}`);
-      }
-      const updatedData = await updateResponse.json();
-      console.log('Subjects database successfully overwritten with PTA data, duplicates handled:', updatedData);
+        const ptaData = await responsePTA.json();
+
+        // Een nieuwe Map om duplicaten te voorkomen, met een combinatie van name en level als key
+        const subjectsMap = new Map();
+
+        ptaData.forEach(pta => {
+            const key = `${pta.name}-${pta.level}`;
+            if (!subjectsMap.has(key)) {
+                subjectsMap.set(key, {
+                    name: pta.name,
+                    level: pta.level,
+                    responsible: pta.responsible
+                });
+            }
+        });
+
+        // Transformeer de map terug naar een array
+        const transformedSubjects = Array.from(subjectsMap.values());
+
+        // Verstuur de gefilterde en getransformeerde lijst naar de subjects database
+        const updateResponse = await fetch('/api/defaults/subjects', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(transformedSubjects)
+        });
+        if (!updateResponse.ok) {
+            throw new Error(`Network response was not ok, status: ${updateResponse.status}`);
+        }
+        const updatedData = await updateResponse.json();
+        console.log('Subjects database successfully overwritten with PTA data, duplicates handled:', updatedData);
     } catch (error) {
-      console.error('Error overwriting subjects database with duplicate handling:', error);
+        console.error('Error overwriting subjects database with duplicate handling:', error);
     }
-  }
-  
-  //overwriteSubjectsDatabaseHandlingDuplicates();
+}
+
+//overwriteSubjectsDatabaseHandlingDuplicates();
+
+let opSlot = false; 
+
+function toggleOpSlot() {
+  const knop = document.getElementById('toggleOpSlot');
+  opSlot = !opSlot;
+  knop.textContent = !opSlot ? '🔓 Bewerken mogelijk' : '🔒 Bewerken gesloten';
+
+  fetch('/api/pad/toestand', { // TODO goede endpoint toevoegen
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ opSlot }),
+  })
+  .then(response => response.json())
+  .then(data => console.log('Succesvol bijgewerkt:', data))
+  .catch(error => console.error('Fout bij het bijwerken:', error));
+}
