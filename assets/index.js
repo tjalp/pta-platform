@@ -624,8 +624,8 @@ let ptaData = {
             "time": 100,
             "time_else": null,
             "resitable": true,
-            "weight_pod": 3,
-            "weight_pta": 2,
+            "pod_weight": 3,
+            "pta_weight": 2,
             "tools": [
                 0,
                 1,
@@ -644,8 +644,8 @@ let ptaData = {
             "time": 0,
             "time_else": '???',
             "resitable": true,
-            "weight_pod": 5,
-            "weight_pta": 2,
+            "pod_weight": 5,
+            "pta_weight": 2,
             "tools": [
                 0
             ]
@@ -662,8 +662,8 @@ let ptaData = {
             "time": 0,
             "time_else": 'Project',
             "resitable": true,
-            "weight_pod": 9,
-            "weight_pta": 0,
+            "pod_weight": 9,
+            "pta_weight": 0,
             "tools": [
 
             ]
@@ -680,8 +680,8 @@ let ptaData = {
             "time": 50,
             "time_else": null,
             "resitable": true,
-            "weight_pod": 10,
-            "weight_pta": 2,
+            "pod_weight": 10,
+            "pta_weight": 2,
             "tools": [
                 0
             ]
@@ -698,8 +698,8 @@ let ptaData = {
             "time": 100,
             "time_else": null,
             "resitable": true,
-            "weight_pod": 1,
-            "weight_pta": 2,
+            "pod_weight": 1,
+            "pta_weight": 2,
             "tools": [
                 0
             ]
@@ -825,7 +825,7 @@ function vulOverzichtTabel() {
         // Gebruik de letterlijke test.week waarde voor de Week Select kolom
         let weekWaarde = test.week;
 
-        [test.id, weekWaarde, eerste100Karakters, test.weight_pod, test.weight_pta].forEach(text => {
+        [test.id, weekWaarde, eerste100Karakters, test.pod_weight, test.pta_weight].forEach(text => {
             let cell = rij.insertCell();
             cell.textContent = text; // Alles als tekst
         });
@@ -1305,8 +1305,8 @@ function voegNieuweTabToe() {
         time: 0,
         time_else: null,
         resitable: null,
-        weight_pod: 0,
-        weight_pta: 0,
+        pod_weight: 0,
+        pta_weight: 0,
         tools: []
     });
 
@@ -1456,6 +1456,14 @@ function refreshData() {
     ptaData.tests.forEach(test => {
         laadToetsInhoud(test.id, true);
     });
+    resetPercentages();
+}
+
+function resetPercentages(){
+    vwoWegingen = { '4 VWO': ptaData.weights[0], '5 VWO': ptaData.weights[1], '6 VWO': ptaData.weights[2] };
+    havoWegingen = { '4 HAVO': ptaData.weights[0], '5 HAVO': ptaData.weights[1] };
+    mavoWegingen = { '3 MAVO': ptaData.weights[0], '4 MAVO': ptaData.weights[1] };
+    laadPercentages()
 }
 
 function getNieuwePtaData() {
@@ -1483,8 +1491,8 @@ function getNieuwePtaData() {
                 time: 0,
                 time_else: null,
                 resitable: null,
-                weight_pod: 0,
-                weight_pta: 0,
+                pod_weight: 0,
+                pta_weight: 0,
                 tools: []
             });
         }
@@ -1559,8 +1567,8 @@ function getPtaDataFromTab(contentPane) {
             ? contentPane.querySelector('.tijdAnders').value
             : null,
         result_type: contentPane.querySelector('.beoordelingSelect').value,
-        weight_pod: parseInt(contentPane.querySelector('.pod').value, 10),
-        weight_pta: parseInt(contentPane.querySelector('.pta').value, 10),
+        pod_weight: parseInt(contentPane.querySelector('.pod').value, 10),
+        pta_weight: parseInt(contentPane.querySelector('.pta').value, 10),
         resitable: contentPane.querySelector('.herkansbaarSelect').value === 'Ja',
         tools: Array.from(contentPane.querySelectorAll('.hulpmiddelen li')).map(li => {
             return ptaData.tools.indexOf(li.textContent.trim());
@@ -1584,11 +1592,11 @@ function weekNaarUniformNummer(week) {
 }
 
 function herindexeerTestIDs() {
+    let startnummer = parseInt(selectedNiveau.split(' ')[0]) * 100 + 1
     ptaData.tests.forEach((test, index) => {
-        test.id = 601 + index; // Begin bij 601 en ga verder
+        test.id = startnummer + index; // Begin bij 601 en ga verder
     });
 }
-
 
 function sorteerTabs() {
     console.log('sorteren')
