@@ -1,5 +1,6 @@
 // Globale variabelen
 let isBewerker = false;
+let heeftBewerkingsRechten = false;
 let selectedBewerkerOfBekijker = "";
 let selectedVak = null;
 let selectedJaar = null;
@@ -168,7 +169,7 @@ function vakZoeken(vak) {
             return response.json();
         })
         .then(data => {
-            zoekenNiveau(data, vak)
+            let niveauOpties = zoekenNiveau(data, vak)
             initialiseerKeuzeModal('Niveau', niveauOpties, (opties) => bevestigKeuze('Niveau', opties), vakkeuze, selectedNiveau ? [selectedNiveau] : []);
         })
         .catch(error => {
@@ -176,16 +177,39 @@ function vakZoeken(vak) {
         });
 }
 
+function sorteerVakken(vakken) {
+    const niveauGewicht = { 'mavo': 1, 'havo': 2, 'vwo': 3 };
+    
+    return vakken.sort((a, b) => {
+      if (a.name === b.name) {
+        const niveauA = niveauGewicht[a.level.split(' ')[1].toLowerCase()];
+        const niveauB = niveauGewicht[b.level.split(' ')[1].toLowerCase()];
+        const jaarlaagA = parseInt(a.level.split(' ')[0]);
+        const jaarlaagB = parseInt(b.level.split(' ')[0]);
+  
+        if (niveauA === niveauB) {
+          return jaarlaagA - jaarlaagB; // Sorteer op jaarlaag als het niveau hetzelfde is
+        } 
+        return niveauA - niveauB; // Sorteer op niveau als de vaknaam hetzelfde is
+      }
+      return a.name.localeCompare(b.name); // Standaard sortering op vaknaam
+    });
+  }
+
+
 function zoekenNiveau(vakkenlijst, vak) {
-    niveauOpties = []
-    for (let i = 0; i < vakkenlijst.length; i++) {
-        if (vakkenlijst[i].name == vak) {
-            let b = vakkenlijst[i].level
-            b.toUpperCase()
-            niveauOpties.push(b)
-        }
-    }
+    // Filter de vakkenlijst op basis van de gegeven vaknaam
+    const gefilterdeVakken = vakkenlijst.filter(vakkenItem => vakkenItem.name === vak);
+
+    // Gebruik de sorteerVakken functie om de gefilterde lijst te sorteren
+    const gesorteerdeVakken = sorteerVakken(gefilterdeVakken);
+
+    // Map de gesorteerde vakken naar hun niveaus, zorg ervoor dat de niveaus in hoofdletters zijn
+    const niveauOpties = gesorteerdeVakken.map(vakkenItem => vakkenItem.level.toUpperCase());
+
+    return niveauOpties;
 }
+
 
 function vakkeuze() {
     initialiseerKeuzeModal('Vak', vakkenOpties, (opties) => bevestigKeuze('Vak', opties), start, selectedVak ? [selectedVak] : []);
@@ -558,17 +582,20 @@ GET & SET FUNCTIES VOOR DATABASE
 function opslaan() {
     toonTabInhoud('overzichtContent');
     genereerOverzichtInhoud();
-    // TODO Wegingen nog updaten in ptaData
+
     if (setLegeVelden()) {
-        console.log('Er zijn nog lege velden. Niet opslaan?')
+        alert('Er zijn nog lege velden. Vul deze in voordat u opslaat.');
         return;
     }
+
     if (!isGesorteerd(ptaData.tests)) {
         document.getElementById('tabOverzicht').style.border = '1px solid red';
         document.getElementById('sorteerKnop').style.border = '2px solid red';
+        alert('De toetsen zijn niet correct gesorteerd. Sorteer deze voordat u opslaat.');
         return;
     }
-    const bevestiging = confirm(`Zeker weten dat u wilt opslaan?`);
+
+    const bevestiging = confirm('Zeker weten dat u wilt opslaan?');
     if (!bevestiging) {
         return;
     }
@@ -580,20 +607,31 @@ function opslaan() {
         },
         body: JSON.stringify(ptaData)
     })
-        .then(response => response.json())
-        .then(data => {
-            ptaData = data;
-            console.log('Data succesvol opgeslagen');
-            console.log(ptaData);
-        })
-        .catch(error => console.error(error));
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`Server returned ${response.status}: ${response.statusText}`);
+        }
+        return response.text();
+    })
+    .then(text => {
+        if (text) {
+            ptaData = JSON.parse(text);
+            console.log('Data succesvol opgeslagen', ptaData);
+            alert('De gegevens zijn succesvol opgeslagen.');
+        } else {
+            alert('Gegevens zijn opgeslagen.');
+        }
+    })
+    .catch(error => {
+        console.error('Fout bij opslaan:', error);
+        alert('Er is een fout opgetreden bij het opslaan. Zie console voor details.');
+    });
 }
-
 
 // Ophalen uit DB
 let opSlot = false; // Als Admin op slot gooit
 let bewerkJaar = '2024/2025' // De te bewerken jaar
-let jaarOpties = ['2024/2025', '2023/2024', '2022/2023', '2021/2022'];
+let jaarOpties = ['2024/2025', '2023/2024'];
 
 function fetchFromDatabase() {
     fetch('/api/defaults/subjects')
@@ -899,7 +937,7 @@ function genereerOverzichtInhoud() {
     sorteerKnop.textContent = 'Sorteer Toetsen';
 
     // Bepaal de status van heeftBewerkingsRechten
-    let heeftBewerkingsRechten = isBewerker && selectedJaar.includes(bewerkJaar) && !opSlot;
+    heeftBewerkingsRechten = isBewerker && selectedJaar.includes(bewerkJaar) && !opSlot;
 
     // Zet de disabled status van de knop op basis van heeftBewerkingsRechten
     sorteerKnop.disabled = !heeftBewerkingsRechten;
@@ -999,7 +1037,7 @@ function setDisplayStyle(elements, displayStyle) {
 }
 
 function setEditRights() {
-    const heeftBewerkingsRechten = isBewerker && selectedJaar.includes(bewerkJaar) && !opSlot;
+    heeftBewerkingsRechten = isBewerker && selectedJaar.includes(bewerkJaar) && !opSlot;
     const invulVelden = document.querySelectorAll('.tabContent input, .tabContent select, .tabContent textarea');
     const buttons = document.querySelectorAll('.tabContent button');
     const iconen = document.querySelectorAll('.icon');
@@ -1352,7 +1390,7 @@ function toggleWeekInputEnBijwerkenJaarPeriode(weekSelect, weekInputField, jaarP
         weekInputField.parentElement.style.display = 'block';
         weekInputField.value = weekWaarde; // Reset de week input
         setSelectValue(weekSelect, 'week');
-        jaarPeriodeSpan.textContent = isBewerker ? berekenJaarPeriode(weekWaarde) : jaarPeriode;
+        jaarPeriodeSpan.textContent = heeftBewerkingsRechten ? berekenJaarPeriode(weekWaarde) : jaarPeriode;
     }
 
     weekInputField.oninput = () => {
