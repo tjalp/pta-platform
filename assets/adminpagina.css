@@ -457,10 +457,14 @@ input::placeholder {
     /* Maakt de placeholder-tekst schuingedrukt */
 }
 
-#slotTekst, #volgendJaar {
+#slotTekst {
     margin-left: 15px;
 }
 
+#volgendJaar {
+    margin-left: 3px;
+}
+
 #bewerkJaar {
-    width: 75px;
+    width: 70px;
 }
