@@ -456,3 +456,11 @@ input::placeholder {
     font-style: italic;
     /* Maakt de placeholder-tekst schuingedrukt */
 }
+
+#slotTekst, #volgendJaar {
+    margin-left: 15px;
+}
+
+#bewerkJaar {
+    width: 75px;
+}

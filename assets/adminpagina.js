@@ -715,12 +715,13 @@ async function overwriteSubjectsDatabaseHandlingDuplicates() {
 
 //overwriteSubjectsDatabaseHandlingDuplicates();
 
-let opSlot = false; 
+let opSlot = false; // TODO lezen uit DB
 
 function toggleOpSlot() {
   const knop = document.getElementById('toggleOpSlot');
   opSlot = !opSlot;
-  knop.textContent = !opSlot ? '🔓 Bewerken mogelijk' : '🔒 Bewerken gesloten';
+  knop.textContent = !opSlot ? '🔓' : '🔒';
+  document.getElementById('slotTekst').textContent = !opSlot? 'PTAs zijn open voor:' : 'PTAs zijn gesloten voor:';
 
   fetch('/api/pad/toestand', { // TODO goede endpoint toevoegen
     method: 'PUT',
@@ -733,3 +734,15 @@ function toggleOpSlot() {
   .then(data => console.log('Succesvol bijgewerkt:', data))
   .catch(error => console.error('Fout bij het bijwerken:', error));
 }
+
+let bewerkJaar = 2024; // TODO lezen uit DB
+
+function setBewerkJaar() {
+    const bewerkJaarInput = document.getElementById('bewerkJaar');
+    bewerkJaar = parseInt(bewerkJaarInput.value, 10);
+    const volgendJaarSpan = document.getElementById('volgendJaar');
+    volgendJaarSpan.textContent = `/ ${bewerkJaar + 1}`;
+
+    // TODO DB updaten voor bewerkjaar 
+  }
+  
