@@ -131,6 +131,7 @@ function bevestigKeuze(keuzeType, geselecteerdeOpties) {
         updateSelection(keuzeType, selected);
 
         // Ga naar de volgende keuze of maak dynamische knoppen aan
+        isEersteKeer = true; // TODO voor nu altijd door alle forms, want soms bestaat niveau niet bij vak
         if (isEersteKeer) {
             switch (keuzeType) {
                 case 'Vak': niveaukeuze(); break;
