@@ -37,10 +37,8 @@ function updateJaarOpties(nieuwJaarOpties, bewerkJaar, opSlot) {
 }
 
 function start() {
-    //fetchFromDatabase();
     isEersteKeer = true;
     isDynamicButtonClicked = false;
-    console.log('start')
     removeExistingModals();
     const modal = createModal('Wilt u PTAs bekijken of bewerken?', [
         { text: 'Bekijken', action: bekijken },
@@ -140,7 +138,7 @@ function bevestigKeuze(keuzeType, geselecteerdeOpties) {
                 case 'Jaar':
                     if (selectedJaar === bewerkJaar) {
                         // TODO mooier maken
-                        //alert('Er is een kopie van het PTA van vorig jaar gemaakt. Deze kan je nu bewerken.')
+                        alert('Er is een kopie van het PTA van vorig jaar gemaakt. Deze kan je nu bewerken.')
                         laadPta()
                     }
                     createDynamicButtons();
@@ -179,22 +177,22 @@ function vakZoeken(vak) {
 
 function sorteerVakken(vakken) {
     const niveauGewicht = { 'mavo': 1, 'havo': 2, 'vwo': 3 };
-    
+
     return vakken.sort((a, b) => {
-      if (a.name === b.name) {
-        const niveauA = niveauGewicht[a.level.split(' ')[1].toLowerCase()];
-        const niveauB = niveauGewicht[b.level.split(' ')[1].toLowerCase()];
-        const jaarlaagA = parseInt(a.level.split(' ')[0]);
-        const jaarlaagB = parseInt(b.level.split(' ')[0]);
-  
-        if (niveauA === niveauB) {
-          return jaarlaagA - jaarlaagB; // Sorteer op jaarlaag als het niveau hetzelfde is
-        } 
-        return niveauA - niveauB; // Sorteer op niveau als de vaknaam hetzelfde is
-      }
-      return a.name.localeCompare(b.name); // Standaard sortering op vaknaam
+        if (a.name === b.name) {
+            const niveauA = niveauGewicht[a.level.split(' ')[1].toLowerCase()];
+            const niveauB = niveauGewicht[b.level.split(' ')[1].toLowerCase()];
+            const jaarlaagA = parseInt(a.level.split(' ')[0]);
+            const jaarlaagB = parseInt(b.level.split(' ')[0]);
+
+            if (niveauA === niveauB) {
+                return jaarlaagA - jaarlaagB; // Sorteer op jaarlaag als het niveau hetzelfde is
+            }
+            return niveauA - niveauB; // Sorteer op niveau als de vaknaam hetzelfde is
+        }
+        return a.name.localeCompare(b.name); // Standaard sortering op vaknaam
     });
-  }
+}
 
 
 function zoekenNiveau(vakkenlijst, vak) {
@@ -227,7 +225,6 @@ function jaarkeuze() {
 function updateSelection(keuzeType, selected) {
     switch (keuzeType) {
         case 'Vak': selectedVak = selected;
-            console.log(selectedVak)
             break;
         case 'Niveau': selectedNiveau = selected; break;
         case 'Jaar': selectedJaar = selected; break;
@@ -465,7 +462,7 @@ function createModalStructure(title, searchOptions, geselecteerdeOpties, meervou
 function createSearchInput(ul, searchOptions, geselecteerdeOpties, meervoudigeSelectie) {
     let searchInput = document.createElement('input');
     searchInput.type = 'text';
-    searchInput.placeholder = meervoudigeSelectie? 'Zoek of voeg een hulpmiddel toe...' : 'Zoeken...';
+    searchInput.placeholder = meervoudigeSelectie ? 'Zoek of voeg een hulpmiddel toe...' : 'Zoeken...';
     searchInput.onkeyup = () => filterOptions(ul, searchOptions, searchInput.value, geselecteerdeOpties, meervoudigeSelectie);
     return searchInput;
 }
@@ -607,25 +604,25 @@ function opslaan() {
         },
         body: JSON.stringify(ptaData)
     })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error(`Server returned ${response.status}: ${response.statusText}`);
-        }
-        return response.text();
-    })
-    .then(text => {
-        if (text) {
-            ptaData = JSON.parse(text);
-            console.log('Data succesvol opgeslagen', ptaData);
-            alert('De gegevens zijn succesvol opgeslagen.');
-        } else {
-            alert('Gegevens zijn opgeslagen.');
-        }
-    })
-    .catch(error => {
-        console.error('Fout bij opslaan:', error);
-        alert('Er is een fout opgetreden bij het opslaan. Zie console voor details.');
-    });
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Server returned ${response.status}: ${response.statusText}`);
+            }
+            return response.text();
+        })
+        .then(text => {
+            if (text) {
+                ptaData = JSON.parse(text);
+                console.log('Data succesvol opgeslagen', ptaData);
+                alert('De gegevens zijn succesvol opgeslagen.');
+            } else {
+                alert('Gegevens zijn opgeslagen.');
+            }
+        })
+        .catch(error => {
+            console.error('Fout bij opslaan:', error);
+            alert('Er is een fout opgetreden bij het opslaan. Zie console voor details.');
+        });
 }
 
 // Ophalen uit DB
@@ -870,26 +867,26 @@ function vulOverzichtTabel() {
 
         [test.id, test.week, '', test.pod_weight, test.pta_weight].forEach((text, index) => {
             let cell = rij.insertCell();
-            if (index === 2) { 
+            if (index === 2) {
                 let span = document.createElement('span');
                 span.textContent = eerste25Karakters;
                 span.className = 'beschrijving-preview';
-                span.style.cursor = 'pointer'; 
+                span.style.cursor = 'pointer';
                 cell.appendChild(span);
 
-                span.isUitgeklapt = false; 
+                span.isUitgeklapt = false;
 
                 span.onclick = () => {
                     if (!span.isUitgeklapt) {
-                        span.textContent = beschrijving; 
+                        span.textContent = beschrijving;
                         span.isUitgeklapt = true;
                     } else {
-                        span.textContent = eerste25Karakters; 
+                        span.textContent = eerste25Karakters;
                         span.isUitgeklapt = false;
                     }
                 };
             } else {
-                cell.textContent = text; 
+                cell.textContent = text;
             }
         });
     });
@@ -1261,10 +1258,17 @@ function setSelectValue(selectElement, value) {
     const optionToSelect = Array.from(selectElement.options).find(option => option.value === value);
     if (optionToSelect) {
         selectElement.value = value;
+    } else if (!heeftBewerkingsRechten) {
+        // Als de gebruiker bewerkingsrechten heeft, voeg de waarde toe als nieuwe optie
+        const nieuweOptie = new Option(value, value);
+        selectElement.add(nieuweOptie);
+        selectElement.value = value;
     } else {
+        // Als de waarde niet bestaat en de gebruiker geen bewerkingsrechten heeft, log een fout
         console.error(`Waarde '${value}' komt niet overeen met een beschikbare optie in de select.`);
     }
 }
+
 
 function vulHulpmiddelenList(ulElement, hulpmiddelen) {
     if (!hulpmiddelen || hulpmiddelen.length === 0) {
