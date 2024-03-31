@@ -963,7 +963,7 @@ function genereerOverzichtInhoud() {
     let headerRow = thead.insertRow();
     let isAllesUitgeklapt = false;
 
-    ['#', 'Week', 'Beschrijving', 'POD', 'PTA'].forEach((text, index) => {
+    ['#', 'Week', '🔽 Beschrijving', 'POD', 'PTA'].forEach((text, index) => {
         let th = document.createElement('th');
         if (index === 2) {
             let span = document.createElement('span');
@@ -1005,7 +1005,7 @@ function toggleAlleBeschrijvingen(headerSpan, tabel) {
     // Update de staat en het innerHTML van de headerSpan op basis van de huidige staat
     isUitgeklapt = !isUitgeklapt;
     headerSpan.setAttribute('data-uitgeklapt', isUitgeklapt);
-    headerSpan.innerHTML = `${isUitgeklapt ? '' : ''}Beschrijving`;
+    headerSpan.innerHTML = `${isUitgeklapt ? '🔼' : '🔽'}Beschrijving`;
 
     // Selecteer alle beschrijving spans in de tbody om hun inhoud te toggelen
     let tbody = tabel.querySelector('tbody');
