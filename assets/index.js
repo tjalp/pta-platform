@@ -1467,7 +1467,7 @@ function toggleWeekInputEnBijwerkenJaarPeriode(weekSelect, weekInputField, jaarP
         setSelectValue(weekSelect, genormaliseerdeWeekWaarde);
     } else {
         weekInputField.parentElement.style.display = 'block';
-        weekInputField.value = weekWaarde; // Reset de week input
+        weekInputField.value = heeftBewerkingsRechten && weekWaarde.length > 2? '' : weekWaarde; 
         setSelectValue(weekSelect, 'week');
         jaarPeriodeSpan.textContent = heeftBewerkingsRechten ? berekenJaarPeriode(weekWaarde) : jaarPeriode;
     }

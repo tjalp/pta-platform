@@ -588,6 +588,10 @@ select.inputField.tijdSelect:disabled {
     width: 200px;
 }
 
+input#week.inputField.week:disabled {
+    width: 60px;
+}
+
 .flexOnderElkaar {
     display: grid;
     grid-template-columns: min-content auto; /* Eerste kolom past zich aan aan breedte van label */
