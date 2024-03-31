@@ -593,12 +593,6 @@ function opslaan() {
 // Ophalen uit DB
 let opSlot = false; // Als Admin op slot gooit
 let bewerkJaar = '2024/2025' // De te bewerken jaar
-let vwoWegingen = { '4 VWO': 0, '5 VWO': 10, '6 VWO': 90 };
-let havoWegingen = { '4 HAVO': 50, '5 HAVO': 50 };
-let mavoWegingen = { '3 MAVO': 15, '4 MAVO': 85 };
-let oefenOpties = ['Optie 1', 'Optie 2', 'Optie 3'];
-let vakkenOpties = ['Aardrijkskunde', 'Informatica', 'Wiskunde A'];
-let niveauOpties = ['3 MAVO', '4 MAVO', '4 HAVO', '5 HAVO', '4 VWO', '5 VWO', '6 VWO'];
 let jaarOpties = ['2024/2025', '2023/2024', '2022/2023', '2021/2022'];
 
 function fetchFromDatabase() {
