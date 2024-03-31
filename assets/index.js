@@ -104,7 +104,6 @@ function bevestigBewerken() {
 }
 
 function initialiseerKeuzeModal(keuzeType, opties, bevestigingsActie, terugActie, selectOptie = []) {
-    console.log('hier')
     try {
         removeExistingModals();
 
@@ -554,6 +553,11 @@ function addButtons(buttonContainer, bevestigActie, terugActie, geselecteerdeOpt
 }
 
 function populateOptionsList(ul, searchOptions, geselecteerdeOpties, meervoudigeSelectie) {
+    if (!meervoudigeSelectie && !searchOptions.includes(geselecteerdeOpties[0])) {
+        geselecteerdeOpties.length = 0;
+        geselecteerdeOpties.push(searchOptions[0]);
+    }
+
     searchOptions.forEach(option => {
         let li = document.createElement('li');
         li.textContent = option;
@@ -565,6 +569,7 @@ function populateOptionsList(ul, searchOptions, geselecteerdeOpties, meervoudige
         }
     });
 }
+
 
 function selectOption(li, geselecteerdeOpties, meervoudigeSelectie) {
     const optionText = li.textContent;
