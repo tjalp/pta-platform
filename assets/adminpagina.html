@@ -6,6 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PTA Platform - Adminpagina</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%2210 0 100 100%22><text y=%22.90em%22 font-size=%2290%22>📝</text></svg>"></link>
 </head>
 
 <body>
@@ -27,56 +28,56 @@
         </div>
 
         <div class="container">
-        <form id="tijdsModgelijkheden" onsubmit="tijdsMogelijkhedenVersturen(event)">
-            <div class="flex">
-                <h2>Tijdsmogelijkheden</h2>
-                <button type="submit">💾</button>
-                <div id="feedbackTijden" class="feedback"></div>
-            </div>
-            <div id="kloonbareVeld2">
-            </div>
-            <button type="button" class="plus" onclick="voegExtraVeldToe('kloonbareVeld2', 'number')">+</button>
-        </form>
-    </div>
+            <form id="tijdsModgelijkheden" onsubmit="tijdsMogelijkhedenVersturen(event)">
+                <div class="flex">
+                    <h2>Tijdsmogelijkheden</h2>
+                    <button type="submit">💾</button>
+                    <div id="feedbackTijden" class="feedback"></div>
+                </div>
+                <div id="kloonbareVeld2">
+                </div>
+                <button type="button" class="plus" onclick="voegExtraVeldToe('kloonbareVeld2', 'number')">+</button>
+            </form>
+        </div>
 
-    <div class="container">
-        <form id="hulpmiddelenform" onsubmit="hulpmiddelenOpslaan(event); return false;">
-            <div class="flex">
-                <h2>Hulpmiddelen</h2>
-                <button type="submit">💾</button>
-                <div id="feedbackHulpmiddelen" class="feedback"></div>
-            </div>
-            <div id="kloonbareVeld3">
-            </div>
-            <button type="button" class="plus" onclick="voegExtraVeldToe('kloonbareVeld3', 'text')">+</button>
-        </form>
-    </div>
+        <div class="container">
+            <form id="hulpmiddelenform" onsubmit="hulpmiddelenOpslaan(event); return false;">
+                <div class="flex">
+                    <h2>Hulpmiddelen</h2>
+                    <button type="submit">💾</button>
+                    <div id="feedbackHulpmiddelen" class="feedback"></div>
+                </div>
+                <div id="kloonbareVeld3">
+                </div>
+                <button type="button" class="plus" onclick="voegExtraVeldToe('kloonbareVeld3', 'text')">+</button>
+            </form>
+        </div>
 
-    <div class="container">
-        <form id="periodes" onsubmit="periodesOpslaan(event)">
-            <div class="flex">
-                <h2>Periodes</h2>
-                <button type="submit" class="saveButton">💾</button>
-                <div id="feedbackPeriodes" class="feedback"></div>
-            </div>
-            <table class="tijdlijnTabel">
-                <tr>
-                    <th>Eerste week schooljaar</th>
-                    <th>Week SE 1</th>
-                    <th>Week SE 2</th>
-                    <th>Week SE 3</th>
-                    <th>Week SE 4</th>
-                </tr>
-                <tr>
-                    <td><input type="number" id="startPeriode1" placeholder="Weeknr" /></td>
-                    <td><input type="number" id="eindPeriode1" placeholder="Eind SE 1" /></td>
-                    <td><input type="number" id="eindPeriode2" placeholder="Eind SE 2" /></td>
-                    <td><input type="number" id="eindPeriode3" placeholder="Eind SE 3" /></td>
-                    <td><input type="number" id="eindPeriode4" placeholder="Eind SE 4" /></td>
-                </tr>
-            </table>
-        </form>
-    </div>
+        <div class="container">
+            <form id="periodes" onsubmit="periodesOpslaan(event)">
+                <div class="flex">
+                    <h2>Periodes</h2>
+                    <button type="submit" class="saveButton">💾</button>
+                    <div id="feedbackPeriodes" class="feedback"></div>
+                </div>
+                <table class="tijdlijnTabel">
+                    <tr>
+                        <th>Eerste week schooljaar</th>
+                        <th>Week SE 1</th>
+                        <th>Week SE 2</th>
+                        <th>Week SE 3</th>
+                        <th>Week SE 4</th>
+                    </tr>
+                    <tr>
+                        <td><input type="number" id="startPeriode1" placeholder="Weeknr" /></td>
+                        <td><input type="number" id="eindPeriode1" placeholder="Eind SE 1" /></td>
+                        <td><input type="number" id="eindPeriode2" placeholder="Eind SE 2" /></td>
+                        <td><input type="number" id="eindPeriode3" placeholder="Eind SE 3" /></td>
+                        <td><input type="number" id="eindPeriode4" placeholder="Eind SE 4" /></td>
+                    </tr>
+                </table>
+            </form>
+        </div>
 
         <form id="DocentenAccounts" class="pta-docenten-accounts" onsubmit="docentenAccountsOpslaan(event)">
             <div class="pta-header">
