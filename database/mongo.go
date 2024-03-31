@@ -146,7 +146,7 @@ func (s MongoDatabase) GetTools() []string {
 	if err != nil {
 		panic(err)
 	}
-	var tools []string
+	var tools []string = make([]string, 0)
 	for _, tool := range result {
 		tools = append(tools, tool.Name)
 	}
@@ -186,7 +186,7 @@ func (s MongoDatabase) GetTypes() []string {
 	if err != nil {
 		panic(err)
 	}
-	var types []string
+	var types []string = make([]string, 0)
 	for _, tool := range result {
 		types = append(types, tool.Name)
 	}
@@ -211,6 +211,46 @@ func (s MongoDatabase) SetTypes(types []string) {
 	}
 }
 
+func (s MongoDatabase) GetDurations() []int {
+	collection := mongodb.Collection("durations")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	cursor, err := collection.Find(ctx, bson.D{})
+	if err != nil {
+		panic(err)
+	}
+	defer cursor.Close(ctx)
+	var result []struct{ Length int }
+	err = cursor.All(ctx, &result)
+	if err != nil {
+		panic(err)
+	}
+	var durations = make([]int, 0)
+	for _, duration := range result {
+		durations = append(durations, duration.Length)
+	}
+	return durations
+}
+
+func (s MongoDatabase) SetDurations(durations []int) {
+	collection := mongodb.Collection("durations")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	_, err := collection.DeleteMany(ctx, bson.D{})
+	if err != nil {
+		panic(err)
+	}
+	var documents []interface{}
+	for _, duration := range durations {
+		documents = append(documents, bson.D{{"length", duration}})
+	}
+	_, err = collection.InsertMany(ctx, documents)
+	if err != nil {
+		panic(err)
+	}
+}
+
 func (s MongoDatabase) GetPeriods() []Period {
 	collection := mongodb.Collection("periods")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -221,7 +261,7 @@ func (s MongoDatabase) GetPeriods() []Period {
 		panic(err)
 	}
 	defer cursor.Close(ctx)
-	var result []Period
+	var result = make([]Period, 0)
 	err = cursor.All(ctx, &result)
 	if err != nil {
 		panic(err)
@@ -262,7 +302,7 @@ func (s MongoDatabase) GetSubjects() []Subject {
 		panic(err)
 	}
 	defer cursor.Close(ctx)
-	var result []Subject
+	var result = make([]Subject, 0)
 	err = cursor.All(ctx, &result)
 	if err != nil {
 		panic(err)

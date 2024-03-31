@@ -15,6 +15,8 @@ type Database interface {
 	SetSubjects([]Subject)
 	GetTypes() []string
 	SetTypes([]string)
+	GetDurations() []int
+	SetDurations([]int)
 	GetPeriods() []Period
 	SetPeriods([]Period)
 	GetUser(string) *User

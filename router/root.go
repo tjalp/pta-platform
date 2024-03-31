@@ -393,7 +393,7 @@ func createUser(c *gin.Context) {
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "error hashing password"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "error hashing password: " + err.Error()})
 		return
 	}
 	user.Password = string(hashedPassword)
@@ -575,15 +575,35 @@ func setPeriods(c *gin.Context) {
 }
 
 func getDurations(c *gin.Context) {
-
+	c.JSON(http.StatusOK, data.GetDurations())
 }
 
 func addDurations(c *gin.Context) {
+	var durationsToAdd []int
 
+	if err := c.Bind(&durationsToAdd); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	durations := append(data.GetDurations(), durationsToAdd...)
+
+	data.SetDurations(durations)
+
+	c.JSON(http.StatusOK, durations)
 }
 
 func setDurations(c *gin.Context) {
+	var durations []int
 
+	if err := c.Bind(&durations); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	data.SetDurations(durations)
+
+	c.JSON(http.StatusOK, durations)
 }
 
 func getCohorts(c *gin.Context) {
