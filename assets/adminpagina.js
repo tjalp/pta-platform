@@ -132,8 +132,8 @@ function tijdsMogelijkhedenOphalen() {
             return response.json();
         })
         .then(data => {
-            let tijdsmogelijkheden = data;
-            tijdsmogelijkhedenLaden(tijdsmogelijkheden)
+            console.log(data)
+            tijdsmogelijkhedenLaden(data)
         })
         .catch(error => {
             console.error('Fout bij het laden:', error);
@@ -145,7 +145,7 @@ function tijdsmogelijkhedenLaden(tijden) {
     locatie.innerHTML = ''; // Maak de container leeg voor nieuwe invoer
     tijden.forEach(tijd => {
         voegExtraVeldToe('kloonbareVeld2', 'number', tijd);
-    });
+    }); 
 }
 
 /* Hulpmiddelen */
@@ -472,8 +472,8 @@ function periodesOpslaan(event) {
     ];
 
     // Send the data to your backend using fetch
-
-    fetch('/api/defaults/periodes', {
+    console.log(periodesData)
+    fetch('/api/defaults/periods', {
         method: 'PUT', // Or 'PUT', 'PATCH', etc. depending on your backend
         headers: {
             'Content-Type': 'application/json'

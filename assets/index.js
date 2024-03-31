@@ -27,13 +27,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
 function updateJaarOpties(nieuwJaarOpties, bewerkJaar, opSlot) {
     return nieuwJaarOpties.map(jaar => {
-      if (opSlot || jaar !== bewerkJaar || !isBewerker) {
-        return `🔒 ${jaar}`;
-      } else {
-        return jaar;
-      }
+        if (opSlot || jaar !== bewerkJaar || !isBewerker) {
+            return `🔒 ${jaar}`;
+        } else {
+            return jaar;
+        }
     });
-  }
+}
 
 function start() {
     //fetchFromDatabase();
@@ -159,33 +159,33 @@ function bevestigKeuze(keuzeType, geselecteerdeOpties) {
     }
 }
 
-function vakZoeken(vak){
+function vakZoeken(vak) {
     fetch(`/api/defaults/subjects`)
-    .then(response => {
+        .then(response => {
             if (!response.ok) {
                 throw new Error('Netwerkrespons was niet ok');
             }
             return response.json();
-    })
-    .then(data =>{
-        zoekenNiveau(data, vak)
-        initialiseerKeuzeModal('Niveau', niveauOpties, (opties) => bevestigKeuze('Niveau', opties), vakkeuze, selectedNiveau ? [selectedNiveau] : []);
-    })
-    .catch(error => {
+        })
+        .then(data => {
+            zoekenNiveau(data, vak)
+            initialiseerKeuzeModal('Niveau', niveauOpties, (opties) => bevestigKeuze('Niveau', opties), vakkeuze, selectedNiveau ? [selectedNiveau] : []);
+        })
+        .catch(error => {
             console.error('Fout bij het laden:', error);
-    });
+        });
 }
 
-function zoekenNiveau(vakkenlijst, vak){
+function zoekenNiveau(vakkenlijst, vak) {
     niveauOpties = []
-    for(let i = 0; i < vakkenlijst.length; i ++){   
-        if(vakkenlijst[i].name == vak){
+    for (let i = 0; i < vakkenlijst.length; i++) {
+        if (vakkenlijst[i].name == vak) {
             let b = vakkenlijst[i].level
             b.toUpperCase()
             niveauOpties.push(b)
         }
     }
-}   
+}
 
 function vakkeuze() {
     initialiseerKeuzeModal('Vak', vakkenOpties, (opties) => bevestigKeuze('Vak', opties), start, selectedVak ? [selectedVak] : []);
@@ -198,17 +198,17 @@ function niveaukeuze() {
 function jaarkeuze() {
     nieuwJaarOpties = updateJaarOpties(jaarOpties, bewerkJaar, opSlot);
     initialiseerKeuzeModal('Jaar', nieuwJaarOpties, (opties) => bevestigKeuze('Jaar', opties), niveaukeuze, selectedJaar ? [selectedJaar] : []);
-}   
+}
 
 function updateSelection(keuzeType, selected) {
     switch (keuzeType) {
         case 'Vak': selectedVak = selected;
-        console.log(selectedVak)
-        break;
+            console.log(selectedVak)
+            break;
         case 'Niveau': selectedNiveau = selected; break;
         case 'Jaar': selectedJaar = selected; break;
         default: throw new Error(`Onbekend keuzeType: ${keuzeType}`);
-    }   
+    }
     updateDynamicButtonValue(keuzeType, selected);
 }
 
@@ -1090,8 +1090,7 @@ function vulVelden(clone, toetsData) {
             }
         }
     }
-
-    updateWeekSelectie(clone, toetsData.week);
+    updateWeekSelectie(clone, toetsData.week, toetsData.jaarPeriode);
 
     // Hulpmiddelen
     const hulpmiddelenList = clone.querySelector('.hulpmiddelen');
@@ -1334,7 +1333,7 @@ function voegNieuweTabToe() {
 document.getElementById('voegTabToe').onclick = voegNieuweTabToe;
 
 
-function updateWeekSelectie(clone, weekWaarde) {
+function updateWeekSelectie(clone, weekWaarde, jaarPeriode) {
     const weekSelect = clone.querySelector('.weekSelect');
     const weekInputField = clone.querySelector('.pickWeek .week');
     const jaarPeriodeSpan = clone.querySelector('.jaarPeriode');
@@ -1345,19 +1344,21 @@ function updateWeekSelectie(clone, weekWaarde) {
     }
 
     // Toon of verberg pickWeek en werk jaarPeriode bij
-    toggleWeekInputEnBijwerkenJaarPeriode(weekSelect, weekInputField, jaarPeriodeSpan, weekWaarde);
+    toggleWeekInputEnBijwerkenJaarPeriode(weekSelect, weekInputField, jaarPeriodeSpan, weekWaarde, jaarPeriode);
 }
+function toggleWeekInputEnBijwerkenJaarPeriode(weekSelect, weekInputField, jaarPeriodeSpan, weekWaarde, jaarPeriode) {
+    // Normalizeer de weekWaarde om consistent te zijn met of zonder spatie
+    const genormaliseerdeWeekWaarde = weekWaarde.replace(/SE(\d)/, 'SE $1');
 
-function toggleWeekInputEnBijwerkenJaarPeriode(weekSelect, weekInputField, jaarPeriodeSpan, weekWaarde) {
-    if (weekWaarde.startsWith('SE')) {
+    if (genormaliseerdeWeekWaarde.startsWith('SE')) {
         weekInputField.parentElement.style.display = 'none';
-        jaarPeriodeSpan.textContent = `${parseInt(selectedNiveau.split(' ')[0])}.${weekWaarde.split(' ')[1]}`;
-        setSelectValue(weekSelect, weekWaarde);
+        jaarPeriodeSpan.textContent = `${parseInt(selectedNiveau.split(' ')[0])}.${weekWaarde.split(' ')[1]}`
+        setSelectValue(weekSelect, genormaliseerdeWeekWaarde);
     } else {
         weekInputField.parentElement.style.display = 'block';
         weekInputField.value = weekWaarde; // Reset de week input
         setSelectValue(weekSelect, 'week');
-        jaarPeriodeSpan.textContent = berekenJaarPeriode(weekWaarde);
+        jaarPeriodeSpan.textContent = isBewerker ? berekenJaarPeriode(weekWaarde) : jaarPeriode;
     }
 
     weekInputField.oninput = () => {
@@ -1368,36 +1369,37 @@ function toggleWeekInputEnBijwerkenJaarPeriode(weekSelect, weekInputField, jaarP
     };
 }
 
+
 function berekenJaarPeriode(weekNummer) {
     let periode = parseInt(selectedNiveau.split(' ')[0])
     // Omzetten van weeknummer naar een getal indien het een string is
     weekNummer = parseInt(weekNummer, 10);
-  
+
     // Normaliseer weeknummers volgens de schoolkalender
     let genormaliseerdWeekNummer = weekNummer >= 33 ? weekNummer - 32 : weekNummer + 20;
-  
+
     // Omzetten van SE-weken naar de genormaliseerde schoolkalender
-    const genormaliseerdeSEWeekNummers = Object.keys(seWeekNaarWeekNummer).reduce((acc, key) => {
-      const value = seWeekNaarWeekNummer[key];
-      acc[key] = value >= 33 ? value - 32 : value + 20;
-      return acc;
+    const genormaliseerdeSEWeekNummers = Object.keys(defaultPeriods).reduce((acc, key) => {
+        const value = defaultPeriods[key];
+        acc[key] = value >= 33 ? value - 32 : value + 20;
+        return acc;
     }, {});
-  
+
     // Bepaal de periode gebaseerd op het genormaliseerd weeknummer
     if (genormaliseerdWeekNummer < genormaliseerdeSEWeekNummers['SE 1']) {
-      return `${periode}.1`;
+        return `${periode}.1`;
     } else if (genormaliseerdWeekNummer < genormaliseerdeSEWeekNummers['SE 2']) {
-      return `${periode}.2`;
+        return `${periode}.2`;
     } else if (genormaliseerdWeekNummer < genormaliseerdeSEWeekNummers['SE 3']) {
-      return `${periode}.3`;
+        return `${periode}.3`;
     } else if (genormaliseerdWeekNummer < genormaliseerdeSEWeekNummers['SE 4']) {
-      return `${periode}.4`;
+        return `${periode}.4`;
     } else { // Na SE 4 tot week 32
-      return `${periode}.4`;
+        return `${periode}.4`;
     }
-  }
-  
-  
+}
+
+
 
 function togglePickWeek(selectElement) {
     var pickWeekDiv = selectElement.nextElementSibling;
@@ -1413,15 +1415,26 @@ function togglePickWeek(selectElement) {
 }
 
 function voorbewerkTools(tools) {
-    let voorbewerkteTools = [];
+    // Maak een nieuwe Set om unieke waarden te garanderen
+    let uniekeToolsSet = new Set();
+
+    // Voeg eerst de defaultTools toe aan de set
+    if (defaultTools && Array.isArray(defaultTools)) {
+        defaultTools.forEach(tool => uniekeToolsSet.add(tool));
+    }
+
+    // Verwerk en voeg de meegegeven tools toe
     tools.forEach(tool => {
         if (tool.includes(',')) {
-            // Split de items op basis van komma en voeg ze apart toe
-            voorbewerkteTools.push(...tool.split(',').map(t => t.trim()));
+            // Split de items op basis van komma, trim ze, en voeg ze toe aan de set
+            tool.split(',').forEach(t => uniekeToolsSet.add(t.trim()));
         } else {
-            voorbewerkteTools.push(tool);
+            uniekeToolsSet.add(tool);
         }
     });
+
+    // Converteer de set terug naar een array
+    let voorbewerkteTools = Array.from(uniekeToolsSet);
     return voorbewerkteTools;
 }
 
@@ -1475,7 +1488,7 @@ function refreshData() {
     resetPercentages();
 }
 
-function resetPercentages(){
+function resetPercentages() {
     vwoWegingen = { '4 VWO': ptaData.weights[0], '5 VWO': ptaData.weights[1], '6 VWO': ptaData.weights[2] };
     havoWegingen = { '4 HAVO': ptaData.weights[0], '5 HAVO': ptaData.weights[1] };
     mavoWegingen = { '3 MAVO': ptaData.weights[0], '4 MAVO': ptaData.weights[1] };
@@ -1593,16 +1606,9 @@ function getPtaDataFromTab(contentPane) {
     return data;
 }
 
-const seWeekNaarWeekNummer = {
-    'SE 1': 41,
-    'SE 2': 51,
-    'SE 3': 10,
-    'SE 4': 26
-};
-
 function weekNaarUniformNummer(week) {
     // Check of de week een SE-week is en converteer deze naar het juiste weeknummer
-    const weekNummer = seWeekNaarWeekNummer[week] || parseInt(week, 10);
+    const weekNummer = defaultPeriods[week] || parseInt(week, 10);
     // Behandel weken als doorgaand vanaf week 33 tot week 32 van het volgende jaar
     return weekNummer >= 33 ? weekNummer - 33 : weekNummer + 20;
 }
@@ -1695,43 +1701,41 @@ function isGesorteerd(tests) {
 }
 
 
-function OptiesUitDatabase(){
+function OptiesUitDatabase() {
     fetch(`/api/defaults/subjects`)
-    .then(response => {
+        .then(response => {
             if (!response.ok) {
                 throw new Error('Netwerkrespons was niet ok');
             }
             return response.json();
-    })
-    .then(data =>{
-        console.log(data)
-        vakkenJuistzetten(data)
-    })
-    .catch(error => {
+        })
+        .then(data => {
+            vakkenJuistzetten(data)
+        })
+        .catch(error => {
             console.error('Fout bij het laden:', error);
-    });
+        });
 }
 
-function vakkenJuistzetten(fdata){
+function vakkenJuistzetten(fdata) {
     vakkenOpties = []
-    for(let i = 0; i < fdata.length; i ++){
-        if(!chekkenOfHetzelfde(fdata[i].name, vakkenOpties)){
-        vakkenOpties.push(fdata[i].name)
+    for (let i = 0; i < fdata.length; i++) {
+        if (!chekkenOfHetzelfde(fdata[i].name, vakkenOpties)) {
+            vakkenOpties.push(fdata[i].name)
         }
     }
-    console.log(vakkenOpties)
 }
 
-function chekkenOfHetzelfde(a, b){
-    for(let i = 0; i < b.length; i ++){
-        if(a === b[i]){
+function chekkenOfHetzelfde(a, b) {
+    for (let i = 0; i < b.length; i++) {
+        if (a === b[i]) {
             return true
         }
     }
     return false
 }
 
-async function laadPta(){
+async function laadPta() {
     const response = await fetch(`/api/pta/search?name=${selectedVak}&level=${selectedNiveau}`)
     if (!response.ok) {
         throw new Error(`Netwerkrespons was niet ok`);
@@ -1743,7 +1747,7 @@ async function laadPta(){
     refreshData()
 }
 
-function selecteerRecentstePta(fptas){
+function selecteerRecentstePta(fptas) {
     const recentstePta = fptas.reduce((recentste, huidig) => {
         const recentsteJaar = recentste.cohort.split(' - ')[1];
         const huidigJaar = huidig.cohort.split(' - ')[1];
@@ -1752,44 +1756,129 @@ function selecteerRecentstePta(fptas){
     ptaData = recentstePta
 }
 
+
 function initialiseerTemplate() {
-    haalToetssoortenOpEnVulIn();
-    // Voeg hier meer functieaanroepen toe voor andere template-onderdelen
-  }
+    setToetsSoorten();
+    setDurations();
+    setDefaultTools();
+    setPeriods();
+}
 
-
-
-  function haalToetssoortenOpEnVulIn() {
+function setToetsSoorten() {
     getToetssoorten().then(toetssoorten => {
-      if (!toetssoorten) return;
-      setDropdownTemplate(toetssoorten, 'afnamevormSelect');
+        if (!toetssoorten) return;
+        // Transformeer de toetssoorten naar het benodigde formaat
+        const verwerkteToetssoorten = toetssoorten.map(toetssoort => ({
+            text: toetssoort, // Behoud de originele tekst voor de weergave
+            value: toetssoort.toLowerCase() // Zet de waarde om naar kleine letters
+        }));
+        setDropdownTemplate(verwerkteToetssoorten, 'afnamevormSelect');
     }).catch(error => {
-      console.error('Fout bij het laden van toetssoorten:', error);
+        console.error('Fout bij het laden van toetssoorten:', error);
     });
-  }
-  
-  function getToetssoorten() {
+}
+
+
+function getToetssoorten() {
     return fetch(`/api/defaults/types`)
-      .then(response => {
-        if (!response.ok) throw new Error('Netwerkrespons was niet ok'); 
-        return response.json();
-      });
-  }
-  
-  function setDropdownTemplate(data, element) {
+        .then(response => {
+            if (!response.ok) throw new Error('Netwerkrespons was niet ok');
+            return response.json();
+        });
+}
+
+function setDurations() {
+    getDurations().then(durations => {
+        if (!durations) return;
+        const verwerkteDurations = durations.map(duration => {
+            return typeof duration === 'number' ?
+                { text: `${duration} min.`, value: duration } :
+                duration; // Houd 'Anders' of andere strings ongewijzigd
+        });
+        // Voeg 'Anders' toe, indien niet al aanwezig
+        if (!verwerkteDurations.some(item => item === 'Anders' || (item.text && item.text === 'Anders'))) {
+            verwerkteDurations.push('Anders');
+        }
+        setDropdownTemplate(verwerkteDurations, 'tijdSelect');
+    }).catch(error => {
+        console.error('Fout bij het laden van durations:', error);
+    });
+}
+
+
+function getDurations() {
+    return fetch(`/api/defaults/durations`)
+        .then(response => {
+            if (!response.ok) throw new Error('Netwerkrespons was niet ok');
+            return response.json();
+        });
+}
+
+let defaultTools;
+function setDefaultTools() {
+    getDefaultTools().then(tools => {
+        defaultTools = tools;
+    }).catch(error => {
+        console.error('Fout bij het ophalen van de default tools:', error);
+    });
+}
+
+function getDefaultTools() {
+    return fetch(`/api/defaults/tools`)
+        .then(response => {
+            if (!response.ok) throw new Error('Netwerkrespons was niet ok');
+            return response.json();
+        });
+}
+
+let defaultPeriods = {
+    'SE 1': 41,
+    'SE 2': 51,
+    'SE 3': 10,
+    'SE 4': 26
+};
+function setPeriods() {
+    getPeriods().then(periods => {
+        if (!periods || periods.length < 4) return; // Controleer of we minstens 4 perioden hebben
+
+        // Update de defaultPeriods met de end_week waarden van de opgehaalde perioden
+        defaultPeriods['SE 1'] = periods[0].end_week;
+        defaultPeriods['SE 2'] = periods[1].end_week;
+        defaultPeriods['SE 3'] = periods[2].end_week;
+        defaultPeriods['SE 4'] = periods[3].end_week;
+    }).catch(error => {
+        console.error('Fout bij het ophalen van de perioden:', error);
+    });
+}
+
+
+function getPeriods() {
+    return fetch(`/api/defaults/periods`)
+        .then(response => {
+            if (!response.ok) throw new Error('Netwerkrespons was niet ok');
+            return response.json();
+        });
+}
+
+function setDropdownTemplate(data, element) {
     let template = document.getElementById('toetsTemplate');
     let selectElement = template.content.querySelector(`.${element}`);
     if (!selectElement) {
-      console.error('Select element niet gevonden in template');
-      return; 
+        console.error('Select element niet gevonden in template');
+        return;
     }
-    
+
     selectElement.innerHTML = ''; // Verwijder bestaande opties
-    data.forEach(toetssoort => {
-      let optie = document.createElement('option');
-      optie.value = toetssoort.toLowerCase(); // Zet waarde naar kleine letters
-      optie.textContent = toetssoort.toLowerCase(); // Zet tekst naar kleine letters
-      selectElement.appendChild(optie);
+    data.forEach(item => {
+        let optie = document.createElement('option');
+        // Check of het item een object is voor custom tekst en waarde
+        if (typeof item === 'object' && item.text !== undefined && item.value !== undefined) {
+            optie.textContent = item.text;
+            optie.value = item.value;
+        } else {
+            optie.value = item.toString();
+            optie.textContent = item.toString();
+        }
+        selectElement.appendChild(optie);
     });
-  }
-  
+}
