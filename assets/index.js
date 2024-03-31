@@ -860,25 +860,41 @@ function maakTabs(ptaData) {
 
 function vulOverzichtTabel() {
     let tabelBody = document.querySelector('.overzichtTabel tbody');
-    tabelBody.innerHTML = ''; // Zorg ervoor dat de tabel leeg is voordat je deze vult
+    tabelBody.innerHTML = '';
 
     ptaData.tests.forEach(test => {
         let rij = tabelBody.insertRow();
 
-        let eerste100Karakters = test.description.slice(0, 25);
-        eerste100Karakters += test.description.length > 25 ? "..." : "";
+        let beschrijving = test.description || '';
+        let eerste25Karakters = beschrijving.slice(0, 25) + (beschrijving.length > 25 ? "..." : "");
 
-
-        // Gebruik de letterlijke test.week waarde voor de Week Select kolom
-        let weekWaarde = test.week;
-
-        [test.id, weekWaarde, eerste100Karakters, test.pod_weight, test.pta_weight].forEach(text => {
+        [test.id, test.week, '', test.pod_weight, test.pta_weight].forEach((text, index) => {
             let cell = rij.insertCell();
-            cell.textContent = text; // Alles als tekst
+            if (index === 2) { 
+                let span = document.createElement('span');
+                span.textContent = eerste25Karakters;
+                span.className = 'beschrijving-preview';
+                span.style.cursor = 'pointer'; 
+                cell.appendChild(span);
+
+                span.isUitgeklapt = false; 
+
+                span.onclick = () => {
+                    if (!span.isUitgeklapt) {
+                        span.textContent = beschrijving; 
+                        span.isUitgeklapt = true;
+                    } else {
+                        span.textContent = eerste25Karakters; 
+                        span.isUitgeklapt = false;
+                    }
+                };
+            } else {
+                cell.textContent = text; 
+            }
         });
     });
-    updateGewogenGemiddelden();
 }
+
 
 function updateGewogenGemiddelden() {
     const tabelBody = document.querySelector('.overzichtTabel tbody');
@@ -914,22 +930,31 @@ function updateGewogenGemiddelden() {
 function genereerOverzichtInhoud() {
     refreshData();
     let contentPane = document.getElementById("overzichtContent");
-    contentPane.innerHTML = ''; // Maak de inhoud van het paneel leeg
+    contentPane.innerHTML = '';
 
     let tabel = document.createElement('table');
     tabel.setAttribute('class', 'overzichtTabel');
 
     let thead = tabel.createTHead();
     let headerRow = thead.insertRow();
-    ['#', 'Week', 'Beschrijving', 'POD', 'PTA'].forEach(text => {
+    let isAllesUitgeklapt = false;
+
+    ['#', 'Week', 'Beschrijving', 'POD', 'PTA'].forEach((text, index) => {
         let th = document.createElement('th');
-        th.textContent = text;
+        if (index === 2) {
+            let span = document.createElement('span');
+            span.innerHTML = text;
+            span.style.cursor = 'pointer';
+            // Initialiseer de data-uitgeklapt attribuut als false
+            span.setAttribute('data-uitgeklapt', 'false');
+            span.onclick = () => toggleAlleBeschrijvingen(span, tabel);
+            th.appendChild(span);
+        } else {
+            th.textContent = text;
+        }
         headerRow.appendChild(th);
     });
-
-    // Voeg tbody toe aan de tabel, waar de testgegevens zullen worden ingevoegd
     tabel.createTBody();
-
     contentPane.appendChild(tabel);
 
     let sorteerKnop = document.createElement('button');
@@ -948,6 +973,29 @@ function genereerOverzichtInhoud() {
 
     vulOverzichtTabel(); // Zorg dat deze functie wordt aangeroepen na het opzetten van de tabel
 }
+
+function toggleAlleBeschrijvingen(headerSpan, tabel) {
+    // Gebruik een attribuut van het span-element om de uitklapstaat bij te houden
+    let isUitgeklapt = headerSpan.getAttribute('data-uitgeklapt') === 'true';
+
+    // Update de staat en het innerHTML van de headerSpan op basis van de huidige staat
+    isUitgeklapt = !isUitgeklapt;
+    headerSpan.setAttribute('data-uitgeklapt', isUitgeklapt);
+    headerSpan.innerHTML = `${isUitgeklapt ? '' : ''}Beschrijving`;
+
+    // Selecteer alle beschrijving spans in de tbody om hun inhoud te toggelen
+    let tbody = tabel.querySelector('tbody');
+    let beschrijvingSpans = tbody.querySelectorAll('.beschrijving-preview');
+
+    beschrijvingSpans.forEach(span => {
+        // Controleer of de huidige staat van de beschrijving overeenkomt met de gewenste staat
+        if (isUitgeklapt !== span.isUitgeklapt) {
+            span.click();
+        }
+    });
+}
+
+
 
 function toonTabInhoud(tabId) {
     document.querySelectorAll('.contentPane').forEach(pane => pane.style.display = 'none');
