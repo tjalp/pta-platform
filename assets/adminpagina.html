@@ -33,7 +33,7 @@
         </div>
 
         <div class="container">
-            <form id="tijdsModgelijkheden" onsubmit="tijdsMogelijkhedenVersturen(event)">
+            <form id="tijdsMogelijkheden" onsubmit="tijdsMogelijkhedenVersturen(event)">
                 <div class="flex">
                     <h2>Tijdsmogelijkheden</h2>
                     <button type="submit">💾</button>
@@ -125,7 +125,7 @@
                             <option value="Alle">Alle jaarlagen</option>
                         </select>
                     </div>
-                    <button type="button" class="pta-button" onclick="vakToevoegen()">+</button>
+                    <button type="button" class="pta-button" onclick="vakToevoegen(event)">+</button>
                 </form>
             </div>
             <form id="VerantwoordelijkeDocentenPta" class="pta-vakken-lijst" onsubmit="docentenPtaOpslaan(event)">
