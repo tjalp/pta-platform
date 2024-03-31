@@ -140,7 +140,7 @@ function bevestigKeuze(keuzeType, geselecteerdeOpties) {
                 case 'Jaar':
                     if (selectedJaar === bewerkJaar) {
                         // TODO mooier maken
-                        alert('Er is een kopie van het PTA van vorig jaar gemaakt. Deze kan je nu bewerken.')
+                        alert('Kopie van vorig jaar of laatste PTA-versie is geladen. Deze kan je nu (verder) bewerken.')
                         laadPta()
                     }
                     createDynamicButtons();
