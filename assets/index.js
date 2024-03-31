@@ -465,7 +465,7 @@ function createModalStructure(title, searchOptions, geselecteerdeOpties, meervou
 function createSearchInput(ul, searchOptions, geselecteerdeOpties, meervoudigeSelectie) {
     let searchInput = document.createElement('input');
     searchInput.type = 'text';
-    searchInput.placeholder = 'Zoeken...';
+    searchInput.placeholder = meervoudigeSelectie? 'Zoek of voeg een hulpmiddel toe...' : 'Zoeken...';
     searchInput.onkeyup = () => filterOptions(ul, searchOptions, searchInput.value, geselecteerdeOpties, meervoudigeSelectie);
     return searchInput;
 }
