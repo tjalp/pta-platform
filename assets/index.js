@@ -18,6 +18,8 @@ function toggleExplanation(selectElement) {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
+    initialiseerTemplate();
+    OptiesUitDatabase()
     isEersteKeer = true;
     start();
     genereerToetsen();
@@ -1716,4 +1718,44 @@ function selecteerRecentstePta(fptas){
     ptaData = recentstePta
 }
 
-OptiesUitDatabase()
+function initialiseerTemplate() {
+    haalToetssoortenOpEnVulIn();
+    // Voeg hier meer functieaanroepen toe voor andere template-onderdelen
+  }
+
+
+
+  function haalToetssoortenOpEnVulIn() {
+    getToetssoorten().then(toetssoorten => {
+      if (!toetssoorten) return;
+      setDropdownTemplate(toetssoorten, 'afnamevormSelect');
+    }).catch(error => {
+      console.error('Fout bij het laden van toetssoorten:', error);
+    });
+  }
+  
+  function getToetssoorten() {
+    return fetch(`/api/defaults/types`)
+      .then(response => {
+        if (!response.ok) throw new Error('Netwerkrespons was niet ok'); 
+        return response.json();
+      });
+  }
+  
+  function setDropdownTemplate(data, element) {
+    let template = document.getElementById('toetsTemplate');
+    let selectElement = template.content.querySelector(`.${element}`);
+    if (!selectElement) {
+      console.error('Select element niet gevonden in template');
+      return; 
+    }
+    
+    selectElement.innerHTML = ''; // Verwijder bestaande opties
+    data.forEach(toetssoort => {
+      let optie = document.createElement('option');
+      optie.value = toetssoort.toLowerCase(); // Zet waarde naar kleine letters
+      optie.textContent = toetssoort.toLowerCase(); // Zet tekst naar kleine letters
+      selectElement.appendChild(optie);
+    });
+  }
+  
