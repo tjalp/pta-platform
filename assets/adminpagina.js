@@ -298,23 +298,12 @@ function vakkenPtaOpslaan() {
     });
 }
 
-function docentenOphalen() {
-    fetch('/api/user/all')
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(data => {
-            docentenLaden(data);
-        })
-        .catch(error => {
-            console.error('Error loading data:', error);
-        });
-}
-
-function wachtwoordGenereren(lengte) {
+function genereerWachtwoord() {
+    const wachtwoordInput = document.getElementById('wachtwoordInput');
+    wachtwoordInput.value = wachtwoordGenereren(8);
+  }
+  
+  function wachtwoordGenereren(lengte) {
     const karakters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     let wachtwoord = '';
     for (let i = 0; i < lengte; i++) {
@@ -323,95 +312,70 @@ function wachtwoordGenereren(lengte) {
     return wachtwoord;
   }
   
-  function docentenLaden(data) {
-    console.log(data)
-    const container = document.getElementById('docentenVeldenContainer');
-    container.innerHTML = ''; // Verwijdert bestaande docentenvelden indien nodig
   
-    data.forEach((docent, index) => {
-      const div = document.createElement('div');
-      div.setAttribute('id', `docent_${docent.abbreviation}_${index}`);
-  
-      const label = document.createElement('label');
-      label.setAttribute('for', `wachtwoord_${docent.abbreviation}`);
-      label.textContent = `${docent.abbreviation}:`;
-  
-      const input = document.createElement('input');
-      input.type = 'text';
-      input.id = `wachtwoord_${docent.abbreviation}`;
-      input.placeholder = 'Wachtwoord';
-      input.value = wachtwoordGenereren(8); // Genereert een wachtwoord
-  
-      const verwijderKnop = document.createElement('button');
-      verwijderKnop.textContent = 'X';
-      verwijderKnop.type = 'button';
-      verwijderKnop.onclick = () => div.remove(); // Verwijdert het specifieke veld
-  
-      div.appendChild(label);
-      div.appendChild(input);
-      div.appendChild(verwijderKnop);
-  
-      container.appendChild(div);
-    });
-  }
-
-  function voegDocentToe() { 
-    const container = document.getElementById('docentenVeldenContainer');
-    const div = document.createElement('div');
-    div.setAttribute('id', `docent_nieuw_${container.children.length}`);
-  
-    const input = document.createElement('input');
-    input.type = 'text';
-    input.placeholder = 'Afkorting docent';
-    input.value = ''; // Laat de gebruiker de afkorting invullen
-  
-    const wachtwoordInput = document.createElement('input');
-    wachtwoordInput.type = 'text';
-    wachtwoordInput.placeholder = 'Wachtwoord';
-    wachtwoordInput.value = wachtwoordGenereren(8); // Genereert een wachtwoord
-  
-    const verwijderKnop = document.createElement('button');
-    verwijderKnop.textContent = 'X';
-    verwijderKnop.type = 'button';
-    verwijderKnop.onclick = () => div.remove();
-  
-    div.appendChild(input);
-    div.appendChild(wachtwoordInput);
-    div.appendChild(verwijderKnop);
-  
-    container.appendChild(div);
+  function ophalenGebruikers() {
+    return fetch('/api/user/all').then(response => response.json());
   }
   
-  
-function docentenAccountsOpslaan() {
-    event.preventDefault(); // Prevent the default form submission
-
-    // Gather data from the form
-    var docentenData = [];
-    var inputs = document.querySelectorAll('#DocentenAccounts input[type="text"]');
-    inputs.forEach(function (input) {
-        fetch(`/api/user/${input.id}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ id: input.id, password: input.value })
-        }).then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        }).then(data => {
-            console.log('Data received:', data);
-        }).catch(error => {
-            console.error('Error sending data:', error);
-        })
-        docentenData.push({
-            id: input.id,
-            abbreviation: input.value
-        });
+  function gebruikerAanmaken(afkorting, wachtwoord) {
+    return fetch('/api/user/create', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ abbreviation: afkorting, password: wachtwoord })
     });
-}
+  }
+  
+  function gebruikerBijwerken(id, wachtwoord) {
+    return fetch(`/api/user/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: wachtwoord })
+    });
+  }
+  
+  function toonFeedback(bericht, isSucces = true) {
+    const feedbackElement = document.getElementById('feedbackDocenten');
+    feedbackElement.textContent = bericht;
+    feedbackElement.className = isSucces ? 'feedback success' : 'feedback error';
+  }
+  
+  function docentenAccountsOpslaan(event) {
+    event.preventDefault();
+  
+    const afkorting = document.getElementById('afkortingInput').value;
+    const wachtwoord = document.getElementById('wachtwoordInput').value;
+  
+    ophalenGebruikers().then(users => {
+      const gebruiker = users.find(user => user.abbreviation === afkorting);
+      if (!gebruiker) {
+        const bevestiging = confirm(`De afkorting ${afkorting} bestaat niet. Nieuwe gebruiker aanmaken?`);
+        if (bevestiging) {
+          gebruikerAanmaken(afkorting, wachtwoord)
+            .then(handleResponse)
+            .catch(error => toonFeedback(error.message, false));
+        } else {
+          toonFeedback('Nieuwe gebruiker aanmaken geannuleerd.', false);
+        }
+      } else {
+        gebruikerBijwerken(gebruiker.id, wachtwoord)
+          .then(handleResponse)
+          .catch(error => toonFeedback(error.message, false));
+      }
+    }).catch(error => toonFeedback(error.message, false));
+  }
+  
+  function handleResponse(response) {
+    if (!response.ok) {
+      throw new Error('Fout bij het bijwerken/aanmaken van de gebruiker.');
+    }
+    return response.text().then(text => text ? JSON.parse(text) : {}).then(data => {
+      toonFeedback('Wachtwoord succesvol opgeslagen.');
+      document.getElementById('DocentenAccounts').reset();
+      console.log('Data received:', data);
+    });
+  }
+  
+  
 
 function vakkenOphalen() {
     fetch(`/api/defaults/subjects`)
@@ -531,284 +495,66 @@ function periodesOpslaan(event) {
         });
 }
 
-
 function vakToevoegen() {
-    event.preventDefault(); // Voorkom de standaardformulier verzending
+    event.preventDefault();
+    const vaknaam = document.getElementById('vaknaam').value;
+    const niveauSelectie = document.getElementById('niveau').value;
+    const jaarlaagSelectie = document.getElementById('jaarlaag').value;
 
-    // Haal de vaknaam, niveau en jaarlaag op uit het formulier VakkenPtaSchool
-    var vaknaam = document.getElementById('vaknaam').value;
-    var niveau = document.getElementById('niveau').value;
-    var jaarlaag = document.getElementById('jaarlaag').options[document.getElementById('jaarlaag').selectedIndex].text;
-    if (niveau == "alle") {
-        alert("geef bij alle altijd alle jaarlagen aan")
-        return
-    }
-    var bestaandeVakken = document.querySelectorAll('#VerantwoordelijkeDocentenPta input[type="text"]');
-    for (var i = 0; i < bestaandeVakken.length; i++) {
-        if (bestaandeVakken[i].getAttribute('vak') === vaknaam && bestaandeVakken[i].getAttribute('niveau') === niveau && bestaandeVakken[i].getAttribute('jaarlaag') === jaarlaag) {
-            alert('Dit vak is al toegevoegd.');
-            return;
-        }
-    }
+    const niveaus = niveauSelectie === "Alle" ? ["MAVO", "HAVO", "VWO"] : [niveauSelectie];
+    const jaarlagen = jaarlaagSelectie === "Alle" ? ["3", "4", "5", "6"] : [jaarlaagSelectie];
 
-    if (niveau == "Alle" && jaarlaag == "alle jaarlagen") {
-        let niveaus = ["Mavo", "Havo", "Vwo"]
-        for (let j = 0; j < niveaus.length; j++) {
-            if (niveaus[j] == 'Vwo') {
-                for (let i = 4; i < 7; i++) {
-                    var formDocentenPta = document.getElementById('VerantwoordelijkeDocentenPta');
-                    var label = document.createElement('label');
-                    label.textContent = vaknaam + " (" + i + ' ' + niveaus[j] + "): ";
-                    label.setAttribute('for', vaknaam + '_' + niveaus[j] + '_' + i)
-                    var icon = document.createElement('img')
-                    icon.setAttribute('src', '/prullenbak.png')
-                    icon.setAttribute('width', 25)
-                    icon.setAttribute('height', 25)
-                    icon.setAttribute('onclick', 'verwijderVak(' + vaknaam + '_' + niveau + '_' + i + ')')
-                    var inputDocent = document.createElement('input');
-                    inputDocent.setAttribute('type', 'text');
-                    inputDocent.setAttribute('id', vaknaam + '_' + niveaus[j] + '_' + i);
-                    inputDocent.setAttribute('jaarlaag', i);
-                    inputDocent.setAttribute('maxlength', 3)
-                    inputDocent.setAttribute('placeholder', 'afkorting docent')
-                    inputDocent.setAttribute('vak', vaknaam);
-                    inputDocent.setAttribute('niveau', niveaus[j]);
-                    inputDocent.setAttribute('name', 'docent_' + vaknaam.replace(/\s+/g, '') + '_' + niveaus[j] + '_' + i); // Maak een unieke naam gebaseerd op vaknaam, niveau en jaarlaag
-                    var div = document.createElement('div')
-                    div.appendChild(label);
-                    div.appendChild(icon);
-                    div.appendChild(inputDocent);
-                    if (bestaandeVakken.length > 0) {
-                        if (VakkenControleren(i, niveau[j], vaknaam, bestaandeVakken)) {
-                            alert('Dit vak is al toegevoegd.');
-                        } else {
-                            formDocentenPta.appendChild(div);
-                        }
-                    } else {
-                        formDocentenPta.appendChild(div);
-                    }
-                }
-            } else if (niveaus[j] == 'Havo') {
-                for (let i = 4; i < 6; i++) {
-                    var formDocentenPta = document.getElementById('VerantwoordelijkeDocentenPta');
-                    var label = document.createElement('label');
-                    label.textContent = vaknaam + " (" + i + ' ' + niveaus[j] + "): ";
-                    label.setAttribute('for', vaknaam + '_' + niveaus[j] + '_' + i)
-                    var icon = document.createElement('img')
-                    icon.setAttribute('src', '/prullenbak.png')
-                    icon.setAttribute('width', 25)
-                    icon.setAttribute('height', 25)
-                    icon.setAttribute('onclick', 'verwijderVak(' + vaknaam + '_' + niveau + '_' + i + ')')
-                    var inputDocent = document.createElement('input');
-                    inputDocent.setAttribute('type', 'text');
-                    inputDocent.setAttribute('id', vaknaam + '_' + niveaus[j] + '_' + i);
-                    inputDocent.setAttribute('jaarlaag', i);
-                    inputDocent.setAttribute('maxlength', 3)
-                    inputDocent.setAttribute('placeholder', 'afkorting docent')
-                    inputDocent.setAttribute('vak', vaknaam);
-                    inputDocent.setAttribute('niveau', niveaus[j]);
-                    inputDocent.setAttribute('name', 'docent_' + vaknaam.replace(/\s+/g, '') + '_' + niveaus[j] + '_' + i); // Maak een unieke naam gebaseerd op vaknaam, niveau en jaarlaag
-                    var div = document.createElement('div')
-                    div.appendChild(label);
-                    div.appendChild(icon);
-                    div.appendChild(inputDocent);
-                    if (bestaandeVakken.length > 0) {
-                        if (VakkenControleren(i, niveau[j], vaknaam, bestaandeVakken)) {
-                            alert('Dit vak is al toegevoegd.');
-                        } else {
-                            formDocentenPta.appendChild(div);
-                        }
-                    } else {
-                        formDocentenPta.appendChild(div);
-                    }
-                }
-            } else if (niveaus[j] == 'Mavo') {
-                for (let i = 3; i < 5; i++) {
-                    var formDocentenPta = document.getElementById('VerantwoordelijkeDocentenPta');
-                    var label = document.createElement('label');
-                    label.textContent = vaknaam + " (" + i + ' ' + niveaus[j] + "): ";
-                    label.setAttribute('for', vaknaam + '_' + niveaus[j] + '_' + i)
-                    var icon = document.createElement('img')
-                    icon.setAttribute('src', '/prullenbak.png')
-                    icon.setAttribute('width', 25)
-                    icon.setAttribute('height', 25)
-                    icon.setAttribute('onclick', 'verwijderVak(' + vaknaam + '_' + niveau + '_' + i + ')')
-                    var inputDocent = document.createElement('input');
-                    inputDocent.setAttribute('type', 'text');
-                    inputDocent.setAttribute('id', vaknaam + '_' + niveaus[j] + '_' + i);
-                    inputDocent.setAttribute('jaarlaag', i);
-                    inputDocent.setAttribute('maxlength', 3)
-                    inputDocent.setAttribute('placeholder', 'afkorting docent')
-                    inputDocent.setAttribute('vak', vaknaam);
-                    inputDocent.setAttribute('niveau', niveaus[j]);
-                    inputDocent.setAttribute('name', 'docent_' + vaknaam.replace(/\s+/g, '') + '_' + niveaus[j] + '_' + i); // Maak een unieke naam gebaseerd op vaknaam, niveau en jaarlaag
-                    var div = document.createElement('div')
-                    div.appendChild(label);
-                    div.appendChild(icon)
-                    div.appendChild(inputDocent);
-                    if (bestaandeVakken.length > 0) {
-                        if (VakkenControleren(i, niveau[j], vaknaam, bestaandeVakken)) {
-                            alert('Dit vak is al toegevoegd.');
-                        } else {
-                            formDocentenPta.appendChild(div);
-                        }
-                    } else {
-                        formDocentenPta.appendChild(div);
-                    }
-                }
-            }
-        }
-        return
-    }
-    if (niveau == "Mavo" && (jaarlaag == "5" || jaarlaag == "6")) {
-        alert("voer een geldig jaar in")
-        return
-    }
-    if (niveau == "Havo" && (jaarlaag == "3" || jaarlaag == "6")) {
-        alert("voer een geldig jaar in")
-        return
-    }
-    if (niveau == "Vwo" && jaarlaag == "3") {
-        alert("voer een geldig jaar in")
-        return
+    // Filter ongeldige combinaties uit
+    const geldigeCombinaties = niveaus.flatMap(niveau => jaarlagen.map(jaarlaag => {
+        if (niveau === "MAVO" && jaarlaag === "6") return null;
+        if (niveau === "HAVO" && (jaarlaag === "3" || jaarlaag === "6")) return null;
+        if (niveau === "VWO" && jaarlaag === "3") return null;
+        return { niveau, jaarlaag };
+    })).filter(combinatie => combinatie !== null);
+
+    geldigeCombinaties.forEach(({ niveau, jaarlaag }) => {
+        voegVakVeldToe(vaknaam, niveau, jaarlaag);
+    });
+}
+
+function voegVakVeldToe(vaknaam, niveau, jaarlaag) {
+    const formDocentenPta = document.getElementById('VerantwoordelijkeDocentenPta');
+    
+    // Controleer of het vak al bestaat
+    if (document.querySelector(`input[vak="${vaknaam}"][niveau="${niveau}"][jaarlaag="${jaarlaag}"]`)) {
+        alert('Dit vak is al toegevoegd voor de geselecteerde niveau en jaarlaag combinatie.');
+        return;
     }
 
-    if (jaarlaag == "alle jaarlagen") {
-        if (niveau == 'Vwo') {
-            for (let i = 4; i < 7; i++) {
-                var formDocentenPta = document.getElementById('VerantwoordelijkeDocentenPta');
-                var label = document.createElement('label');
-                label.textContent = vaknaam + " (" + i + ' ' + niveau + "): ";
-                label.setAttribute('for', vaknaam + '_' + niveau + '_' + i)
-                var inputDocent = document.createElement('input');
-                var icon = document.createElement('img')
-                icon.setAttribute('src', '/prullenbak.png')
-                icon.setAttribute('width', 25)
-                icon.setAttribute('height', 25)
-                icon.setAttribute('onclick', 'verwijderVak(' + vaknaam + '_' + niveau + '_' + i + ')')
-                var inputDocent = document.createElement('input');
-                inputDocent.setAttribute('type', 'text');
-                inputDocent.setAttribute('maxlength', 3)
-                inputDocent.setAttribute('vak', vaknaam);
-                inputDocent.setAttribute('placeholder', 'afkorting docent')
-                inputDocent.setAttribute('id', vaknaam + '_' + niveau + '_' + jaarlaag);
-                inputDocent.setAttribute('name', 'docent_' + vaknaam.replace(/\s+/g, '') + '_' + niveau + '_' + i); // Maak een unieke naam gebaseerd op vaknaam, niveau en jaarlaag
-                var div = document.createElement('div')
-                div.setAttribute('id', vaknaam + '_' + niveau + '_' + i)
-                div.appendChild(label);
-                div.appendChild(inputDocent);
-                div.appendChild(icon)
-                if (bestaandeVakken.length > 0) {
-                    if (VakkenControleren(i, "Vwo", vaknaam, bestaandeVakken)) {
-                        alert('Dit vak is al toegevoegd.');
-                    } else {
-                        formDocentenPta.appendChild(div);
-                    }
-                } else {
-                    formDocentenPta.appendChild(div);
-                }
-            }
-            return
-        } else if (niveau == 'Havo') {
-            for (let i = 4; i < 6; i++) {
-                var formDocentenPta = document.getElementById('VerantwoordelijkeDocentenPta');
-                var label = document.createElement('label');
-                label.textContent = vaknaam + " (" + i + ' ' + niveau + "): ";
-                label.setAttribute('for', vaknaam + '_' + niveau + '_' + i)
-                var icon = document.createElement('img')
-                icon.setAttribute('src', '/prullenbak.png')
-                icon.setAttribute('width', 25)
-                icon.setAttribute('height', 25)
-                icon.setAttribute('onclick', 'verwijderVak(' + vaknaam + '_' + niveau + '_' + i + ')')
-                var inputDocent = document.createElement('input');
-                inputDocent.setAttribute('type', 'text');
-                inputDocent.setAttribute('maxlength', 3)
-                inputDocent.setAttribute('vak', vaknaam);
-                inputDocent.setAttribute('placeholder', 'afkorting docent')
-                inputDocent.setAttribute('id', vaknaam + '_' + niveau + '_' + jaarlaag);
-                inputDocent.setAttribute('name', 'docent_' + vaknaam.replace(/\s+/g, '') + '_' + niveau + '_' + i); // Maak een unieke naam gebaseerd op vaknaam, niveau en jaarlaag
-                var div = document.createElement('div')
-                div.setAttribute('id', vaknaam + '_' + niveau + '_' + i)
-                div.appendChild(label);
-                div.appendChild(inputDocent);
-                div.appendChild(icon)
-                if (bestaandeVakken.length > 0) {
-                    if (VakkenControleren(i, "Havo", vaknaam, bestaandeVakken)) {
-                        alert('Dit vak is al toegevoegd.');
-                    } else {
-                        formDocentenPta.appendChild(div);
-                    }
-                } else {
-                    formDocentenPta.appendChild(div);
-                }
-            }
-            return
-        } else if (niveau == 'Mavo') {
-            for (let i = 3; i < 5; i++) {
-                var formDocentenPta = document.getElementById('VerantwoordelijkeDocentenPta');
-                var label = document.createElement('label');
-                label.textContent = vaknaam + " (" + i + ' ' + niveau + "): ";
-                label.setAttribute('for', vaknaam + '_' + niveau + '_' + i)
-                var icon = document.createElement('img')
-                icon.setAttribute('src', '/prullenbak.png')
-                icon.setAttribute('width', 25)
-                icon.setAttribute('height', 25)
-                icon.setAttribute('onclick', 'verwijderVak(' + vaknaam + '_' + niveau + '_' + i + ')')
-                var inputDocent = document.createElement('input');
-                inputDocent.setAttribute('type', 'text');
-                inputDocent.setAttribute('id', vaknaam + '_' + niveau + '_' + jaarlaag);
-                inputDocent.setAttribute('jaarlaag', jaarlaag);
-                inputDocent.setAttribute('vak', vaknaam);
-                inputDocent.setAttribute('placeholder', 'afkorting docent')
-                inputDocent.setAttribute('maxlength', 3)
-                inputDocent.setAttribute('niveau', i);
-                inputDocent.setAttribute('name', 'docent_' + vaknaam.replace(/\s+/g, '') + '_' + niveau + '_' + i); // Maak een unieke naam gebaseerd op vaknaam, niveau en jaarlaag
-                var div = document.createElement('div')
-                div.setAttribute('id', vaknaam + '_' + niveau + '_' + i)
-                div.appendChild(label);
-                div.appendChild(inputDocent);
-                div.appendChild(icon)
-                if (bestaandeVakken.length > 0) {
-                    if (VakkenControleren(i, 'Mavo', vaknaam, bestaandeVakken)) {
-                        alert('Dit vak is al toegevoegd.');
-                    } else {
-                        formDocentenPta.appendChild(div);
-                    }
-                } else {
-                    formDocentenPta.appendChild(div);
-                }
-            }
-            return
+    const div = document.createElement('div');
+    div.className = 'vak-item';
 
-        }
-    }
+    const label = document.createElement('label');
+    label.textContent = `${vaknaam} (${jaarlaag} ${niveau}):`;
 
-    // Creëer nieuwe inputvelden voor de docent verantwoordelijk voor het nieuwe vak
-    var formDocentenPta = document.getElementById('VerantwoordelijkeDocentenPta');
-    var label = document.createElement('label');
-    label.textContent = vaknaam + " (" + jaarlaag + ' ' + niveau + "): ";
-    label.setAttribute('for', vaknaam + '_' + niveau + '_' + jaarlaag)
-    var icon = document.createElement('img')
-    icon.setAttribute('src', '/prullenbak.png')
-    icon.setAttribute('width', 25)
-    icon.setAttribute('height', 25)
-    icon.setAttribute('onclick', 'verwijderVak(' + vaknaam + '_' + niveau + '_' + i + ')')
-    var inputDocent = document.createElement('input');
-    inputDocent.setAttribute('type', 'text');
-    inputDocent.setAttribute('id', vaknaam + '_' + niveau + '_' + jaarlaag);
-    inputDocent.setAttribute('jaarlaag', jaarlaag);
+    const inputDocent = document.createElement('input');
+    inputDocent.type = 'text';
     inputDocent.setAttribute('vak', vaknaam);
-    inputDocent.setAttribute('maxlength', 3)
     inputDocent.setAttribute('niveau', niveau);
-    inputDocent.setAttribute('placeholder', 'afkorting docent')
-    inputDocent.setAttribute('name', 'docent_' + vaknaam.replace(/\s+/g, '') + '_' + niveau + '_' + jaarlaag); // Maak een unieke naam gebaseerd op vaknaam, niveau en jaarlaag
-    var div = document.createElement('div')
+    inputDocent.setAttribute('jaarlaag', jaarlaag);
+    inputDocent.placeholder = 'Afkorting docent';
+
+    const verwijderKnop = document.createElement('button');
+    verwijderKnop.textContent = 'X';
+    verwijderKnop.type = 'button';
+    verwijderKnop.onclick = () => div.remove();
+
     div.appendChild(label);
     div.appendChild(inputDocent);
-    div.appendChild(icon);
-    formDocentenPta.appendChild(div);
+    div.appendChild(verwijderKnop);
+    
+    const header = formDocentenPta.querySelector('.pta-header');
+    
+    formDocentenPta.insertBefore(div, header.nextSibling);
+    
 
 }
+
 
 function VakkenControleren(fi, fniveau, fvaknaam, fbestaandeVakken) {
     for (i = 0; i < fbestaandeVakken.length; i++) {
@@ -899,7 +645,6 @@ function periodesLaden(periodes) {
 
 
 vakkenOphalen()
-docentenOphalen()
 hulpmiddelenOphalen()
 toetsSoortenOphalen()
 tijdsMogelijkhedenOphalen()

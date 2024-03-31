@@ -318,19 +318,93 @@ button {
     padding: 5px;
   }
   
-  .form-container {
+  .pta-wrapper {
     display: flex;
-    justify-content: space-around;
-    align-items: flex-start;
-    flex-wrap: wrap;
-    gap: 20px; /* Geeft wat ruimte tussen de formulieren */
+    flex-direction: column;
+    gap: 20px;
+    margin: 10px;
+}
+
+.pta-vakken-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.pta-vakken-toevoegen, .pta-vakken-lijst, .pta-docenten-accounts, .container {
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.pta-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.form-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+input[type="text"], select {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.pta-button, .saveButton {
+    cursor: pointer;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    text-align: center;
+}
+
+.pta-button:hover, .saveButton:hover {
+    opacity: 0.9;
+}
+
+.feedback.error {
+    margin-bottom: 15px;
+    padding: 10px;
+    border-radius: 4px;
+    color: #dc3545; /* Rood voor foutmeldingen */
+}
+
+.feedback.success {
+    color: #28a745; /* Groen voor succesmeldingen */
+}
+
+.pta-vakken-toevoegen .form-row {
+    display: flex;
+    align-items: center;
+}
+
+.pta-vakken-toevoegen .form-row label {
+    flex-shrink: 0;
+    width: 150px; /* Pas deze breedte aan naar de breedte van het langste label */
+}
+
+.pta-vakken-toevoegen .form-row input, 
+.pta-vakken-toevoegen .form-row select {
+    flex-grow: 1;
+    max-width: 200px;
+}
+
+.pta-wrapper input {
+    width: 200px;
+    max-width: 200px;
+}
+
+input::placeholder {
+    color: rgb(151, 151, 151); /* Maakt de placeholder-tekst grijzer */
+    font-style: italic; /* Maakt de placeholder-tekst schuingedrukt */
   }
   
-  .form-container form, .form-container button.plus {
-    flex: 1 1 300px; /* Zorgt ervoor dat elke form zich aanpast maar niet kleiner wordt dan 300px */
-    margin: 10px; /* Voegt wat marge toe rond de formulieren */
-    padding: 20px;
-    border: 1px solid #ccc; /* Geeft een subtiele rand */
-    border-radius: 5px; /* Afgeronde hoeken voor esthetiek */
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Een lichte schaduw voor diepte */
-  }

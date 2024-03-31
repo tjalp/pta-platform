@@ -11,98 +11,124 @@
 <body>
 
 
-    <form id="AanpassingenVoorDropdown" onsubmit="toetssoortenVersturen(event)">
-        <div class="flex">
-            <h2>Soorten toetsen</h2>
-            <button type="submit">💾</button>
+    <div class="pta-wrapper">
+        <div class="container">
+            <form id="AanpassingenVoorDropdown" onsubmit="toetssoortenVersturen(event)">
+                <div class="flex">
+                    <h2>Soorten toetsen</h2>
+                    <button type="submit">💾</button>
+                </div>
+                <div id="kloonbareVeld1">
+                </div>
+                <button type="button" class="plus" onclick="voegExtraVeldToe('kloonbareVeld1', 'text')">+</button>
+            </form>
         </div>
-        <div id="kloonbareVeld1">
-        </div>
-        <button type="button" class="plus" onclick="voegExtraVeldToe('kloonbareVeld1', 'text')">+</button>
-    </form>
 
-
-    <form id="tijdsModgelijkheden" onsubmit="tijdsMogelijkhedenVersturen(event)">
-        <div class="flex">
-            <h2>Tijdsmogelijkheden</h2>
-            <button type="submit">💾</button>
-        </div>
-        <div id="kloonbareVeld2">
-        </div>
-        <button type="button" class="plus" onclick="voegExtraVeldToe('kloonbareVeld2', 'number')">+</button>
-    </form>
-
-    <form id="hulpmiddelenform" onsubmit="hulpmiddelenOpslaan(event); return false;">
-        <div class="flex">
-            <h2>Hulpmiddelen</h2>
-            <button type="submit">💾</button>
-        </div>
-        <div id="kloonbareVeld3">
-        </div>
-        <button type="button" class="plus" onclick="voegExtraVeldToe('kloonbareVeld3', 'text')">+</button>
-    </form>
-
-    <form id="periodes" onsubmit="periodesOpslaan(event)">
-        <div class="flex">
-            <h2>Periodes</h2>
-            <button type="submit" class="saveButton">💾</button>
-        </div>
-        <table class="tijdlijnTabel">
-            <tr>
-                <th>Eerste week schooljaar</th>
-                <th>Week SE 1</th>
-                <th>Week SE 2</th>
-                <th>Week SE 3</th>
-                <th>Week SE 4</th>
-            </tr>
-            <tr>
-                <td><input type="number" id="startPeriode1" placeholder="Weeknr" /></td>
-                <td><input type="number" id="eindPeriode1" placeholder="Eind SE 1" /></td>
-                <td><input type="number" id="eindPeriode2" placeholder="Eind SE 2" /></td>
-                <td><input type="number" id="eindPeriode3" placeholder="Eind SE 3" /></td>
-                <td><input type="number" id="eindPeriode4" placeholder="Eind SE 4" /></td>
-            </tr>
-        </table>
-    </form>
-
-    <h2>Vakken toevoegen</h2>
-    <form id="VakkenPtaSchool">
-        <label for="vaknaam">Vak:</label>
-        <input type="text" id="vaknaam">
-        <label for="niveau">Kies een niveau:</label>
-        <select id="niveau" name="niveau">
-            <option value="Mavo">Mavo</option>
-            <option value="Havo">Havo</option>
-            <option value="Vwo">Vwo</option>
-            <option value="Alle">Alle niveau's</option>
-        </select>
-        <label for="jaarlaag">Kies een jaarlaag:</label>
-        <select id="jaarlaag" name="jaarlaag">
-            <option value="Mavo">3</option>
-            <option value="Havo">4</option>
-            <option value="Vwo">5</option>
-            <option value="6_jaarlaag">6</option>
-            <option value="Alle_jaarlagen">alle jaarlagen</option>
-        </select>
-        <button type="submit" onclick="vakToevoegen()">Vak(ken) toevoegen</button>
-    </form>
-    <div class="form-container">
-
-        <form id="VerantwoordelijkeDocentenPta" onsubmit="docentenPtaOpslaan(event)">
+        <div class="container">
+        <form id="tijdsModgelijkheden" onsubmit="tijdsMogelijkhedenVersturen(event)">
             <div class="flex">
-                <h2>Vakken</h2>
+                <h2>Tijdsmogelijkheden</h2>
+                <button type="submit">💾</button>
+            </div>
+            <div id="kloonbareVeld2">
+            </div>
+            <button type="button" class="plus" onclick="voegExtraVeldToe('kloonbareVeld2', 'number')">+</button>
+        </form>
+    </div>
+
+    <div class="container">
+        <form id="hulpmiddelenform" onsubmit="hulpmiddelenOpslaan(event); return false;">
+            <div class="flex">
+                <h2>Hulpmiddelen</h2>
+                <button type="submit">💾</button>
+            </div>
+            <div id="kloonbareVeld3">
+            </div>
+            <button type="button" class="plus" onclick="voegExtraVeldToe('kloonbareVeld3', 'text')">+</button>
+        </form>
+    </div>
+
+    <div class="container">
+        <form id="periodes" onsubmit="periodesOpslaan(event)">
+            <div class="flex">
+                <h2>Periodes</h2>
                 <button type="submit" class="saveButton">💾</button>
             </div>
+            <table class="tijdlijnTabel">
+                <tr>
+                    <th>Eerste week schooljaar</th>
+                    <th>Week SE 1</th>
+                    <th>Week SE 2</th>
+                    <th>Week SE 3</th>
+                    <th>Week SE 4</th>
+                </tr>
+                <tr>
+                    <td><input type="number" id="startPeriode1" placeholder="Weeknr" /></td>
+                    <td><input type="number" id="eindPeriode1" placeholder="Eind SE 1" /></td>
+                    <td><input type="number" id="eindPeriode2" placeholder="Eind SE 2" /></td>
+                    <td><input type="number" id="eindPeriode3" placeholder="Eind SE 3" /></td>
+                    <td><input type="number" id="eindPeriode4" placeholder="Eind SE 4" /></td>
+                </tr>
+            </table>
         </form>
-        <form id="DocentenAccounts" onsubmit="docentenAccountsOpslaan(event)">
-            <div class="flex">
+    </div>
+
+        <form id="DocentenAccounts" class="pta-docenten-accounts" onsubmit="docentenAccountsOpslaan(event)">
+            <div class="pta-header">
                 <h2>Docenten</h2>
                 <button type="submit" class="saveButton">💾</button>
             </div>
-            <!-- Specifieke container voor docentenvelden -->
-            <div id="docentenVeldenContainer"></div>
-            <button type="button" class="plus" onclick="voegDocentToe()">+</button>
+            <div id="feedbackDocenten" class="feedback"></div>
+            <div class="form-row">
+                <input type="text" id="afkortingInput" name="afkorting" placeholder="Afkorting" required>
+            </div>
+            <div class="form-row">
+                <input type="text" id="wachtwoordInput" name="wachtwoord" placeholder="Wachtwoord" required>
+                <button type="button" onclick="genereerWachtwoord()">🔁</button>
+            </div>
         </form>
+        <div class="pta-vakken-wrapper">
+            <div class="pta-vakken-toevoegen">
+                <h2>Vakken toevoegen</h2>
+                <form id="VakkenPtaSchool" class="pta-form">
+                    <div class="form-row">
+                        <label for="vaknaam">Vak:</label>
+                        <input type="text" id="vaknaam" placeholder="Nederlands">
+                    </div>
+                    <div class="form-row">
+                        <label for="niveau">Kies een niveau:</label>
+                        <select id="niveau" name="niveau">
+                            <option value="Mavo">Mavo</option>
+                            <option value="Havo">Havo</option>
+                            <option value="Vwo">Vwo</option>
+                            <option value="Alle">Alle niveau's</option>
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <label for="jaarlaag">Kies een jaarlaag:</label>
+                        <select id="jaarlaag" name="jaarlaag">
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="Alle">Alle jaarlagen</option>
+                        </select>
+                    </div>
+                    <button type="button" class="pta-button" onclick="vakToevoegen()">+</button>
+                </form>
+            </div>
+            <form id="VerantwoordelijkeDocentenPta" class="pta-vakken-lijst" onsubmit="docentenPtaOpslaan(event)">
+                <div class="pta-header">
+                    <h2>Vakken</h2>
+                    <button type="submit" class="saveButton">💾</button>
+                </div>
+                <!-- Dynamisch gegenereerde vakken komen hier -->
+            </form>
+        </div>
+
+    </div>
+
+
     </div>
     <script src="adminpagina.js">
     </script>
