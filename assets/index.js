@@ -139,7 +139,7 @@ function bevestigKeuze(keuzeType, geselecteerdeOpties) {
                 case 'Jaar':
                     if (selectedJaar === bewerkJaar) {
                         // TODO mooier maken
-                        alert('Er is een kopie van het PTA van vorig jaar gemaakt. Deze kan je nu bewerken.')
+                        //alert('Er is een kopie van het PTA van vorig jaar gemaakt. Deze kan je nu bewerken.')
                         laadPta()
                     }
                     createDynamicButtons();
@@ -179,7 +179,6 @@ function vakZoeken(vak){
 function zoekenNiveau(vakkenlijst, vak){
     niveauOpties = []
     for(let i = 0; i < vakkenlijst.length; i ++){   
-        console.log(vakkenlijst[i].name == vak)
         if(vakkenlijst[i].name == vak){
             let b = vakkenlijst[i].level
             b.toUpperCase()
@@ -316,7 +315,6 @@ function laadAlles() {
 }
 
 function laadPercentages() {
-    console.log('percentages laden')
     vwoVelden.style.display = selectedNiveau.includes('VWO') ? 'block' : 'none';
     havoVelden.style.display = selectedNiveau.includes('HAVO') ? 'block' : 'none';
     mavoVelden.style.display = selectedNiveau.includes('MAVO') ? 'block' : 'none';
@@ -558,11 +556,23 @@ GET & SET FUNCTIES VOOR DATABASE
 */
 
 function opslaan() {
+    toonTabInhoud('overzichtContent');
+    genereerOverzichtInhoud();
     // TODO Wegingen nog updaten in ptaData
     if (setLegeVelden()) {
         console.log('Er zijn nog lege velden. Niet opslaan?')
         return;
     }
+    if (!isGesorteerd(ptaData.tests)) {
+        document.getElementById('tabOverzicht').style.border = '1px solid red';
+        document.getElementById('sorteerKnop').style.border = '2px solid red';
+        return;
+    }
+    const bevestiging = confirm(`Zeker weten dat u wilt opslaan?`);
+    if (!bevestiging) {
+        return;
+    }
+
     fetch(`/api/pta/${ptaData.id}`, {
         method: 'PUT',
         headers: {
@@ -1619,11 +1629,11 @@ function setLegeVelden() {
 
     // Reset alle markeringen
     document.querySelectorAll('.tab').forEach(tab => {
-        tab.style.color = '';
+        tab.style.border = '';
     });
 
     document.querySelectorAll('.contentPane input, .contentPane select').forEach(element => {
-        element.style.borderColor = '';
+        element.style.border = '';
     });
 
     ptaData.tests.forEach(test => {
@@ -1655,20 +1665,30 @@ function setLegeVelden() {
                 }
             } else if (!waarde || waarde.trim() === '') {
                 if (element) {
-                    element.style.borderColor = 'red';
+                    element.style.border = '1px solid red';
                     legeVeldenGevondenVoorDezeTest = true;
                 }
             }
         });
 
         if (legeVeldenGevondenVoorDezeTest) {
-            tab.style.color = 'red';
+            tab.style.border = '1px solid red';
             algemeneLegeVeldenGevonden = true;
         }
     });
 
     return algemeneLegeVeldenGevonden;
 }
+
+function isGesorteerd(tests) {
+    for (let i = 0; i < tests.length - 1; i++) {
+        if (weekNaarUniformNummer(tests[i].week) > weekNaarUniformNummer(tests[i + 1].week)) {
+            return false; // Vroegtijdige return als een test later komt dan de volgende
+        }
+    }
+    return true; // Alle tests zijn correct gesorteerd
+}
+
 
 function OptiesUitDatabase(){
     fetch(`/api/defaults/subjects`)
