@@ -804,13 +804,17 @@ function maakTabs(ptaData) {
     let contentContainer = document.querySelector('.tabContent');
 
     // Verwijder alle toegevoegde tabs, behalve de vaste tabs
-    document.querySelectorAll('.tab').forEach(tab => {
-        if (tab.id !== 'tabWegingen' && tab.id !== 'tabOverzicht') {
-            tab.remove();
+    document.querySelectorAll('.tab:not(#tabWegingen):not(#tabOverzicht)').forEach(tab => {
+        tab.remove();
+    });
+
+    // Verwijder corresponderende contentPanes voor verwijderde tabs
+    document.querySelectorAll('.contentPane').forEach(contentPane => {
+        if (!['wegingenContent', 'overzichtContent'].includes(contentPane.id)) {
+            contentPane.remove();
         }
     });
 
-    // Initialiseer vaste tabs
     initialiseerVasteTabs();
 
     // Maak dynamische tabs voor elke toets in ptaData
@@ -818,9 +822,9 @@ function maakTabs(ptaData) {
         maakTab(test.id.toString(), test.id.toString(), tabsContainer, contentContainer);
     });
 
-    // Activeer standaard de 'Wegingen' tab
     toonTabInhoud('wegingenContent');
 }
+
 
 function vulOverzichtTabel() {
     let tabelBody = document.querySelector('.overzichtTabel tbody');
