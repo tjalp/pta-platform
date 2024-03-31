@@ -693,3 +693,4 @@ async function overwriteSubjectsDatabaseHandlingDuplicates() {
     }
   }
   
+  //overwriteSubjectsDatabaseHandlingDuplicates();
