@@ -26,6 +26,10 @@ body {
     margin-bottom: 10px; /* Of een andere passende waarde */
 }
 
+select {
+    background-color: white;
+}
+
 h1 {
     text-align: left;
     color: var(--primary-color);
@@ -242,6 +246,7 @@ nav>*:not(:last-child) {
 
 .selectField {
     margin-right: 10px;
+    background-color: white;
 }
 
 label,
