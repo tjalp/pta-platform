@@ -165,6 +165,7 @@ func StartServer() {
 	apiGroup.Group("/user").
 		//Use(auth.Authentication(data)).
 		GET("/:id", getUser).
+		POST("/create", createUser).
 		PUT("/:id", setUser).
 		GET("/all", getAllUsers).
 		PUT("/password", setPassword)
@@ -377,6 +378,32 @@ func getUser(c *gin.Context) {
 	c.JSON(http.StatusOK, user)
 }
 
+func createUser(c *gin.Context) {
+	var user database.User
+
+	if err := c.ShouldBind(&user); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if user.Abbreviation == "" || user.Password == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "'abbreviation' & 'password' cannot be empty"})
+		return
+	}
+
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "error hashing password"})
+		return
+	}
+	user.Password = string(hashedPassword)
+	user.CreatedAt = time.Now()
+
+	user = data.SaveUser(user)
+
+	c.JSON(http.StatusCreated, user)
+}
+
 func setUser(c *gin.Context) {
 	id := c.Param("id")
 
@@ -398,6 +425,9 @@ func setUser(c *gin.Context) {
 		return
 	}
 	user.Password = string(hashedPassword)
+	if user.CreatedAt.IsZero() {
+		user.CreatedAt = time.Now()
+	}
 	data.SaveUser(*user)
 
 	c.Status(http.StatusNoContent)
