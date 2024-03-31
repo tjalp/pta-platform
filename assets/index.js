@@ -916,6 +916,7 @@ function vulOverzichtTabel() {
             }
         });
     });
+    updateGewogenGemiddelden();
 }
 
 
