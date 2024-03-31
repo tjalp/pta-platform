@@ -65,9 +65,11 @@ function toetssoortenVersturen() {
         })
         .then(data => {
             console.log('Data sent successfully:', data);
+            toonFeedback('feedbackToetsen', 'Soorten toetsen succesvol opgeslagen.', true);
         })
         .catch(error => {
             console.error('Error sending data:', error);
+            toonFeedback('feedbackToetsen', error.message, false);
         });
 }
 
@@ -115,9 +117,11 @@ function tijdsMogelijkhedenVersturen() {
         })
         .then(data => {
             console.log('Data sent successfully:', data);
+            toonFeedback('feedbackTijden', 'Periodes succesvol opgeslagen.', true);
         })
         .catch(error => {
             console.error('Error sending data:', error);
+            toonFeedback('feedbackTijden', error.message, false);
         });
 }
 
@@ -132,7 +136,6 @@ function tijdsMogelijkhedenOphalen() {
             return response.json();
         })
         .then(data => {
-            console.log(data)
             tijdsmogelijkhedenLaden(data)
         })
         .catch(error => {
@@ -174,9 +177,11 @@ function hulpmiddelenOpslaan() {
         })
         .then(data => {
             console.log('Data sent successfully:', data);
+            toonFeedback('feedbackHulpmiddelen', 'Hulpmiddelen succesvol opgeslagen.', true);
         })
         .catch(error => {
             console.error('Error sending data:', error);
+            toonFeedback('feedbackHulpmiddelen', error.message, false);
         });
 }
 
@@ -333,11 +338,23 @@ function genereerWachtwoord() {
     });
   }
   
-  function toonFeedback(bericht, isSucces = true) {
-    const feedbackElement = document.getElementById('feedbackDocenten');
-    feedbackElement.textContent = bericht;
-    feedbackElement.className = isSucces ? 'feedback success' : 'feedback error';
+  let feedbackTimeout; 
+
+  function toonFeedback(element, bericht, isSucces = true) {
+      const feedbackElement = document.getElementById(element);
+      feedbackElement.textContent = bericht;
+      feedbackElement.className = isSucces ? 'feedback success' : 'feedback error';
+  
+      if (feedbackTimeout) {
+          clearTimeout(feedbackTimeout);
+      }
+      feedbackTimeout = setTimeout(() => {
+          feedbackElement.textContent = '';
+          feedbackElement.className = 'feedback';
+          feedbackTimeout = null;
+      }, 5000);
   }
+  
   
   function docentenAccountsOpslaan(event) {
     event.preventDefault();
@@ -352,16 +369,16 @@ function genereerWachtwoord() {
         if (bevestiging) {
           gebruikerAanmaken(afkorting, wachtwoord)
             .then(handleResponse)
-            .catch(error => toonFeedback(error.message, false));
+            .catch(error => toonFeedback('feedbackDocenten', error.message, false));
         } else {
-          toonFeedback('Nieuwe gebruiker aanmaken geannuleerd.', false);
+          toonFeedback('feedbackDocenten', 'Nieuwe gebruiker aanmaken geannuleerd.', false);
         }
       } else {
         gebruikerBijwerken(gebruiker.id, wachtwoord)
           .then(handleResponse)
-          .catch(error => toonFeedback(error.message, false));
+          .catch(error => toonFeedback('feedbackDocenten', error.message, false));
       }
-    }).catch(error => toonFeedback(error.message, false));
+    }).catch(error => toonFeedback('feedbackDocenten', error.message, false));
   }
   
   function handleResponse(response) {
@@ -369,7 +386,7 @@ function genereerWachtwoord() {
       throw new Error('Fout bij het bijwerken/aanmaken van de gebruiker.');
     }
     return response.text().then(text => text ? JSON.parse(text) : {}).then(data => {
-      toonFeedback('Wachtwoord succesvol opgeslagen.');
+      toonFeedback('feedbackDocenten', 'Wachtwoord succesvol opgeslagen.');
       document.getElementById('DocentenAccounts').reset();
       console.log('Data received:', data);
     });
@@ -434,6 +451,7 @@ function vakkenLaden() {
         inputDocent.placeholder = 'Afkorting docent';
         inputDocent.name = `docent_${index}`;
         inputDocent.value = vak.responsible;
+        inputDocent.required = true;
 
         const verwijderKnop = document.createElement('button');
         verwijderKnop.textContent = 'X'; // Of gebruik een afbeelding met prullenbak icoon
@@ -449,9 +467,8 @@ function vakkenLaden() {
 }
 
 function periodesOpslaan(event) {
-    event.preventDefault(); // Prevent the default form submission
+    event.preventDefault();
 
-    // Gather data from the form
     var periodesData = [
         {
             start_week: parseInt(document.getElementById("startPeriode1").value),
@@ -471,31 +488,32 @@ function periodesOpslaan(event) {
         }
     ];
 
-    // Send the data to your backend using fetch
-    console.log(periodesData)
     fetch('/api/defaults/periods', {
-        method: 'PUT', // Or 'PUT', 'PATCH', etc. depending on your backend
+        method: 'PUT',
         headers: {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify(periodesData)
     })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(data => {
-            // Handle the response from your backend if needed
-            console.log('Data sent successfully:', data);
-        })
-        .catch(error => {
-            console.error('Error sending data:', error);
-        });
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Serverfout bij het opslaan van periodes.');
+        }
+        return response.text();
+    })
+    .then(text => {
+        const data = text ? JSON.parse(text) : {};
+        console.log('Periodes succesvol opgeslagen:', data);
+        toonFeedback('feedbackPeriodes', 'Periodes succesvol opgeslagen.', true);
+    })
+    .catch(error => {
+        console.error('Fout bij het opslaan van periodes:', error);
+        toonFeedback('feedbackPeriodes', error.message, false);
+    });
 }
 
-function vakToevoegen() {
+
+function vakToevoegen(event) {
     event.preventDefault();
     const vaknaam = document.getElementById('vaknaam').value;
     const niveauSelectie = document.getElementById('niveau').value;
@@ -538,6 +556,7 @@ function voegVakVeldToe(vaknaam, niveau, jaarlaag) {
     inputDocent.setAttribute('niveau', niveau);
     inputDocent.setAttribute('jaarlaag', jaarlaag);
     inputDocent.placeholder = 'Afkorting docent';
+    inputDocent.required = true;
 
     const verwijderKnop = document.createElement('button');
     verwijderKnop.textContent = 'X';
@@ -605,10 +624,11 @@ function docentenPtaOpslaan(e) {
       })
       .then(data => {
         console.log('Data sent successfully:', data);
-        // Eventuele extra acties na succesvolle update
+        toonFeedback('feedbackVerantwoordelijken', 'Verantwoordelijken succesvol opgeslagen.', true);
       })
       .catch(error => {
         console.error('Error sending data:', error);
+        toonFeedback('feedbackVerantwoordelijken', error.message, false);
       });
   }
 

@@ -1,17 +1,24 @@
 /* Color Scheme */
 :root {
-    --primary-color: #27ae60; /* Blue */
-    --secondary-color: #2ecc71; /* Green */
-    --text-color: #333; /* Dark Gray */
-    --modal-background-color: #fefefe;  /* Light White */
-    --overlay-color: rgba(0, 0, 0, 0.6);  /* Semi-Transparent Black */
-    --button-hover-color: #1abc9c;  /* Lighter Green */
+    --primary-color: #27ae60;
+    /* Blue */
+    --secondary-color: #2ecc71;
+    /* Green */
+    --text-color: #333;
+    /* Dark Gray */
+    --modal-background-color: #fefefe;
+    /* Light White */
+    --overlay-color: rgba(0, 0, 0, 0.6);
+    /* Semi-Transparent Black */
+    --button-hover-color: #1abc9c;
+    /* Lighter Green */
 }
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 20px;
-    background-color: #ecf0f1; /* Light Gray */
+    background-color: #ecf0f1;
+    /* Light Gray */
     color: var(--text-color);
 }
 
@@ -20,11 +27,14 @@ h1 {
     color: var(--primary-color);
 }
 
-h2, h3, th {
+h2,
+h3,
+th {
     color: var(--primary-color);
 }
 
-h3, th {
+h3,
+th {
     font-style: italic;
 }
 
@@ -34,7 +44,8 @@ label {
     color: var(--text-color);
 }
 
-button, input[type="button"] {
+button,
+input[type="button"] {
     background-color: var(--secondary-color);
     color: #fff;
     padding: 10px 20px;
@@ -43,12 +54,16 @@ button, input[type="button"] {
     border-radius: 5px;
 }
 
-button:hover, input[type="button"]:hover {
-    background-color: #27ae60; /* Darker Green on hover */
+button:hover,
+input[type="button"]:hover {
+    background-color: #27ae60;
+    /* Darker Green on hover */
 }
 
-button:disabled, input[type="button"]:disabled {
-    background-color: #bdc3c7; /* Light Gray */
+button:disabled,
+input[type="button"]:disabled {
+    background-color: #bdc3c7;
+    /* Light Gray */
     cursor: default;
 }
 
@@ -70,7 +85,8 @@ button:disabled, input[type="button"]:disabled {
     width: 50vw;
 }
 
-input, textarea {
+input,
+textarea {
     padding: 10px;
     box-sizing: border-box;
     border: 1px solid #ccc;
@@ -84,7 +100,8 @@ textarea {
 }
 
 
-input:focus, textarea:focus {
+input:focus,
+textarea:focus {
     outline: none;
     border-color: var(--primary-color);
 }
@@ -123,11 +140,13 @@ input:focus, textarea:focus {
     margin-right: 10px;
 }
 
-#percentages .inputField, #percentages .showField {
-    width: 50px; /* Of een andere breedte naar keuze */
+#percentages .inputField,
+#percentages .showField {
+    width: 50px;
+    /* Of een andere breedte naar keuze */
     margin-right: 5px;
 }
- 
+
 .error {
     color: red;
     margin-top: 10px;
@@ -136,17 +155,21 @@ input:focus, textarea:focus {
 
 nav {
     display: flex;
-    align-items: center; /* Zorgt voor verticale centrering */
-    justify-content: start; /* Lijnt items uit aan de start (links), kan aangepast worden naar wens */
+    align-items: center;
+    /* Zorgt voor verticale centrering */
+    justify-content: start;
+    /* Lijnt items uit aan de start (links), kan aangepast worden naar wens */
 }
 
-nav h1  {
-    margin: 0; /* Verwijdert de standaard marge */
+nav h1 {
+    margin: 0;
+    /* Verwijdert de standaard marge */
     /* Voeg hier eventueel andere stijlen voor h1 toe */
 }
 
-nav > *:not(:last-child) {
-    margin-right: 10px; /* Voegt 10px marge toe aan de rechterkant van elk element, behalve het laatste */
+nav>*:not(:last-child) {
+    margin-right: 10px;
+    /* Voegt 10px marge toe aan de rechterkant van elk element, behalve het laatste */
 }
 
 #controls {
@@ -172,8 +195,10 @@ nav > *:not(:last-child) {
     padding: 20px;
     border: 1px solid #888;
     border-radius: 10px;
-    width: 50%; /* Smaller width for a more centered look */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Soft shadow for depth */
+    width: 50%;
+    /* Smaller width for a more centered look */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    /* Soft shadow for depth */
 }
 
 .modal button {
@@ -198,7 +223,8 @@ nav > *:not(:last-child) {
     margin-right: 10px;
 }
 
-label, .selectField {
+label,
+.selectField {
     display: inline-block;
     margin-right: 10px;
 }
@@ -212,7 +238,8 @@ label, .selectField {
 
 .explanationDiv.visible {
     /* Gebruik een geschatte max-height die groter is dan de verwachte inhoud */
-    max-height: 200px; /* Pas dit aan op basis van de verwachte inhoudsgrootte */
+    max-height: 200px;
+    /* Pas dit aan op basis van de verwachte inhoudsgrootte */
     visibility: visible;
 }
 
@@ -220,7 +247,8 @@ label, .selectField {
     overflow-y: hidden;
     resize: none;
     min-height: 35px;
-    height: 35px; /* Verwijder 'height: auto;' aangezien de textarea automatisch groeit */
+    height: 35px;
+    /* Verwijder 'height: auto;' aangezien de textarea automatisch groeit */
 }
 
 #addToolModal {
@@ -231,9 +259,11 @@ label, .selectField {
     background-color: white;
     padding: 20px;
     border-radius: 10px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-    z-index: 1000; /* Zorg dat het boven andere elementen verschijnt */
-    display: none; /* Verborgen tot het geactiveerd wordt */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    /* Zorg dat het boven andere elementen verschijnt */
+    display: none;
+    /* Verborgen tot het geactiveerd wordt */
 }
 
 /* Achtergrond overlay */
@@ -244,22 +274,29 @@ label, .selectField {
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.5);
-    z-index: 999; /* Onder de modal, maar boven andere elementen */
-    display: none; /* Verborgen tot het geactiveerd wordt */
+    z-index: 999;
+    /* Onder de modal, maar boven andere elementen */
+    display: none;
+    /* Verborgen tot het geactiveerd wordt */
 }
 
-.toolsSelect, option {
+.toolsSelect,
+option {
     max-width: 50vw;
 }
 
 ul.selectedTools {
-    width: 100%; /* Of een specifieke breedte */
+    width: 100%;
+    /* Of een specifieke breedte */
 }
 
 ul.selectedTools li {
-    white-space: normal; /* Zorgt ervoor dat de tekst normaal omloopt */
-    word-wrap: break-word; /* Breekt lange woorden af zodat ze binnen de breedte passen */
-    overflow-wrap: break-word; /* Alternatief voor word-wrap, voor betere ondersteuning */
+    white-space: normal;
+    /* Zorgt ervoor dat de tekst normaal omloopt */
+    word-wrap: break-word;
+    /* Breekt lange woorden af zodat ze binnen de breedte passen */
+    overflow-wrap: break-word;
+    /* Alternatief voor word-wrap, voor betere ondersteuning */
 }
 
 select {
@@ -269,16 +306,18 @@ select {
     border: 1px solid #ccc;
     border-radius: 5px;
     background-color: white;
-    box-sizing: border-box; /* Include padding and border in width */
+    box-sizing: border-box;
+    /* Include padding and border in width */
 }
 
-#dynamicButtons button, .modal button {
+#dynamicButtons button,
+.modal button {
     margin: 10px;
 }
 
 .flex {
     display: flex;
-	align-items: center;
+    align-items: center;
 }
 
 button {
@@ -306,19 +345,19 @@ button {
     display: flex;
     margin-bottom: 10px;
     padding: 10px;
-  }
-  
-  #VerantwoordelijkeDocentenPta label {
+}
+
+#VerantwoordelijkeDocentenPta label {
     margin-right: 10px;
     width: 200px;
-  }
-  
-  #VerantwoordelijkeDocentenPta input[type="text"] {
+}
+
+#VerantwoordelijkeDocentenPta input[type="text"] {
     margin-right: 10px;
     padding: 5px;
-  }
-  
-  .pta-wrapper {
+}
+
+.pta-wrapper {
     display: flex;
     flex-direction: column;
     gap: 20px;
@@ -331,11 +370,14 @@ button {
     gap: 20px;
 }
 
-.pta-vakken-toevoegen, .pta-vakken-lijst, .pta-docenten-accounts, .container {
+.pta-vakken-toevoegen,
+.pta-vakken-lijst,
+.pta-docenten-accounts,
+.container {
     background-color: #f9f9f9;
     padding: 20px;
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .pta-header {
@@ -351,14 +393,16 @@ button {
     margin-bottom: 10px;
 }
 
-input[type="text"], select {
+input[type="text"],
+select {
     flex: 1;
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 4px;
 }
 
-.pta-button, .saveButton {
+.pta-button,
+.saveButton {
     cursor: pointer;
     color: white;
     border: none;
@@ -367,19 +411,21 @@ input[type="text"], select {
     text-align: center;
 }
 
-.pta-button:hover, .saveButton:hover {
+.pta-button:hover,
+.saveButton:hover {
     opacity: 0.9;
 }
 
 .feedback.error {
-    margin-bottom: 15px;
-    padding: 10px;
-    border-radius: 4px;
-    color: #dc3545; /* Rood voor foutmeldingen */
+    margin-left: 15px;
+    color: #dc3545;
+    /* Rood voor foutmeldingen */
 }
 
 .feedback.success {
-    color: #28a745; /* Groen voor succesmeldingen */
+    margin-left: 15px;
+    color: #28a745;
+    /* Groen voor succesmeldingen */
 }
 
 .pta-vakken-toevoegen .form-row {
@@ -389,10 +435,11 @@ input[type="text"], select {
 
 .pta-vakken-toevoegen .form-row label {
     flex-shrink: 0;
-    width: 150px; /* Pas deze breedte aan naar de breedte van het langste label */
+    width: 150px;
+    /* Pas deze breedte aan naar de breedte van het langste label */
 }
 
-.pta-vakken-toevoegen .form-row input, 
+.pta-vakken-toevoegen .form-row input,
 .pta-vakken-toevoegen .form-row select {
     flex-grow: 1;
     max-width: 200px;
@@ -404,6 +451,8 @@ input[type="text"], select {
 }
 
 input::placeholder {
-    color: rgb(151, 151, 151); /* Maakt de placeholder-tekst grijzer */
-    font-style: italic; /* Maakt de placeholder-tekst schuingedrukt */
-  }
+    color: rgb(151, 151, 151);
+    /* Maakt de placeholder-tekst grijzer */
+    font-style: italic;
+    /* Maakt de placeholder-tekst schuingedrukt */
+}
