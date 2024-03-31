@@ -37,6 +37,9 @@ function updateJaarOpties(nieuwJaarOpties, bewerkJaar, opSlot) {
 }
 
 function start() {
+    if (!isEersteKeer && heeftBewerkingsRechten && !wiltWisselen()) {
+        return; 
+    }
     isEersteKeer = true;
     isDynamicButtonClicked = false;
     removeExistingModals();
@@ -208,19 +211,37 @@ function zoekenNiveau(vakkenlijst, vak) {
     return niveauOpties;
 }
 
+function wiltWisselen() {
+    return(confirm('Niet opgeslagen data zal verloren gaan. Weet u zeker dat u wilt wisselen van PTA?'));
+}
+
+function promptVoorWisselen(keuzeFunctie) {
+    if (!isEersteKeer && heeftBewerkingsRechten && !wiltWisselen()) {
+        return;
+    }
+    keuzeFunctie();
+}
 
 function vakkeuze() {
-    initialiseerKeuzeModal('Vak', vakkenOpties, (opties) => bevestigKeuze('Vak', opties), start, selectedVak ? [selectedVak] : []);
+    promptVoorWisselen(() => {
+        isEersteKeer = true;
+        initialiseerKeuzeModal('Vak', vakkenOpties, (opties) => bevestigKeuze('Vak', opties), start, selectedVak ? [selectedVak] : []);
+    });
 }
 
 function niveaukeuze() {
-    vakZoeken(selectedVak)
+    promptVoorWisselen(() => {
+        vakZoeken(selectedVak);
+    });
 }
 
 function jaarkeuze() {
-    nieuwJaarOpties = updateJaarOpties(jaarOpties, bewerkJaar, opSlot);
-    initialiseerKeuzeModal('Jaar', nieuwJaarOpties, (opties) => bevestigKeuze('Jaar', opties), niveaukeuze, selectedJaar ? [selectedJaar] : []);
+    promptVoorWisselen(() => {
+        nieuwJaarOpties = updateJaarOpties(jaarOpties, bewerkJaar, opSlot);
+        initialiseerKeuzeModal('Jaar', nieuwJaarOpties, (opties) => bevestigKeuze('Jaar', opties), niveaukeuze, selectedJaar ? [selectedJaar] : []);
+    });
 }
+
 
 function updateSelection(keuzeType, selected) {
     switch (keuzeType) {

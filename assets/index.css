@@ -583,6 +583,11 @@ ul.selectedTools li {
     opacity: 1;
 }
 
+select.inputField.afnamevormSelect:disabled,
+select.inputField.tijdSelect:disabled {
+    width: 200px;
+}
+
 .flexOnderElkaar {
     display: grid;
     grid-template-columns: min-content auto; /* Eerste kolom past zich aan aan breedte van label */
