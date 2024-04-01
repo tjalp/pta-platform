@@ -1847,7 +1847,7 @@ function chekkenOfHetzelfde(a, b) {
 }
 
 async function laadPta() {
-    const response = await fetch(`/api/pta/search?name=${selectedVak}&level=${selectedNiveau}`)
+    const response = await fetch(`/api/pta/search?name=${encodeURIComponent(selectedVak)}&level=${encodeURIComponent(selectedNiveau)}`)
     if (!response.ok) {
         throw new Error(`Netwerkrespons was niet ok`);
     }
