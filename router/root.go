@@ -99,7 +99,7 @@ func StartServer() {
 			return
 		}
 		if user.Abbreviation == "" || user.Password == "" {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "abbreviation and password may not be empty"})
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Abbreviation and password may not be empty"})
 			return
 		}
 		existingUser := data.FindUsers(map[string][]string{"abbreviation": {user.Abbreviation}})
@@ -109,7 +109,7 @@ func StartServer() {
 		}
 		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "error hashing password"})
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error hashing password, try again later"})
 			return
 		}
 		user.Password = string(hashedPassword)
@@ -125,7 +125,7 @@ func StartServer() {
 			return
 		}
 		if user.Abbreviation == "" || user.Password == "" {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "abbreviation and password may not be empty"})
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Abbreviation and password may not be empty"})
 			return
 		}
 		var existingUsers = data.FindUsers(map[string][]string{"abbreviation": {user.Abbreviation}})
@@ -134,22 +134,22 @@ func StartServer() {
 			existingUser = &existingUsers[0]
 		}
 		if existingUser == nil {
-			c.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
+			c.JSON(http.StatusNotFound, gin.H{"error": "The requested user was not found"})
 			return
 		}
 		err := bcrypt.CompareHashAndPassword([]byte(existingUser.Password), []byte(user.Password))
 		if err != nil {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid password"})
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Incorrect details provided"})
 			return
 		}
 		expirationTime := time.Now().Add(time.Hour * 12)
 		token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.StandardClaims{ExpiresAt: expirationTime.Unix()})
 		tokenString, err := token.SignedString([]byte(os.Getenv("JWT_SECRET")))
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "error generating token"})
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error generating token, try again later"})
 			return
 		}
-		c.SetCookie("token", tokenString, int(expirationTime.Unix()), "/", "", false, false)
+		c.SetCookie("token", tokenString, int((time.Hour * 12).Seconds()), "/", "", false, false)
 		c.JSON(http.StatusOK, gin.H{"message": "login successful"})
 	})
 
