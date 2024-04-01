@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/gin-contrib/cors"
@@ -508,8 +509,10 @@ func uploadPta(c *gin.Context) {
 				return
 			}
 			sheets := f.GetSheetList()
+			var wg sync.WaitGroup
 
 			for _, sheetName := range sheets {
+				wg.Add(1)
 				rows, err := f.GetRows(sheetName, excelize.Options{})
 				if err != nil {
 					fmt.Println("error reading sheet", sheetName, ":", err)
@@ -517,8 +520,12 @@ func uploadPta(c *gin.Context) {
 				}
 				pta := ReadRows(rows)
 				fmt.Println("Saving PTA", pta.Name)
-				data.SavePta(pta)
+				go func(db database.Database, pta database.PtaData) {
+					defer wg.Done()
+					db.SavePta(pta)
+				}(data, pta)
 			}
+			wg.Wait()
 		}()
 	}
 
