@@ -71,7 +71,7 @@ func ReadRows(rows [][]string) database.PtaData {
 		}
 	}
 
-	var tools []string
+	var tools = make([]string, 0)
 	for i := toolsIndexStart; i < len(rows); i += 1 {
 		if len(rows[i]) < 2 || rows[i][1] == "" {
 			break
@@ -80,7 +80,7 @@ func ReadRows(rows [][]string) database.PtaData {
 	}
 	pta.Tools = tools
 
-	var tests []database.Test
+	var tests = make([]database.Test, 0)
 	for i := testsIndexStart; i < len(rows); i += 1 {
 		if len(rows[i]) < 15 || rows[i][1] == "" {
 			break
@@ -112,7 +112,7 @@ func ReadRows(rows [][]string) database.PtaData {
 			ptaWeight, _ = strconv.Atoi(rows[i][ptaColumn])
 		}
 		testToolsString := rows[i][14]
-		testTools := []int{}
+		var testTools = make([]int, 0)
 
 		if strings.Contains(testToolsString, " t/m ") {
 			tools := strings.Split(testToolsString, " t/m ")

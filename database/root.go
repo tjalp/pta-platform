@@ -29,6 +29,7 @@ type PtaData struct {
 	Name        string   `json:"name" form:"name"`
 	Level       string   `json:"level" form:"level"`
 	Cohort      string   `json:"cohort" form:"cohort"`
+	Year        int      `json:"year" form:"year"` // The first year, so 2024 would be 2024-2025
 	Responsible string   `json:"responsible" form:"responsible"`
 	Tools       []string `json:"tools" form:"tools"`
 	Tests       []Test   `json:"tests" form:"tests"`

@@ -8,6 +8,7 @@ import (
 	"mime/multipart"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -487,7 +488,19 @@ func setPassword(c *gin.Context) {
 
 func uploadPta(c *gin.Context) {
 	form, err := c.MultipartForm()
+	years := form.Value["year"]
 	files := form.File["files[]"]
+
+	if err != nil || years == nil || len(years) == 0 {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "no year provided"})
+		return
+	}
+	yearString := years[0]
+	year, err := strconv.Atoi(yearString)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "wrong year provided: " + err.Error()})
+		return
+	}
 
 	if err != nil || files == nil || len(files) == 0 {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "no files provided"})
@@ -496,11 +509,11 @@ func uploadPta(c *gin.Context) {
 	var wg sync.WaitGroup
 
 	for _, fileHeader := range files {
-		fmt.Println("Processing file:", fileHeader.Filename)
 		wg.Add(1)
 		// New function otherwise there may be a resource leak
 		go func(fileHeader *multipart.FileHeader) {
 			defer wg.Done()
+			fmt.Println("Processing file:", fileHeader.Filename)
 			file, err := fileHeader.Open()
 			if err != nil {
 				c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "error opening file:" + fileHeader.Filename})
@@ -525,6 +538,7 @@ func uploadPta(c *gin.Context) {
 						return
 					}
 					pta := ReadRows(rows)
+					pta.Year = year
 					processTime := time.Since(startTime)
 					startSavingTime := time.Now()
 					data.SavePta(pta)

@@ -392,7 +392,39 @@ function handleResponse(response) {
     });
 }
 
+function uploadFiles(event) {
+    event.preventDefault();
 
+    const form = document.getElementById('importform');
+    const formData = new FormData(form);
+    const button = form.querySelector('button[type="submit"]');
+    const buttonText = button.textContent;
+    button.disabled = true;
+    button.textContent = 'Bezig met uploaden...';
+
+    fetch('/api/pta/upload', {
+        method: 'POST',
+        body: formData
+    }).then(response => {
+        if (!response.ok) {
+            throw new Error('Serverfout bij het uploaden van bestanden.');
+        }
+        return response.json();
+    }).then(data => {
+        console.log('Bestanden succesvol geüpload:', data);
+        toonFeedback('feedbackImport', 'Bestanden succesvol geüpload.', true);
+    }).catch(error => {
+        console.error('Fout bij het uploaden van bestanden:', error);
+        toonFeedback('feedbackImport', error.message, false);
+    }).finally(() => {
+        button.disabled = false;
+        button.textContent = buttonText;
+    })
+}
+
+document.getElementById("importform").addEventListener("submit", event => {
+    uploadFiles(event);
+});
 
 function vakkenOphalen() {
     fetch(`/api/defaults/subjects`)
@@ -745,4 +777,3 @@ function setBewerkJaar() {
 
     // TODO DB updaten voor bewerkjaar 
   }
-  

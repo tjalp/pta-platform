@@ -84,6 +84,23 @@
             </form>
         </div>
 
+        <div class="container">
+            <form id="importform" method="POST" enctype="multipart/form-data" onsubmit="uploadFiles">
+                <div class="flex">
+                    <h2>Importeer PTA</h2>
+                    <div id="feedbackImport" class="feedback"></div>
+                </div>
+                <div class="form-row">
+                    <label for="year">Beginjaar:</label><input id="year" name="year" type="number" placeholder="2024 (2024-2025)" required>
+                </div>
+                <div class="form-row">
+                    <label for="file">Bestand(en):</label>
+                    <input id="file" name="files[]" type="file" accept=".xlsx" multiple required />
+                    <button type="submit" class="saveButton">Upload</button>
+                </div>
+            </form>
+        </div>
+
         <form id="DocentenAccounts" class="pta-docenten-accounts" onsubmit="docentenAccountsOpslaan(event)">
             <div class="pta-header">
                 <h2>Docenten</h2>
