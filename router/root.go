@@ -5,6 +5,7 @@ import (
 	"github.com/golang-jwt/jwt"
 	"github.com/tjalp/pta-platform/auth"
 	"golang.org/x/crypto/bcrypt"
+	"mime/multipart"
 	"net/http"
 	"os"
 	"strings"
@@ -492,11 +493,14 @@ func uploadPta(c *gin.Context) {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "no files provided"})
 		return
 	}
+	var wg sync.WaitGroup
 
 	for _, fileHeader := range files {
 		fmt.Println("Processing file:", fileHeader.Filename)
+		wg.Add(1)
 		// New function otherwise there may be a resource leak
-		func() {
+		go func(fileHeader *multipart.FileHeader) {
+			defer wg.Done()
 			file, err := fileHeader.Open()
 			if err != nil {
 				c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "error opening file:" + fileHeader.Filename})
@@ -509,25 +513,28 @@ func uploadPta(c *gin.Context) {
 				return
 			}
 			sheets := f.GetSheetList()
-			var wg sync.WaitGroup
 
 			for _, sheetName := range sheets {
 				wg.Add(1)
-				rows, err := f.GetRows(sheetName, excelize.Options{})
-				if err != nil {
-					fmt.Println("error reading sheet", sheetName, ":", err)
-					continue
-				}
-				pta := ReadRows(rows)
-				fmt.Println("Saving PTA", pta.Name)
-				go func(db database.Database, pta database.PtaData) {
+				go func(sheetName string) {
 					defer wg.Done()
-					db.SavePta(pta)
-				}(data, pta)
+					startTime := time.Now()
+					rows, err := f.GetRows(sheetName, excelize.Options{})
+					if err != nil {
+						fmt.Println("error reading sheet", sheetName, ":", err)
+						return
+					}
+					pta := ReadRows(rows)
+					processTime := time.Since(startTime)
+					startSavingTime := time.Now()
+					data.SavePta(pta)
+					saveTime := time.Since(startSavingTime)
+					fmt.Printf("Processed sheet %8s (%30s) in %10s and saved in %10s with total time being %10s\n", sheetName, pta.Name, processTime, saveTime, time.Since(startTime))
+				}(sheetName)
 			}
-			wg.Wait()
-		}()
+		}(fileHeader)
 	}
+	wg.Wait()
 
 	c.JSON(http.StatusOK, gin.H{"message": "files uploaded and processed"})
 }
