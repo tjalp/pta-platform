@@ -69,9 +69,11 @@ function bewerken() {
     ]);
     document.body.appendChild(modal);
 }
+
+let afkorting;
 function bevestigBewerken() {
     let elements = document.querySelector('.modal').querySelectorAll('input');
-    let afkorting = elements[0].value;
+    afkorting = elements[0].value;
     let wachtwoord = elements[1].value;
     let messageField = document.getElementById('modalMessage');
 
@@ -164,8 +166,8 @@ function bevestigKeuze(keuzeType, geselecteerdeOpties) {
     }
 }
 
-function vakZoeken(vak) {
-    fetch(`/api/defaults/subjects`)
+function vakZoeken(vak, afkorting) {
+    return fetch(`/api/defaults/subjects`)
         .then(response => {
             if (!response.ok) {
                 throw new Error('Netwerkrespons was niet ok');
@@ -173,13 +175,20 @@ function vakZoeken(vak) {
             return response.json();
         })
         .then(data => {
-            let niveauOpties = zoekenNiveau(data, vak)
+            // Filter de data op basis van de meegegeven afkorting als deze is opgegeven
+            if (afkorting) {
+                data = data.filter(item => item.responsible.includes(afkorting));
+            }
+            // Zoek niveau-opties op basis van de gefilterde data en het opgegeven vak
+            let niveauOpties = zoekenNiveau(data, vak);
+            // Initialiseer de keuzemodal met de gevonden niveau-opties
             initialiseerKeuzeModal('Niveau', niveauOpties, (opties) => bevestigKeuze('Niveau', opties), vakkeuze, selectedNiveau ? [selectedNiveau] : []);
         })
         .catch(error => {
             console.error('Fout bij het laden:', error);
         });
 }
+
 
 function sorteerVakken(vakken) {
     const niveauGewicht = { 'mavo': 1, 'havo': 2, 'vwo': 3 };
@@ -234,7 +243,7 @@ function vakkeuze() {
 
 function niveaukeuze() {
     promptVoorWisselen(() => {
-        vakZoeken(selectedVak);
+        vakZoeken(selectedVak, afkorting);
     });
 }
 
