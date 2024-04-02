@@ -7,6 +7,7 @@ let selectedJaar = null;
 let selectedNiveau = null;
 let isDynamicButtonClicked = false;
 let isEersteKeer = true;
+let vwoWegingen = {}, havoWegingen = {}, mavoWegingen = {}; // TODO lelijk
 
 function toggleExplanation(selectElement) {
     var explanationDiv = selectElement.parentElement.querySelector('.explanationDiv');
@@ -678,129 +679,129 @@ function fetchFromDatabase() {
         .catch(error => console.error(error));
 }
 
-let ptaData = {
-    "id": "65fc5b40905c19cf1422e971",
-    "name": "Duits",
-    "level": "6 VWO",
-    "cohort": "2021 - 2024",
-    "responsible": "LNM",
-    "tools": [
-        "pen (blauw of zwart), potlood, geodriehoek/lineaal",
-        "woordenboek Duits-Nederlands",
-        "woordenboek Nederlands-Duits",
-        "steekwoordenlijst"
-    ],
-    "tests": [
-        {
-            "id": 601,
-            "year_and_period": "6.1",
-            "week": "SE 1",
-            "subdomain": "E",
-            "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque felis velit, tristique at odio luctus, dignissim facilisis nisi. Sed fermentum blandit varius. Suspendisse scelerisque ex eget dui sollicitudin consequat.",
-            "type": "schriftelijk",
-            'type_else': null,
-            "result_type": "cijfer",
-            "time": 100,
-            "time_else": null,
-            "resitable": true,
-            "pod_weight": 3,
-            "pta_weight": 2,
-            "tools": [
-                0,
-                1,
-                2
-            ]
-        },
-        {
-            "id": 602,
-            "year_and_period": "6.2",
-            "week": "SE 2",
-            "subdomain": "C",
-            "description": "Spreek- en gespreksvaardigheid dialoog over 10 stellingen",
-            "type": "mondeling",
-            'type_else': null,
-            "result_type": "cijfer",
-            "time": 0,
-            "time_else": '???',
-            "resitable": true,
-            "pod_weight": 5,
-            "pta_weight": 2,
-            "tools": [
-                0
-            ]
-        },
-        {
-            "id": 603,
-            "year_and_period": "6.3",
-            "week": "4",
-            "subdomain": "D",
-            "description": "Literatuur/film vergelijking",
-            "type": "anders",
-            'type_else': 'Literatuur/ film vergelijking',
-            "result_type": "o/v/g",
-            "time": 0,
-            "time_else": 'Project',
-            "resitable": true,
-            "pod_weight": 9,
-            "pta_weight": 0,
-            "tools": [
+let ptaData = {};
+// let ptaData = {
+//     "id": "65fc5b40905c19cf1422e971",
+//     "name": "Duits",
+//     "level": "6 VWO",
+//     "cohort": "2021 - 2024",
+//     "responsible": "LNM",
+//     "tools": [
+//         "pen (blauw of zwart), potlood, geodriehoek/lineaal",
+//         "woordenboek Duits-Nederlands",
+//         "woordenboek Nederlands-Duits",
+//         "steekwoordenlijst"
+//     ],
+//     "tests": [
+//         {
+//             "id": 601,
+//             "year_and_period": "6.1",
+//             "week": "SE 1",
+//             "subdomain": "E",
+//             "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque felis velit, tristique at odio luctus, dignissim facilisis nisi. Sed fermentum blandit varius. Suspendisse scelerisque ex eget dui sollicitudin consequat.",
+//             "type": "schriftelijk",
+//             'type_else': null,
+//             "result_type": "cijfer",
+//             "time": 100,
+//             "time_else": null,
+//             "resitable": true,
+//             "pod_weight": 3,
+//             "pta_weight": 2,
+//             "tools": [
+//                 0,
+//                 1,
+//                 2
+//             ]
+//         },
+//         {
+//             "id": 602,
+//             "year_and_period": "6.2",
+//             "week": "SE 2",
+//             "subdomain": "C",
+//             "description": "Spreek- en gespreksvaardigheid dialoog over 10 stellingen",
+//             "type": "mondeling",
+//             'type_else': null,
+//             "result_type": "cijfer",
+//             "time": 0,
+//             "time_else": '???',
+//             "resitable": true,
+//             "pod_weight": 5,
+//             "pta_weight": 2,
+//             "tools": [
+//                 0
+//             ]
+//         },
+//         {
+//             "id": 603,
+//             "year_and_period": "6.3",
+//             "week": "4",
+//             "subdomain": "D",
+//             "description": "Literatuur/film vergelijking",
+//             "type": "anders",
+//             'type_else': 'Literatuur/ film vergelijking',
+//             "result_type": "o/v/g",
+//             "time": 0,
+//             "time_else": 'Project',
+//             "resitable": true,
+//             "pod_weight": 9,
+//             "pta_weight": 0,
+//             "tools": [
 
-            ]
-        },
-        {
-            "id": 604,
-            "year_and_period": "6.3",
-            "week": "4",
-            "subdomain": "B",
-            "description": "Cito kijk-en luistertoets 23 januari",
-            "type": "digitaal",
-            'type_else': null,
-            "result_type": "cijfer",
-            "time": 50,
-            "time_else": null,
-            "resitable": true,
-            "pod_weight": 10,
-            "pta_weight": 2,
-            "tools": [
-                0
-            ]
-        },
-        {
-            "id": 605,
-            "year_and_period": "6.3",
-            "week": "SE 3",
-            "subdomain": "CD",
-            "description": "Examenidiom en kennis van land en volk",
-            "type": "schriftelijk",
-            'type_else': null,
-            "result_type": "cijfer",
-            "time": 100,
-            "time_else": null,
-            "resitable": true,
-            "pod_weight": 1,
-            "pta_weight": 2,
-            "tools": [
-                0
-            ]
-        }
-    ]
-}
-
+//             ]
+//         },
+//         {
+//             "id": 604,
+//             "year_and_period": "6.3",
+//             "week": "4",
+//             "subdomain": "B",
+//             "description": "Cito kijk-en luistertoets 23 januari",
+//             "type": "digitaal",
+//             'type_else': null,
+//             "result_type": "cijfer",
+//             "time": 50,
+//             "time_else": null,
+//             "resitable": true,
+//             "pod_weight": 10,
+//             "pta_weight": 2,
+//             "tools": [
+//                 0
+//             ]
+//         },
+//         {
+//             "id": 605,
+//             "year_and_period": "6.3",
+//             "week": "SE 3",
+//             "subdomain": "CD",
+//             "description": "Examenidiom en kennis van land en volk",
+//             "type": "schriftelijk",
+//             'type_else': null,
+//             "result_type": "cijfer",
+//             "time": 100,
+//             "time_else": null,
+//             "resitable": true,
+//             "pod_weight": 1,
+//             "pta_weight": 2,
+//             "tools": [
+//                 0
+//             ]
+//         }
+//     ]
+// }
 
 function getPercentages() {
-    if (selectedNiveau.includes('VWO')) {
-        input4vwo.value = vwoWegingen['4 VWO'];
-        input5vwo.value = vwoWegingen['5 VWO'];
-        input6vwo.value = vwoWegingen['6 VWO'];
-    } else if (selectedNiveau.includes('HAVO')) {
-        input4havo.value = havoWegingen['4 HAVO'];
-        input5havo.value = havoWegingen['5 HAVO'];
-    } else if (selectedNiveau.includes('MAVO')) {
-        input3mavo.value = mavoWegingen['3 MAVO'];
-        input4mavo.value = mavoWegingen['4 MAVO'];
-    }
+    input4vwo.value = vwoWegingen?.['4 VWO'] || 0;
+    input5vwo.value = vwoWegingen?.['5 VWO'] || 0;
+    input6vwo.value = vwoWegingen?.['6 VWO'] || 0;
+
+    input4havo.value = havoWegingen?.['4 HAVO'] || 0;
+    input5havo.value = havoWegingen?.['5 HAVO'] || 0;
+
+    input3mavo.value = mavoWegingen?.['3 MAVO'] || 0;
+    input4mavo.value = mavoWegingen?.['4 MAVO'] || 0;
+
     berekenPercentage();
 }
+
 
 // TODO
 function setPercentages() {
@@ -1613,10 +1614,24 @@ function refreshData() {
 }
 
 function resetPercentages() {
-    vwoWegingen = { '4 VWO': ptaData.weights[0], '5 VWO': ptaData.weights[1], '6 VWO': ptaData.weights[2] };
-    havoWegingen = { '4 HAVO': ptaData.weights[0], '5 HAVO': ptaData.weights[1] };
-    mavoWegingen = { '3 MAVO': ptaData.weights[0], '4 MAVO': ptaData.weights[1] };
-    laadPercentages()
+    // Controleer of ptaData.weights bestaat en heeft elementen; zo niet, gebruik een lege array
+    const weights = ptaData.weights || [];
+    
+    vwoWegingen = {
+        '4 VWO': weights[0] || 0,
+        '5 VWO': weights[1] || 0,
+        '6 VWO': weights[2] || 0
+    };
+    havoWegingen = {
+        '4 HAVO': weights[0] || 0,
+        '5 HAVO': weights[1] || 0
+    };
+    mavoWegingen = {
+        '3 MAVO': weights[0] || 0,
+        '4 MAVO': weights[1] || 0
+    };
+
+    laadPercentages();
 }
 
 function getNieuwePtaData() {
@@ -1861,17 +1876,28 @@ function chekkenOfHetzelfde(a, b) {
 }
 
 async function laadPta() {
-    const response = await fetch(`/api/pta/search?name=${encodeURIComponent(selectedVak)}&level=${encodeURIComponent(selectedNiveau)}`)
-    if (!response.ok) {
+    try {
+      const response = await fetch(`/api/pta/search?name=${encodeURIComponent(selectedVak)}&level=${encodeURIComponent(selectedNiveau)}`);
+      if (!response.ok) {
         throw new Error(`Netwerkrespons was niet ok`);
+      }
+      const data = await response.json();
+  
+      // Controleer of we resultaten hebben, zo niet, creëer een lege PTA
+      if (!data.length) {
+        ptaData = creëerLegePta(selectedVak, selectedNiveau);
+      } else {
+        ptaData = data[0]; // Gebruik het eerste (of enige) resultaat
+      }
+  
+      // Voer de rest van de verwerking uit
+      genereerToetsen();
+      refreshData();
+    } catch (error) {
+      console.error('Fout bij het laden van PTA:', error);
     }
-    const data = await response.json();
-    ptaData = data[0]
-    // selecteerRecentstePta(data)
-    genereerToetsen()
-    refreshData()
-}
-
+  }
+  
 function selecteerRecentstePta(fptas) {
     const recentstePta = fptas.reduce((recentste, huidig) => {
         const recentsteJaar = recentste.cohort.split(' - ')[1];
@@ -2007,3 +2033,22 @@ function setDropdownTemplate(data, element) {
         selectElement.appendChild(optie);
     });
 }
+
+// TODO verbeteren dat alle informatie goed wordt gezet
+function creëerLegePta(vak, niveau) {
+    return {
+      id: "",
+      name: vak,
+      level: niveau,
+      cohort: "",
+      responsible: "",
+      tools: [
+        "pen (blauw of zwart), potlood, geodriehoek/lineaal",
+        "woordenboek",
+        "rekenmachine (niet grafisch)",
+        "geen"
+      ],
+      tests: []
+    };
+  }
+  
