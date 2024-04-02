@@ -1877,26 +1877,28 @@ function chekkenOfHetzelfde(a, b) {
 
 async function laadPta() {
     try {
-      const response = await fetch(`/api/pta/search?name=${encodeURIComponent(selectedVak)}&level=${encodeURIComponent(selectedNiveau)}`);
-      if (!response.ok) {
-        throw new Error(`Netwerkrespons was niet ok`);
-      }
-      const data = await response.json();
-  
-      // Controleer of we resultaten hebben, zo niet, creëer een lege PTA
-      if (!data.length) {
-        ptaData = creëerLegePta(selectedVak, selectedNiveau);
-      } else {
-        ptaData = data[0]; // Gebruik het eerste (of enige) resultaat
-      }
-  
-      // Voer de rest van de verwerking uit
-      genereerToetsen();
-      refreshData();
+        const response = await fetch(`/api/pta/search?name=${encodeURIComponent(selectedVak)}&level=${encodeURIComponent(selectedNiveau)}`);
+
+        // Speciale behandeling voor als de bron niet gevonden wordt (404)
+        if (response.status === 404) {
+            ptaData = creëerLegePta(selectedVak, selectedNiveau);
+        } else if (!response.ok) {
+            throw new Error(`Netwerkrespons was niet ok, status: ${response.status}`);
+        } else {
+            const data = await response.json();
+            
+            // Controleer of we resultaten hebben, zo niet, creëer een lege PTA
+            ptaData = data.length > 0 ? data[0] : creëerLegePta(selectedVak, selectedNiveau);
+        }
+
+        // Voer de rest van de verwerking uit
+        genereerToetsen();
+        refreshData();
     } catch (error) {
-      console.error('Fout bij het laden van PTA:', error);
+        console.error('Fout bij het laden van PTA:', error);
     }
-  }
+}
+
   
 function selecteerRecentstePta(fptas) {
     const recentstePta = fptas.reduce((recentste, huidig) => {
@@ -2036,19 +2038,39 @@ function setDropdownTemplate(data, element) {
 
 // TODO verbeteren dat alle informatie goed wordt gezet
 function creëerLegePta(vak, niveau) {
+    // Vertaal het niveau naar het juiste ID-formaat voor de test
+    const basisId = niveau.replace(/\D/g, ''); // Verwijder niet-digit karakters
+    const testId = parseInt(basisId + '01', 10); // Voeg '01' toe en converteer naar een getal
+    console.log(testId)
     return {
-      id: "",
-      name: vak,
-      level: niveau,
-      cohort: "",
-      responsible: "",
-      tools: [
-        "pen (blauw of zwart), potlood, geodriehoek/lineaal",
-        "woordenboek",
-        "rekenmachine (niet grafisch)",
-        "geen"
-      ],
-      tests: []
+        id: "",
+        name: vak,
+        level: niveau,
+        cohort: "",
+        responsible: "",
+        tools: [
+            "pen (blauw of zwart), potlood, geodriehoek/lineaal",
+            "woordenboek",
+            "rekenmachine (niet grafisch)",
+            "geen"
+        ],
+        tests: [{
+            id: testId,
+            year_and_period: "",
+            week: "",
+            subdomain: "",
+            description: "",
+            type: "",
+            type_else: null,
+            result_type: "",
+            time: 0,
+            time_else: null,
+            resitable: null,
+            pod_weight: 0,
+            pta_weight: 0,
+            tools: []
+        }]
     };
-  }
+}
+
   
