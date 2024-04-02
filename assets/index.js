@@ -74,7 +74,7 @@ function bewerken() {
 let afkorting;
 function bevestigBewerken() {
     let elements = document.querySelector('.modal').querySelectorAll('input');
-    afkorting = elements[0].value;
+    afkorting = elements[0].value.toUpperCase();
     let wachtwoord = elements[1].value;
     let messageField = document.getElementById('modalMessage');
 
