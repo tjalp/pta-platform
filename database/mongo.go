@@ -404,6 +404,29 @@ func (s MongoDatabase) SaveUser(user User) User {
 	return user
 }
 
+func (s MongoDatabase) GetConfig() *Config {
+	collection := mongodb.Collection("config")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	var result Config
+	err := collection.FindOne(ctx, bson.M{"_id": "config"}).Decode(&result)
+	if err != nil {
+		fmt.Println(err)
+		return nil
+	}
+	return &result
+}
+
+func (s MongoDatabase) SetConfig(config Config) {
+	collection := mongodb.Collection("config")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	_, err := collection.ReplaceOne(ctx, bson.M{"_id": "config"}, config, options.Replace().SetUpsert(true))
+	if err != nil {
+		panic(err)
+	}
+}
+
 func objectIdFromHex(hex string) (*primitive.ObjectID, error) {
 	objectID, err := primitive.ObjectIDFromHex(hex)
 	if err != nil {

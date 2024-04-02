@@ -43,13 +43,27 @@ function start() {
     isEersteKeer = true;
     isDynamicButtonClicked = false;
     removeExistingModals();
-    const modal = createModal('Wilt u PTAs bekijken of bewerken?', [
-        { text: 'Bekijken', action: bekijken },
-        { text: 'Bewerken', action: bewerken }
-    ]);
-    document.body.appendChild(modal);
-    toonTabInhoud('wegingenContent');
-    setEditRights()
+    fetch('/api/config')
+        .then(response => response.json())
+        .then(data => {
+            opSlot = data.locked;
+            if (opSlot) {
+                const modal = createModal('PTAs zijn op slot, u kunt alleen bekijken', [
+                    { text: 'Bekijken', action: bekijken },
+                ]);
+                document.body.appendChild(modal);
+            } else {
+                const modal = createModal('Wilt u PTAs bekijken of bewerken?', [
+                    {text: 'Bekijken', action: bekijken},
+                    {text: 'Bewerken', action: bewerken}
+                ]);
+                document.body.appendChild(modal);
+            }
+
+            toonTabInhoud('wegingenContent');
+            setEditRights()
+        })
+        .catch(error => console.error(error));
 }
 
 function bekijken() {

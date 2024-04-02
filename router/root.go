@@ -23,6 +23,7 @@ import (
 )
 
 var data database.Database
+var config database.Config
 
 func StartServer() {
 	fmt.Println("Starting PTA Platform")
@@ -34,6 +35,24 @@ func StartServer() {
 		panic(err)
 		return
 	}
+	fmt.Println("Retrieving config")
+	tempConfig := data.GetConfig()
+	if tempConfig == nil {
+		config = database.Config{}
+		data.SetConfig(config)
+	} else {
+		config = *tempConfig
+	}
+
+	go func() {
+		for {
+			time.Sleep(5 * time.Minute)
+			tempConfig := data.GetConfig()
+			if tempConfig != nil {
+				config = *tempConfig
+			}
+		}
+	}()
 
 	gin.SetMode(gin.ReleaseMode)
 
@@ -193,6 +212,24 @@ func StartServer() {
 		POST("/cohorts", addCohorts).
 		PUT("/cohorts", setCohorts)
 
+	apiGroup.POST("/config", func(c *gin.Context) {
+		var newConfig database.Config
+		if err := c.ShouldBind(&newConfig); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		data.SetConfig(newConfig)
+		tempConfig := data.GetConfig()
+		if tempConfig != nil {
+			config = *tempConfig
+			c.JSON(http.StatusOK, config)
+			return
+		}
+		c.JSON(http.StatusOK, config)
+	}).GET("/config", func(c *gin.Context) {
+		c.JSON(http.StatusOK, data.GetConfig())
+	})
+
 	err = router.Run()
 	if err != nil {
 		panic(err)
@@ -213,6 +250,10 @@ func getPta(c *gin.Context) {
 }
 
 func createPta(c *gin.Context) {
+	if config.Locked {
+		c.AbortWithStatusJSON(http.StatusLocked, gin.H{"error": "The platform is currently locked"})
+		return
+	}
 	var pta database.PtaData
 
 	if err := c.ShouldBind(&pta); err != nil {
@@ -246,6 +287,10 @@ func deletePta(c *gin.Context) {
 }
 
 func editPta(c *gin.Context) {
+	if config.Locked {
+		c.AbortWithStatusJSON(http.StatusLocked, gin.H{"error": "The platform is currently locked"})
+		return
+	}
 	id := c.Param("id")
 
 	pta := data.LoadPta(id)

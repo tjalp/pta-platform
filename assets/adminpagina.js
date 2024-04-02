@@ -746,24 +746,36 @@ async function overwriteSubjectsDatabaseHandlingDuplicates() {
 
 //overwriteSubjectsDatabaseHandlingDuplicates();
 
-let opSlot = false; // TODO lezen uit DB
+let opSlot = true;
+
+fetch('/api/config')
+    .then(response => response.json())
+    .then(data => {
+        setOpSlot(data.locked, false);
+    })
+    .catch(error => console.error('Fout bij het laden:', error));
 
 function toggleOpSlot() {
-  const knop = document.getElementById('toggleOpSlot');
-  opSlot = !opSlot;
-  knop.textContent = !opSlot ? '🔓' : '🔒';
-  document.getElementById('slotTekst').textContent = !opSlot? 'PTAs zijn open voor:' : 'PTAs zijn gesloten voor:';
+  setOpSlot(!opSlot);
+}
 
-  fetch('/api/pad/toestand', { // TODO goede endpoint toevoegen
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ opSlot }),
-  })
-  .then(response => response.json())
-  .then(data => console.log('Succesvol bijgewerkt:', data))
-  .catch(error => console.error('Fout bij het bijwerken:', error));
+function setOpSlot(slot, update = true) {
+    const knop = document.getElementById('toggleOpSlot');
+    opSlot = slot;
+    knop.textContent = !opSlot ? '🔓' : '🔒';
+    document.getElementById('slotTekst').textContent = !opSlot? 'PTAs zijn open voor:' : 'PTAs zijn gesloten voor:';
+
+    if (!update) return
+    fetch('/api/config', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ "locked": opSlot }),
+    })
+        .then(response => response.json())
+        .then(data => console.log('Succesvol bijgewerkt:', data))
+        .catch(error => console.error('Fout bij het bijwerken:', error));
 }
 
 let bewerkJaar = 2024; // TODO lezen uit DB

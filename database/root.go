@@ -22,6 +22,8 @@ type Database interface {
 	GetUser(string) *User
 	FindUsers(map[string][]string) []User
 	SaveUser(User) User
+	GetConfig() *Config
+	SetConfig(Config)
 }
 
 type PtaData struct {
@@ -54,4 +56,8 @@ type User struct {
 	GoogleUserId string    `json:"google_user_id" form:"google_user_id" bson:"google_user_id"`
 	Abbreviation string    `json:"abbreviation" form:"abbreviation"`
 	Password     string    `json:"password,omitempty" form:"password"` // TODO DONT SEND THIS AS RESPONSE!!!
+}
+
+type Config struct {
+	Locked bool `json:"locked" form:"locked"`
 }
