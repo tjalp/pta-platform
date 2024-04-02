@@ -387,7 +387,6 @@ function handleResponse(response) {
     }
     return response.text().then(text => text ? JSON.parse(text) : {}).then(data => {
         toonFeedback('feedbackDocenten', 'Wachtwoord succesvol opgeslagen.');
-        document.getElementById('DocentenAccounts').reset();
         console.log('Data received:', data);
     });
 }
