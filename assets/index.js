@@ -55,9 +55,11 @@ function start() {
 function bekijken() {
     selectedBewerkerOfBekijker = "Bekijken";
     isBewerker = false;
-    OptiesUitDatabase()
-    vakkeuze();
+    OptiesUitDatabase().then(() => {
+        vakkeuze(); // Deze functie wordt nu aangeroepen nadat OptiesUitDatabase() volledig is uitgevoerd.
+    });
 }
+
 
 function bewerken() {
     removeExistingModals();
@@ -1471,19 +1473,20 @@ function updateWeekSelectie(clone, weekWaarde, jaarPeriode) {
     // Toon of verberg pickWeek en werk jaarPeriode bij
     toggleWeekInputEnBijwerkenJaarPeriode(weekSelect, weekInputField, jaarPeriodeSpan, weekWaarde, jaarPeriode);
 }
+
 function toggleWeekInputEnBijwerkenJaarPeriode(weekSelect, weekInputField, jaarPeriodeSpan, weekWaarde, jaarPeriode) {
     // Normalizeer de weekWaarde om consistent te zijn met of zonder spatie
     const genormaliseerdeWeekWaarde = weekWaarde.replace(/SE(\d)/, 'SE $1');
 
     if (genormaliseerdeWeekWaarde.startsWith('SE')) {
         weekInputField.parentElement.style.display = 'none';
-        jaarPeriodeSpan.textContent = `${parseInt(selectedNiveau.split(' ')[0])}.${weekWaarde.split(' ')[1]}`
+        jaarPeriodeSpan.textContent = `${parseInt(selectedNiveau.split(' ')[0])}.${genormaliseerdeWeekWaarde.split(' ')[1]}`
         setSelectValue(weekSelect, genormaliseerdeWeekWaarde);
     } else {
         weekInputField.parentElement.style.display = 'block';
         weekInputField.value = heeftBewerkingsRechten && weekWaarde.length > 2? '' : weekWaarde; 
         setSelectValue(weekSelect, 'week');
-        jaarPeriodeSpan.textContent = heeftBewerkingsRechten ? berekenJaarPeriode(weekWaarde) : jaarPeriode;
+        jaarPeriodeSpan.textContent = heeftBewerkingsRechten ? berekenJaarPeriode(genormaliseerdeWeekWaarde) : jaarPeriode;
     }
 
     weekInputField.oninput = () => {
