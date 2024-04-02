@@ -20,7 +20,6 @@ function toggleExplanation(selectElement) {
 
 document.addEventListener('DOMContentLoaded', function () {
     initialiseerTemplate();
-    OptiesUitDatabase()
     isEersteKeer = true;
     start();
     genereerToetsen();
@@ -55,6 +54,7 @@ function start() {
 function bekijken() {
     selectedBewerkerOfBekijker = "Bekijken";
     isBewerker = false;
+    OptiesUitDatabase()
     vakkeuze();
 }
 
@@ -69,14 +69,12 @@ function bewerken() {
     ]);
     document.body.appendChild(modal);
 }
-
 function bevestigBewerken() {
-    // TODO Doe dit alsjeblieft goed want ik heb geen idee hoe dit moet
     let elements = document.querySelector('.modal').querySelectorAll('input');
     let afkorting = elements[0].value;
     let wachtwoord = elements[1].value;
     let messageField = document.getElementById('modalMessage');
-    // Hier moet verificatie worden afgehandeld
+
     fetch(`/api/auth/login`, {
         method: 'POST',
         headers: {
@@ -86,22 +84,28 @@ function bevestigBewerken() {
     })
         .then(response => {
             if (!response.ok) {
-                response.json().then(data => {
+                // Zorg dat we de error message correct afhandelen binnen de promise chain
+                return response.json().then(data => {
                     messageField.textContent = data.error;
-                })
-                throw new Error('Netwerkrespons was niet ok');
+                    throw new Error('Authenticatie mislukt');
+                });
             }
             return response.json();
         })
         .then(data => {
             isBewerker = true;
             selectedBewerkerOfBekijker = "Bewerken";
-            vakkeuze();
+            // Zorg ervoor dat vakkeuze wordt aangeroepen na OptiesUitDatabase
+            return OptiesUitDatabase(afkorting); // We wachten tot deze promise is voltooid
+        })
+        .then(() => {
+            vakkeuze(); // Nu veilig om aan te roepen
         })
         .catch(error => {
             console.error('Fout bij inloggen:', error);
         });
 }
+
 
 function initialiseerKeuzeModal(keuzeType, opties, bevestigingsActie, terugActie, selectOptie = []) {
     try {
@@ -1812,8 +1816,8 @@ function isGesorteerd(tests) {
 }
 
 
-function OptiesUitDatabase() {
-    fetch(`/api/defaults/subjects`)
+function OptiesUitDatabase(afkorting = "") {
+    return fetch(`/api/defaults/subjects`) // Let op: we retourneren de promise hier direct
         .then(response => {
             if (!response.ok) {
                 throw new Error('Netwerkrespons was niet ok');
@@ -1821,12 +1825,13 @@ function OptiesUitDatabase() {
             return response.json();
         })
         .then(data => {
-            vakkenJuistzetten(data)
-        })
-        .catch(error => {
-            console.error('Fout bij het laden:', error);
+            if (afkorting) {
+                data = data.filter(vak => vak.responsible.includes(afkorting));
+            }
+            vakkenJuistzetten(data);
         });
 }
+
 
 function vakkenJuistzetten(fdata) {
     vakkenOpties = []
