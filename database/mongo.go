@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"strconv"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -110,12 +111,20 @@ func (s MongoDatabase) SearchPta(params map[string][]string) []PtaData {
 
 	filter := bson.D{}
 	for k, v := range params {
+		number, err := strconv.Atoi(v[0])
+		if err != nil {
+			filter = append(filter, bson.E{
+				Key: k,
+				Value: bson.D{
+					{"$regex", "^" + v[0] + "$"},
+					{"$options", "i"},
+				}})
+			continue
+		}
 		filter = append(filter, bson.E{
-			Key: k,
-			Value: bson.D{
-				{"$regex", "^" + v[0] + "$"},
-				{"$options", "i"},
-			}})
+			Key:   k,
+			Value: number,
+		})
 	}
 
 	cursor, err := collection.Find(ctx, filter)

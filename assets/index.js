@@ -164,9 +164,10 @@ function bevestigKeuze(keuzeType, geselecteerdeOpties) {
                     if (selectedJaar === bewerkJaar) {
                         // TODO mooier maken
                         alert('Kopie van vorig jaar of laatste PTA-versie is geladen. Deze kan je nu (verder) bewerken.')
-                        laadPta()
+                        // laadPta()
                     }
                     createDynamicButtons();
+                    // TODO fix dit want dit zorgt ervoor dat de code in de finally scope ook wordt uitgevoerd
                     isEersteKeer = false; // Stop de initiële reeks
                     break;
             }
@@ -653,8 +654,15 @@ function opslaan() {
         return;
     }
 
-    fetch(`/api/pta/${ptaData.id}`, {
-        method: 'PUT',
+    let ptaId = ptaData.id;
+    let method = "PUT"
+    if (!ptaId) {
+        ptaId = "create";
+        method = "POST";
+    }
+
+    fetch(`/api/pta/${ptaId}`, {
+        method: `${method}`,
         headers: {
             'Content-Type': 'application/json'
         },
@@ -1894,11 +1902,18 @@ function chekkenOfHetzelfde(a, b) {
 
 async function laadPta() {
     try {
-        const response = await fetch(`/api/pta/search?name=${encodeURIComponent(selectedVak)}&level=${encodeURIComponent(selectedNiveau)}`);
-
+        // Verkrijg het eerste getal in de string van 'selectedJaar' en zet het om naar een integer
+        const year = parseInt(selectedJaar.split('/')[0].match(/\d+/), 10);
+        const response = await fetch(`/api/pta/search?name=${encodeURIComponent(selectedVak)}&level=${encodeURIComponent(selectedNiveau)}&year=${year}`);
         // Speciale behandeling voor als de bron niet gevonden wordt (404)
         if (response.status === 404) {
-            ptaData = creëerLegePta(selectedVak, selectedNiveau);
+            const secondResponse = await fetch(`/api/pta/search?name=${encodeURIComponent(selectedVak)}&level=${encodeURIComponent(selectedNiveau)}&year=${year - 1}`);
+            if (!secondResponse.ok) ptaData = creëerLegePta(selectedVak, selectedNiveau);
+            else {
+                const data = await secondResponse.json();
+                ptaData = data.length > 0 ? data[0] : creëerLegePta(selectedVak, selectedNiveau);
+                delete ptaData.id;
+            }
         } else if (!response.ok) {
             throw new Error(`Netwerkrespons was niet ok, status: ${response.status}`);
         } else {
@@ -1907,6 +1922,8 @@ async function laadPta() {
             // Controleer of we resultaten hebben, zo niet, creëer een lege PTA
             ptaData = data.length > 0 ? data[0] : creëerLegePta(selectedVak, selectedNiveau);
         }
+
+        ptaData.year = year;
 
         // Voer de rest van de verwerking uit
         genereerToetsen();
@@ -2060,7 +2077,6 @@ function creëerLegePta(vak, niveau) {
     const testId = parseInt(basisId + '01', 10); // Voeg '01' toe en converteer naar een getal
     console.log(testId)
     return {
-        id: "",
         name: vak,
         level: niveau,
         cohort: "",
