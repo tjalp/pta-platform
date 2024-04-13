@@ -763,7 +763,7 @@ function setOpSlot(slot, update = true) {
     const knop = document.getElementById('toggleOpSlot');
     opSlot = slot;
     knop.textContent = !opSlot ? '🔓' : '🔒';
-    document.getElementById('slotTekst').textContent = !opSlot? 'PTAs zijn open voor:' : 'PTAs zijn gesloten voor:';
+    document.getElementById('slotTekst').textContent = !opSlot? 'PTAs zijn open' : 'PTAs zijn gesloten';
 
     if (!update) return
     fetch('/api/config', {
