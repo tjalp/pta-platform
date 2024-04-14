@@ -2084,8 +2084,7 @@ function creëerLegePta(vak, niveau) {
         tools: [
             "pen (blauw of zwart), potlood, geodriehoek/lineaal",
             "woordenboek",
-            "rekenmachine (niet grafisch)",
-            "geen"
+            "rekenmachine (niet grafisch)"
         ],
         tests: [{
             id: testId,
