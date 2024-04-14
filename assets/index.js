@@ -1503,7 +1503,8 @@ function updateWeekSelectie(clone, weekWaarde, jaarPeriode) {
 
 function toggleWeekInputEnBijwerkenJaarPeriode(weekSelect, weekInputField, jaarPeriodeSpan, weekWaarde, jaarPeriode) {
     // Normalizeer de weekWaarde om consistent te zijn met of zonder spatie
-    const genormaliseerdeWeekWaarde = weekWaarde.replace(/SE(\d)/, 'SE $1');
+    const genormaliseerdeWeekWaarde = weekWaarde.replace(/.*SE\s*(\d+)/, 'SE $1');
+    console.log(genormaliseerdeWeekWaarde)
 
     if (genormaliseerdeWeekWaarde.startsWith('SE')) {
         weekInputField.parentElement.style.display = 'none';
@@ -1529,7 +1530,6 @@ function berekenJaarPeriode(weekNummer) {
     let periode = parseInt(selectedNiveau.split(' ')[0])
     // Omzetten van weeknummer naar een getal indien het een string is
     weekNummer = parseInt(weekNummer, 10);
-
     // Normaliseer weeknummers volgens de schoolkalender
     let genormaliseerdWeekNummer = weekNummer >= 33 ? weekNummer - 32 : weekNummer + 20;
 
