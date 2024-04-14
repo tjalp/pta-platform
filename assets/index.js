@@ -69,6 +69,7 @@ function start() {
 function bekijken() {
     selectedBewerkerOfBekijker = "Bekijken";
     isBewerker = false;
+    afkorting = "";
     OptiesUitDatabase().then(() => {
         vakkeuze(); // Deze functie wordt nu aangeroepen nadat OptiesUitDatabase() volledig is uitgevoerd.
     });
@@ -238,7 +239,7 @@ function zoekenNiveau(vakkenlijst, vak) {
 
     // Map de gesorteerde vakken naar hun niveaus, zorg ervoor dat de niveaus in hoofdletters zijn
     const niveauOpties = gesorteerdeVakken.map(vakkenItem => vakkenItem.level.toUpperCase());
-
+    
     return niveauOpties;
 }
 
