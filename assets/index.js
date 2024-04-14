@@ -166,6 +166,7 @@ function bevestigKeuze(keuzeType, geselecteerdeOpties) {
                         alert('Kopie van vorig jaar of laatste PTA-versie is geladen. Deze kan je nu (verder) bewerken.')
                         // laadPta()
                     }
+                    setEditRights();
                     createDynamicButtons();
                     // TODO fix dit want dit zorgt ervoor dat de code in de finally scope ook wordt uitgevoerd
                     isEersteKeer = false; // Stop de initiële reeks
@@ -308,27 +309,30 @@ function createButton(text, clickAction, name) {
 function createDynamicButtons() {
     const buttonContainer = document.getElementById('dynamicButtons');
     if (!buttonContainer) {
-        console.error('Button container niet gevonden');
-        return;
+      console.error('Button container niet gevonden');
+      return;
     }
-
+  
     buttonContainer.innerHTML = ''; // Bestaande knoppen verwijderen
-
+  
     const buttons = [
-        { text: selectedBewerkerOfBekijker, action: start, name: 'BewerkerOfBekijker' },
-        { text: selectedVak || 'Selecteer Vak', action: vakkeuze, name: 'Vak' },
-        { text: selectedNiveau || 'Selecteer Niveau', action: niveaukeuze, name: 'Niveau' },
-        { text: selectedJaar || 'Selecteer Jaar', action: jaarkeuze, name: 'Jaar' },
-        { text: '💾', action: opslaan, name: 'Opslaan' },
+      { text: selectedBewerkerOfBekijker, action: start, name: 'BewerkerOfBekijker' },
+      { text: selectedVak || 'Selecteer Vak', action: vakkeuze, name: 'Vak' },
+      { text: selectedNiveau || 'Selecteer Niveau', action: niveaukeuze, name: 'Niveau' },
+      { text: selectedJaar || 'Selecteer Jaar', action: jaarkeuze, name: 'Jaar' }
     ];
-
+    // Voeg de "Opslaan" knop alleen toe als de gebruiker bewerkingsrechten heeft
+    if (heeftBewerkingsRechten) {
+      buttons.push({ text: '💾', action: opslaan, name: 'Opslaan' });
+    }
+  
     // Creëer en voeg elke knop toe aan de container
     buttons.forEach(({ text, action, name }) => {
-        const button = createButton(text, action, name);
-        buttonContainer.appendChild(button);
+      const button = createButton(text, action, name);
+      buttonContainer.appendChild(button);
     });
-}
-
+  }
+  
 
 
 function createModal(title, elements) {
