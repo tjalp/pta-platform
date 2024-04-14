@@ -38,7 +38,7 @@ function updateJaarOpties(nieuwJaarOpties, bewerkJaar, opSlot) {
 
 function start() {
     if (!isEersteKeer && heeftBewerkingsRechten && !wiltWisselen()) {
-        return; 
+        return;
     }
     isEersteKeer = true;
     isDynamicButtonClicked = false;
@@ -54,8 +54,8 @@ function start() {
                 document.body.appendChild(modal);
             } else {
                 const modal = createModal('Wilt u PTAs bekijken of bewerken?', [
-                    {text: 'Bekijken', action: bekijken},
-                    {text: 'Bewerken', action: bewerken}
+                    { text: 'Bekijken', action: bekijken },
+                    { text: 'Bewerken', action: bewerken }
                 ]);
                 document.body.appendChild(modal);
             }
@@ -243,7 +243,7 @@ function zoekenNiveau(vakkenlijst, vak) {
 }
 
 function wiltWisselen() {
-    return(confirm('Niet opgeslagen data zal verloren gaan. Weet u zeker dat u wilt wisselen van PTA?'));
+    return (confirm('Niet opgeslagen data zal verloren gaan. Weet u zeker dat u wilt wisselen van PTA?'));
 }
 
 function promptVoorWisselen(keuzeFunctie) {
@@ -309,30 +309,30 @@ function createButton(text, clickAction, name) {
 function createDynamicButtons() {
     const buttonContainer = document.getElementById('dynamicButtons');
     if (!buttonContainer) {
-      console.error('Button container niet gevonden');
-      return;
+        console.error('Button container niet gevonden');
+        return;
     }
-  
+
     buttonContainer.innerHTML = ''; // Bestaande knoppen verwijderen
-  
+
     const buttons = [
-      { text: selectedBewerkerOfBekijker, action: start, name: 'BewerkerOfBekijker' },
-      { text: selectedVak || 'Selecteer Vak', action: vakkeuze, name: 'Vak' },
-      { text: selectedNiveau || 'Selecteer Niveau', action: niveaukeuze, name: 'Niveau' },
-      { text: selectedJaar || 'Selecteer Jaar', action: jaarkeuze, name: 'Jaar' }
+        { text: selectedBewerkerOfBekijker, action: start, name: 'BewerkerOfBekijker' },
+        { text: selectedVak || 'Selecteer Vak', action: vakkeuze, name: 'Vak' },
+        { text: selectedNiveau || 'Selecteer Niveau', action: niveaukeuze, name: 'Niveau' },
+        { text: selectedJaar || 'Selecteer Jaar', action: jaarkeuze, name: 'Jaar' }
     ];
     // Voeg de "Opslaan" knop alleen toe als de gebruiker bewerkingsrechten heeft
     if (heeftBewerkingsRechten) {
-      buttons.push({ text: '💾', action: opslaan, name: 'Opslaan' });
+        buttons.push({ text: '💾', action: opslaan, name: 'Opslaan' });
     }
-  
+
     // Creëer en voeg elke knop toe aan de container
     buttons.forEach(({ text, action, name }) => {
-      const button = createButton(text, action, name);
-      buttonContainer.appendChild(button);
+        const button = createButton(text, action, name);
+        buttonContainer.appendChild(button);
     });
-  }
-  
+}
+
 
 
 function createModal(title, elements) {
@@ -1510,7 +1510,7 @@ function toggleWeekInputEnBijwerkenJaarPeriode(weekSelect, weekInputField, jaarP
         setSelectValue(weekSelect, genormaliseerdeWeekWaarde);
     } else {
         weekInputField.parentElement.style.display = 'block';
-        weekInputField.value = heeftBewerkingsRechten && weekWaarde.length > 2? '' : weekWaarde; 
+        weekInputField.value = heeftBewerkingsRechten && weekWaarde.length > 2 ? '' : weekWaarde;
         setSelectValue(weekSelect, 'week');
         jaarPeriodeSpan.textContent = heeftBewerkingsRechten ? berekenJaarPeriode(genormaliseerdeWeekWaarde) : jaarPeriode;
     }
@@ -1645,7 +1645,7 @@ function refreshData() {
 function resetPercentages() {
     // Controleer of ptaData.weights bestaat en heeft elementen; zo niet, gebruik een lege array
     const weights = ptaData.weights || [];
-    
+
     vwoWegingen = {
         '4 VWO': weights[0] || 0,
         '5 VWO': weights[1] || 0,
@@ -1922,7 +1922,7 @@ async function laadPta() {
             throw new Error(`Netwerkrespons was niet ok, status: ${response.status}`);
         } else {
             const data = await response.json();
-            
+
             // Controleer of we resultaten hebben, zo niet, creëer een lege PTA
             ptaData = data.length > 0 ? data[0] : creëerLegePta(selectedVak, selectedNiveau);
         }
@@ -1937,7 +1937,7 @@ async function laadPta() {
     }
 }
 
-  
+
 function selecteerRecentstePta(fptas) {
     const recentstePta = fptas.reduce((recentste, huidig) => {
         const recentsteJaar = recentste.cohort.split(' - ')[1];
@@ -2109,4 +2109,3 @@ function creëerLegePta(vak, niveau) {
     };
 }
 
-  
