@@ -2034,10 +2034,10 @@ function setPeriods() {
         if (!periods || periods.length < 4) return; // Controleer of we minstens 4 perioden hebben
 
         // Update de defaultPeriods met de end_week waarden van de opgehaalde perioden
-        defaultPeriods['SE 1'] = periods[0].end_week;
-        defaultPeriods['SE 2'] = periods[1].end_week;
-        defaultPeriods['SE 3'] = periods[2].end_week;
-        defaultPeriods['SE 4'] = periods[3].end_week;
+        defaultPeriods['SE 1'] = periods[0].end_week + 1;
+        defaultPeriods['SE 2'] = periods[1].end_week + 1;
+        defaultPeriods['SE 3'] = periods[2].end_week + 1;
+        defaultPeriods['SE 4'] = periods[3].end_week + 1;
     }).catch(error => {
         console.error('Fout bij het ophalen van de perioden:', error);
     });
