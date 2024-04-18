@@ -9,16 +9,6 @@ let isDynamicButtonClicked = false;
 let isEersteKeer = true;
 let vwoWegingen = {}, havoWegingen = {}, mavoWegingen = {}; // TODO lelijk
 
-function toggleExplanation(selectElement) {
-    var explanationDiv = selectElement.parentElement.querySelector('.explanationDiv');
-
-    if (selectElement.value === 'anders') {
-        explanationDiv.classList.add('visible');
-    } else {
-        explanationDiv.classList.remove('visible');
-    }
-}
-
 document.addEventListener('DOMContentLoaded', function () {
     initialiseerTemplate();
     isEersteKeer = true;
@@ -2110,3 +2100,13 @@ function creëerLegePta(vak, niveau) {
     };
 }
 
+
+function toggleExplanation(selectElement) {
+    let explanationDiv = selectElement.parentElement.querySelector('.explanationDiv');
+    console.log(selectElement.value)
+    if (selectElement.value.toLowerCase() === 'anders') {
+        explanationDiv.classList.add('visible');
+    } else {
+        explanationDiv.classList.remove('visible');
+    }
+}
