@@ -961,24 +961,24 @@ function updateGewogenGemiddelden() {
     let totaalPTA = 0;
 
     // Eerst de totalen berekenen
-    rijen.forEach(rij => {
-        const pod = parseInt(rij.cells[3].textContent, 10);
-        const pta = parseInt(rij.cells[4].textContent, 10);
+    // rijen.forEach(rij => {
+    //     const pod = parseInt(rij.cells[3].textContent, 10);
+    //     const pta = parseInt(rij.cells[4].textContent, 10);
 
-        totaalPOD += pod;
-        totaalPTA += pta;
-    });
+    //     totaalPOD += pod;
+    //     totaalPTA += pta;
+    // });
 
     // Vervolgens het gewogen gemiddelde berekenen en toevoegen
     rijen.forEach(rij => {
         const pod = parseInt(rij.cells[3].textContent, 10);
         const pta = parseInt(rij.cells[4].textContent, 10);
 
-        const podPercentage = totaalPOD ? (pod / totaalPOD * 100).toFixed(0) : 0;
-        const ptaPercentage = totaalPTA ? (pta / totaalPTA * 100).toFixed(0) : 0;
+        //const podPercentage = totaalPOD ? (pod / totaalPOD * 100).toFixed(0) : 0;
+        //const ptaPercentage = totaalPTA ? (pta / totaalPTA * 100).toFixed(0) : 0;
 
-        rij.cells[3].innerHTML = `${pod}<br>(${podPercentage}%)`;
-        rij.cells[4].innerHTML = `${pta}<br>(${ptaPercentage}%)`;
+        rij.cells[3].innerHTML = `${pod}`; //<br>(${podPercentage}%)`;
+        rij.cells[4].innerHTML = `${pta}`; //<br>(${ptaPercentage}%)`;
     });
 }
 
