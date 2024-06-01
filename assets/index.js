@@ -1038,7 +1038,7 @@ function toggleAlleBeschrijvingen(headerSpan, tabel) {
     // Update de staat en het innerHTML van de headerSpan op basis van de huidige staat
     isUitgeklapt = !isUitgeklapt;
     headerSpan.setAttribute('data-uitgeklapt', isUitgeklapt);
-    headerSpan.innerHTML = `${isUitgeklapt ? '🔼' : '🔽'}Beschrijving`;
+    headerSpan.innerHTML = `${isUitgeklapt ? '🔼' : '🔽'} Beschrijving`;
 
     // Selecteer alle beschrijving spans in de tbody om hun inhoud te toggelen
     let tbody = tabel.querySelector('tbody');
