@@ -1191,19 +1191,21 @@ function vulToetsInhoud(toetsData) {
 function adjustTextareaHeights(element) {
     const textareas = element.querySelectorAll('textarea');
     textareas.forEach(adjustTextareaHeight);
-    textareas.forEach(adjustTextareaHeight); // dit moet blijkbaar twee keer.. 
 }
 
 
 function adjustTextareaHeight(textarea) {
-    //textarea.style.height = 'auto';
-    let height = textarea.scrollHeight >= 0 && textarea.scrollHeight <= 45 ? 30 : textarea.scrollHeight
-    textarea.style.height = (height) + 'px';
+    textarea.style.height = 'auto';  // Reset de hoogte om de natuurlijke hoogte te meten
+    let newHeight = textarea.scrollHeight; // Krijg de scrollHeight die de benodigde hoogte aangeeft
+    textarea.style.height = `${newHeight}px`; // Stel de hoogte in op dit nieuwe meting
 }
 
+
 window.addEventListener('resize', () => {
-    document.querySelectorAll('textarea').forEach(adjustTextareaHeight);
+    const textareas = document.querySelectorAll('textarea');
+    textareas.forEach(adjustTextareaHeight);
 });
+
 
 function vulVelden(clone, toetsData) {
     const velden = {
