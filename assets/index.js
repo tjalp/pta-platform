@@ -1766,11 +1766,24 @@ function getPtaDataFromTab(contentPane) {
 }
 
 function weekNaarUniformNummer(week) {
-    // Check of de week een SE-week is en converteer deze naar het juiste weeknummer
-    const weekNummer = defaultPeriods[week] || parseInt(week, 10);
-    // Behandel weken als doorgaand vanaf week 33 tot week 32 van het volgende jaar
-    return weekNummer >= 33 ? weekNummer - 33 : weekNummer + 20;
+    const baseWeekNumber = 34; // De week waarop het schooljaar begint
+    let weekNum = parseInt(week.replace(/[^0-9]/g, ''), 10);
+
+    if (week.startsWith("SE")) {
+        // Als het een SE week is, gebruik de defaultPeriods voor de week nummer
+        weekNum = defaultPeriods[week];
+    }
+    
+    // Pas de weeknummer aan zodat het binnen een lineaire, continue reeks valt
+    if (weekNum >= baseWeekNumber) {
+        return weekNum - baseWeekNumber;
+    } else {
+        // Voor weken in het nieuwe jaar, na week 52
+        return weekNum + (52 - baseWeekNumber + 1);
+    }
 }
+
+
 
 function herindexeerTestIDs() {
     let startnummer = parseInt(selectedNiveau.split(' ')[0]) * 100 + 1
@@ -1780,13 +1793,13 @@ function herindexeerTestIDs() {
 }
 
 function sorteerTabs() {
-    console.log('sorteren')
     ptaData.tests.sort((a, b) => {
         const weekNummerA = weekNaarUniformNummer(a.week);
         const weekNummerB = weekNaarUniformNummer(b.week);
-
+        console.log(`Sorting: ${a.week} (${weekNummerA}) vs ${b.week} (${weekNummerB})`);
         return weekNummerA - weekNummerB;
     });
+    
     herindexeerTestIDs();
     ptaData.tests.forEach(test => {
         laadToetsInhoud(test.id, true);
@@ -2028,6 +2041,9 @@ function setPeriods() {
         defaultPeriods['SE 2'] = periods[1].end_week + 1;
         defaultPeriods['SE 3'] = periods[2].end_week + 1;
         defaultPeriods['SE 4'] = periods[3].end_week + 1;
+
+        console.log("Bijgewerkte defaultPeriods:", defaultPeriods);
+
     }).catch(error => {
         console.error('Fout bij het ophalen van de perioden:', error);
     });
