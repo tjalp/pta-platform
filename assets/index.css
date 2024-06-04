@@ -275,7 +275,8 @@ label,
     width: 100%;
     border: 1px solid #ccc;
     overflow-y: auto; /* Verbergt de scrollbar */
-    max-height: 90px;
+    max-height: 80px;
+    min-height: 40px;
     resize: none; /* Voorkomt dat de gebruiker de grootte aanpast */
     box-sizing: border-box; /* Inclusief padding en border in de totale breedte en hoogte */
 }

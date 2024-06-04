@@ -1188,24 +1188,34 @@ function vulToetsInhoud(toetsData) {
     }
 }
 
-function adjustTextareaHeights(element) {
-    const textareas = element.querySelectorAll('textarea');
-    textareas.forEach(adjustTextareaHeight);
-}
-
-
 function adjustTextareaHeight(textarea) {
     textarea.style.height = 'auto';  // Reset de hoogte om de natuurlijke hoogte te meten
-    let newHeight = textarea.scrollHeight; // Krijg de scrollHeight die de benodigde hoogte aangeeft
-    textarea.style.height = `${newHeight}px`; // Stel de hoogte in op dit nieuwe meting
-}
-
-
-window.addEventListener('resize', () => {
+    let newHeight = textarea.scrollHeight;  // Krijg de scrollHeight die de benodigde hoogte aangeeft
+    
+    if (newHeight > 80) {  // Als de nieuwe hoogte groter is dan max-height
+      textarea.style.overflowY = 'scroll';  // Toon scrollbalk
+    } else {
+      textarea.style.overflowY = 'hidden';  // Verberg scrollbalk
+    }
+    
+    textarea.style.height = `${newHeight}px`;  // Stel de hoogte in op dit nieuwe meting
+  }
+  
+  function adjustTextareaHeights(element) {
+    const textareas = element.querySelectorAll('textarea');
+    textareas.forEach(adjustTextareaHeight);
+  }
+  
+  window.addEventListener('resize', () => {
     const textareas = document.querySelectorAll('textarea');
     textareas.forEach(adjustTextareaHeight);
-});
-
+  });
+  
+  window.addEventListener('input', () => {
+    const textareas = document.querySelectorAll('textarea');
+    textareas.forEach(adjustTextareaHeight);
+  });
+  
 
 function vulVelden(clone, toetsData) {
     const velden = {
