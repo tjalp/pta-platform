@@ -1217,6 +1217,7 @@ function adjustTextareaHeight(textarea) {
   });
   
 
+
 function vulVelden(clone, toetsData) {
     const velden = {
         '.toetsNummer': toetsData.id,
