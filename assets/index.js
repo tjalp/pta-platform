@@ -1030,12 +1030,24 @@ function genereerOverzichtInhoud() {
     tabel.createTBody();
     contentPane.appendChild(tabel);
 
+    // Bepaal de status van heeftBewerkingsRechten
+    heeftBewerkingsRechten = isBewerker && selectedJaar.includes(bewerkJaar) && !opSlot;
+
+    let afrondKnop = document.createElement('input');
+    afrondKnop.type = 'checkbox';
+    afrondKnop.id = 'afrondKnop';
+    afrondKnop.disabled = !heeftBewerkingsRechten;
+    afrondKnop.checked = ptaData.finished;
+    afrondKnop.addEventListener('click', toggleAfgerond);
+    let afrondLabel = document.createElement('label');
+    afrondLabel.htmlFor = 'afrondKnop';
+    afrondLabel.textContent = 'Afgerond';
+    contentPane.appendChild(afrondKnop);
+    contentPane.appendChild(afrondLabel);
+
     let sorteerKnop = document.createElement('button');
     sorteerKnop.id = 'sorteerKnop';
     sorteerKnop.textContent = 'Sorteer Toetsen';
-
-    // Bepaal de status van heeftBewerkingsRechten
-    heeftBewerkingsRechten = isBewerker && selectedJaar.includes(bewerkJaar) && !opSlot;
 
     // Zet de disabled status van de knop op basis van heeftBewerkingsRechten
     sorteerKnop.disabled = !heeftBewerkingsRechten;
@@ -1045,6 +1057,12 @@ function genereerOverzichtInhoud() {
 
 
     vulOverzichtTabel(); // Zorg dat deze functie wordt aangeroepen na het opzetten van de tabel
+}
+
+function toggleAfgerond() {
+    let isAfgerond = document.getElementById('afrondKnop').checked;
+    console.log('Afgerond:', isAfgerond);
+    ptaData.finished = isAfgerond;
 }
 
 function toggleAlleBeschrijvingen(headerSpan, tabel) {

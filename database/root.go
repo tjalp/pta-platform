@@ -33,6 +33,7 @@ type PtaData struct {
 	Cohort      string   `json:"cohort" form:"cohort"`
 	Year        int      `json:"year" form:"year"` // The first year, so 2024 would be 2024-2025
 	Responsible string   `json:"responsible" form:"responsible"`
+	Finished    bool     `json:"finished" form:"finished"` // Whether the PTA is finished or not
 	Tools       []string `json:"tools" form:"tools"`
 	Tests       []Test   `json:"tests" form:"tests"`
 	Weights     []int    `json:"weights" form:"weights"`
