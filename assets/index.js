@@ -1108,6 +1108,12 @@ function getPtaData(toetsNummer) {
         };
     }
 
+    let tijd = toets.time;
+    let tijdInt = parseInt(tijd);
+    if (!isNaN(tijdInt) && tijdInt === 0) {
+        tijd = 'anders';
+    }
+
     return {
         id: toets.id,
         jaarPeriode: toets.year_and_period,
@@ -1117,7 +1123,7 @@ function getPtaData(toetsNummer) {
         afnamevorm: toets.type,
         afnamevormAnders: toets.type_else,
         beoordeling: toets.result_type,
-        tijd: toets.time,
+        tijd: tijd,
         tijdAnders: toets.time_else,
         herkansbaar: toets.resitable ? "Ja" : "Nee",
         pod: toets.pod_weight,
@@ -1767,19 +1773,20 @@ function verversTabsIds() {
 }
 
 function getPtaDataFromTab(contentPane) {
-    const data = {
-        week: contentPane.querySelector('.weekSelect').value === 'week'
+    let tijdSelectValue = contentPane.querySelector('.tijdSelect').value
+    return {
+        week: contentPane.querySelector('.weekSelect').value.toLowerCase().includes('week')
             ? contentPane.querySelector('.inputField.week').value
             : contentPane.querySelector('.weekSelect').value,
         year_and_period: contentPane.querySelector('.jaarPeriode').textContent,
         subdomain: contentPane.querySelector('.subdomein').value,
         description: contentPane.querySelector('.stofomschrijving').value,
         type: contentPane.querySelector('.afnamevormSelect').value,
-        type_else: contentPane.querySelector('.afnamevormSelect').value === 'anders'
+        type_else: contentPane.querySelector('.afnamevormSelect').value.toLowerCase().includes('anders')
             ? contentPane.querySelector('.afnamevormAnders').value
             : null,
-        time: parseInt(contentPane.querySelector('.tijdSelect').value, 10),
-        time_else: contentPane.querySelector('.tijdSelect').value === 'anders'
+        time: isNaN(parseInt(tijdSelectValue, 10)) ? 0 : parseInt(tijdSelectValue, 10),
+        time_else: tijdSelectValue.toLowerCase().includes('anders')
             ? contentPane.querySelector('.tijdAnders').value
             : null,
         result_type: contentPane.querySelector('.beoordelingSelect').value,
@@ -1790,7 +1797,6 @@ function getPtaDataFromTab(contentPane) {
             return ptaData.tools.indexOf(li.textContent.trim());
         }).filter(index => index !== -1)
     };
-    return data;
 }
 
 function weekNaarUniformNummer(week) {
@@ -2019,7 +2025,7 @@ function setDurations() {
                 duration; // Houd 'Anders' of andere strings ongewijzigd
         });
         // Voeg 'Anders' toe, indien niet al aanwezig
-        if (!verwerkteDurations.some(item => item === 'Anders' || (item.text && item.text === 'Anders'))) {
+        if (!verwerkteDurations.some(item => item.toLowerCase().includes('anders') || (item.text && item.text.toLowerCase().includes('anders')))) {
             verwerkteDurations.push('Anders');
         }
         setDropdownTemplate(verwerkteDurations, 'tijdSelect');
