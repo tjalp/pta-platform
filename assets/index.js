@@ -414,6 +414,7 @@ function berekenPercentage() {
             wisFout();
             let weging6vwo = 100 - weging4vwo - weging5vwo;
             input6vwo.value = weging6vwo >= 0 ? weging6vwo : '';
+            setPercentages();
         }
     }
     else if (selectedNiveau.includes('HAVO')) {
@@ -422,6 +423,7 @@ function berekenPercentage() {
         if (weging4havo <= 100) {
             let weging5havo = 100 - weging4havo;
             input5havo.value = weging5havo >= 0 ? weging5havo : '';
+            setPercentages();
         }
     }
     else if (selectedNiveau.includes('MAVO')) {
@@ -430,6 +432,7 @@ function berekenPercentage() {
         if (weging3mavo <= 100) {
             let weging4mavo = 100 - weging3mavo;
             input4mavo.value = weging4mavo >= 0 ? weging4mavo : '';
+            setPercentages();
         }
     }
 }
@@ -644,6 +647,8 @@ function opslaan() {
         return;
     }
 
+
+
     const bevestiging = confirm('Zeker weten dat u wilt opslaan?');
     if (!bevestiging) {
         return;
@@ -828,30 +833,41 @@ function setPercentages() {
         console.log('Gebruiker is geen bewerker')
         return;
     }
-    if (!isDynamicButtonClicked) {
-        console.log('Gebruiker voor het eerst in het menu');
-        return;
-    }
-    if (prevNiveau === selectedNiveau) {
-        console.log('Geen nieuw niveau geselecteerd');
-        return;
-    }
+    // TODO wat is dit?
+    // if (!isDynamicButtonClicked) {
+    //     console.log('Gebruiker voor het eerst in het menu');
+    //     return;
+    // }
+    // if (prevNiveau === selectedNiveau) {
+    //     console.log('Geen nieuw niveau geselecteerd');
+    //     return;
+    // }
 
-    console.log('Opslaan naar de database:');
-    if (prevNiveau.toLowerCase().includes('VWO')) {
+    console.log('Zet in cache:');
+    if (selectedNiveau.toUpperCase().includes('VWO')) {
         vwoWegingen = {
-            '4 VWO': input4vwo.value,
-            '5 VWO': input5vwo.value,
-            '6 VWO': input6vwo.value
+            '4 VWO': parseInt(input4vwo.value) || 0,
+            '5 VWO': parseInt(input5vwo.value) || 0,
+            '6 VWO': parseInt(input6vwo.value) || 0
         };
+        ptaData.weights = Object.values(vwoWegingen);
         console.log('vwo-wegingen:', vwoWegingen);
-    } else if (prevNiveau.toLowerCase().includes('HAVO')) {
+    } else if (selectedNiveau.toUpperCase().includes('HAVO')) {
         havoWegingen = {
-            '4 HAVO': input4havo.value,
-            '5 HAVO': input5havo.value
+            '4 HAVO': parseInt(input4havo.value) || 0,
+            '5 HAVO': parseInt(input5havo.value) || 0
         };
+        ptaData.weights = Object.values(havoWegingen);
         console.log('havo-wegingen:', havoWegingen);
+    } else if (selectedNiveau.toUpperCase().includes('MAVO')) {
+        havoWegingen = {
+            '3 MAVO': parseInt(input3mavo.value) || 0,
+            '4 MAVO': parseInt(input4mavo.value) || 0
+        };
+        ptaData.weights = Object.values(mavoWegingen);
+        console.log('mavo-wegingen:', mavoWegingen);
     }
+    console.log('pta-wegingen:', ptaData.weights);
 }
 
 /*
