@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/golang-jwt/jwt"
 	"github.com/tjalp/pta-platform/auth"
+	"github.com/xuri/excelize/v2"
 	"golang.org/x/crypto/bcrypt"
 	"mime/multipart"
 	"net/http"
@@ -18,7 +19,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/tjalp/pta-platform/database"
 	"github.com/tjalp/pta-platform/export/pdf"
-	"github.com/xuri/excelize/v2"
 	"google.golang.org/api/idtoken"
 )
 
