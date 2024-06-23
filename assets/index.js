@@ -313,6 +313,7 @@ function createDynamicButtons() {
         { text: selectedJaar || 'Selecteer Jaar', action: jaarkeuze, name: 'Jaar' }
     ];
     // Voeg de "Opslaan" knop alleen toe als de gebruiker bewerkingsrechten heeft
+    // Hetzelfde voor afvinken
     if (heeftBewerkingsRechten) {
         buttons.push({ text: '💾', action: opslaan, name: 'Opslaan' });
     }
@@ -322,6 +323,20 @@ function createDynamicButtons() {
         const button = createButton(text, action, name);
         buttonContainer.appendChild(button);
     });
+
+    if (heeftBewerkingsRechten) {
+        let afrondKnop = document.createElement('input');
+        afrondKnop.type = 'checkbox';
+        afrondKnop.id = 'afrondKnop';
+        afrondKnop.disabled = !heeftBewerkingsRechten;
+        afrondKnop.checked = ptaData.finished;
+        afrondKnop.addEventListener('click', toggleAfgerond);
+        let afrondLabel = document.createElement('label');
+        afrondLabel.htmlFor = 'afrondKnop';
+        afrondLabel.textContent = 'Afgerond';
+        buttonContainer.appendChild(afrondKnop);
+        buttonContainer.appendChild(afrondLabel);
+    }
 }
 
 
@@ -631,7 +646,7 @@ function setupModal(modal, searchInput) {
 GET & SET FUNCTIES VOOR DATABASE
 */
 
-function opslaan() {
+function opslaan(finish = false) {
     toonTabInhoud('overzichtContent');
     genereerOverzichtInhoud();
 
@@ -647,12 +662,10 @@ function opslaan() {
         return;
     }
 
-
-
-    const bevestiging = confirm('Zeker weten dat u wilt opslaan?');
-    if (!bevestiging) {
-        return;
-    }
+    // const bevestiging = confirm('Zeker weten dat u wilt opslaan?');
+    // if (!bevestiging) {
+    //     return;
+    // }
 
     let ptaId = ptaData.id;
     let method = "PUT"
@@ -1033,18 +1046,6 @@ function genereerOverzichtInhoud() {
     // Bepaal de status van heeftBewerkingsRechten
     heeftBewerkingsRechten = isBewerker && selectedJaar.includes(bewerkJaar) && !opSlot;
 
-    let afrondKnop = document.createElement('input');
-    afrondKnop.type = 'checkbox';
-    afrondKnop.id = 'afrondKnop';
-    afrondKnop.disabled = !heeftBewerkingsRechten;
-    afrondKnop.checked = ptaData.finished;
-    afrondKnop.addEventListener('click', toggleAfgerond);
-    let afrondLabel = document.createElement('label');
-    afrondLabel.htmlFor = 'afrondKnop';
-    afrondLabel.textContent = 'Afgerond';
-    contentPane.appendChild(afrondKnop);
-    contentPane.appendChild(afrondLabel);
-
     let sorteerKnop = document.createElement('button');
     sorteerKnop.id = 'sorteerKnop';
     sorteerKnop.textContent = 'Sorteer Toetsen';
@@ -1061,8 +1062,15 @@ function genereerOverzichtInhoud() {
 
 function toggleAfgerond() {
     let isAfgerond = document.getElementById('afrondKnop').checked;
+
+    if (!confirm('Weet u zeker dat u de status van afronden wilt veranderen? Dit slaat de PTA ook meteen op.')) {
+        return;
+    }
+
     console.log('Afgerond:', isAfgerond);
     ptaData.finished = isAfgerond;
+
+    opslaan();
 }
 
 function toggleAlleBeschrijvingen(headerSpan, tabel) {
