@@ -778,6 +778,45 @@ function setOpSlot(slot, update = true) {
         .catch(error => console.error('Fout bij het bijwerken:', error));
 }
 
+function laadAfrondStatus() {
+    const afgerond = document.getElementById('afrondStatus').checked;
+    fetch(`/api/pta/search?year=${bewerkJaar}&finished=${afgerond}`)
+        .then(response => {
+            if (!response.ok && response.status !== 404) {
+                throw new Error('Netwerkrespons was niet ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            const afrondDiv = document.getElementById('ptaList');
+            const method = document.getElementById('sorteerMethode').value;
+
+            afrondDiv.innerHTML = '';
+
+            data = data.sort((a, b) => {
+                if (method === 'niveau') {
+                    return a.level.localeCompare(b.level);
+                }
+                if (method === 'vak') {
+                    return a.name.localeCompare(b.name);
+                }
+                if (method === 'jaarlaag') {
+                    return a.level.split(' ')[0] - b.level.split(' ')[0];
+                }
+            })
+
+            data.forEach(pta => {
+                const afrondLabel = document.createElement('label');
+                afrondLabel.textContent = `${pta.name} (${pta.level} ${pta.year}) --- ${pta.responsible}`;
+                afrondDiv.appendChild(afrondLabel);
+                afrondDiv.append(document.createElement('br'));
+            });
+        })
+        .catch(error => {
+            console.error('Fout bij het laden:', error);
+        });
+}
+
 let bewerkJaar = 2024; // TODO lezen uit DB
 
 function setBewerkJaar() {

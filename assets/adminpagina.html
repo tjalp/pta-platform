@@ -115,6 +115,21 @@
                 <button type="button" onclick="genereerWachtwoord()">🔁</button>
             </div>
         </form>
+
+        <div class="container" id="AfrondstatusPTA">
+            <div class="pta-header">
+                <h2>Afrondstatus PTA's</h2>
+                <label for="afrondStatus">Afgerond?</label><input type="checkbox" id="afrondStatus">
+                <label for="sorteerMethode">Sorteren op:</label><select id="sorteerMethode">
+                    <option value="vak">Vak</option>
+                    <option value="niveau">Niveau</option>
+                    <option value="jaarlaag">Jaarlaag</option>
+                </select>
+                <button type="button" onclick="laadAfrondStatus()">Laad PTA's</button>
+            </div>
+            <div id="ptaList"></div>
+        </div>
+
         <div class="pta-vakken-wrapper">
             <div class="pta-vakken-toevoegen">
                 <h2>Vakken toevoegen</h2>

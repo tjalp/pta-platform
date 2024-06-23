@@ -111,20 +111,31 @@ func (s MongoDatabase) SearchPta(params map[string][]string) []PtaData {
 
 	filter := bson.D{}
 	for k, v := range params {
+		// Is it a number?
 		number, err := strconv.Atoi(v[0])
-		if err != nil {
+		if err == nil {
 			filter = append(filter, bson.E{
-				Key: k,
-				Value: bson.D{
-					{"$regex", "^" + v[0] + "$"},
-					{"$options", "i"},
-				}})
+				Key:   k,
+				Value: number,
+			})
 			continue
 		}
+		// Is it a boolean?
+		boolean, err := strconv.ParseBool(v[0])
+		if err == nil {
+			filter = append(filter, bson.E{
+				Key:   k,
+				Value: boolean,
+			})
+			continue
+		}
+		// Otherwise, it's a string
 		filter = append(filter, bson.E{
-			Key:   k,
-			Value: number,
-		})
+			Key: k,
+			Value: bson.D{
+				{"$regex", "^" + v[0] + "$"},
+				{"$options", "i"},
+			}})
 	}
 
 	cursor, err := collection.Find(ctx, filter)
