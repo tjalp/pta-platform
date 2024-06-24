@@ -229,7 +229,7 @@ function zoekenNiveau(vakkenlijst, vak) {
 
     // Map de gesorteerde vakken naar hun niveaus, zorg ervoor dat de niveaus in hoofdletters zijn
     const niveauOpties = gesorteerdeVakken.map(vakkenItem => vakkenItem.level.toUpperCase());
-    
+
     return niveauOpties;
 }
 
@@ -546,7 +546,7 @@ function filterOptions(ul, searchOptions, searchTerm, geselecteerdeOpties, meerv
 function voegNieuwHulpmiddelToe(searchTerm, ul, searchOptions, geselecteerdeOpties, meervoudigeSelectie) {
     if (!searchOptions.includes(searchTerm)) {
         searchOptions.push(searchTerm); // Voeg toe aan de algemene lijst
-        ptaData.tools.push(searchTerm); // Voor de consistentie, afhankelijk van hoe ptaData.tools wordt gebruikt
+        //ptaData.tools.push(searchTerm); // Voor de consistentie, afhankelijk van hoe ptaData.tools wordt gebruikt
     }
     if (!geselecteerdeOpties.includes(searchTerm)) {
         geselecteerdeOpties.push(searchTerm); // Voeg toe aan geselecteerde opties
@@ -1213,30 +1213,30 @@ function vulToetsInhoud(toetsData) {
 function adjustTextareaHeight(textarea) {
     textarea.style.height = 'auto';  // Reset de hoogte om de natuurlijke hoogte te meten
     let newHeight = textarea.scrollHeight;  // Krijg de scrollHeight die de benodigde hoogte aangeeft
-    
+
     if (newHeight > 80) {  // Als de nieuwe hoogte groter is dan max-height
-      textarea.style.overflowY = 'scroll';  // Toon scrollbalk
+        textarea.style.overflowY = 'scroll';  // Toon scrollbalk
     } else {
-      textarea.style.overflowY = 'hidden';  // Verberg scrollbalk
+        textarea.style.overflowY = 'hidden';  // Verberg scrollbalk
     }
-    
+
     textarea.style.height = `${newHeight}px`;  // Stel de hoogte in op dit nieuwe meting
-  }
-  
-  function adjustTextareaHeights(element) {
+}
+
+function adjustTextareaHeights(element) {
     const textareas = element.querySelectorAll('textarea');
     textareas.forEach(adjustTextareaHeight);
-  }
-  
-  window.addEventListener('resize', () => {
+}
+
+window.addEventListener('resize', () => {
     const textareas = document.querySelectorAll('textarea');
     textareas.forEach(adjustTextareaHeight);
-  });
-  
-  window.addEventListener('input', () => {
+});
+
+window.addEventListener('input', () => {
     const textareas = document.querySelectorAll('textarea');
     textareas.forEach(adjustTextareaHeight);
-  });
+});
 
 
 function vulVelden(clone, toetsData) {
@@ -1641,6 +1641,12 @@ function bevestigTools(nieuweHulpmiddelen, actieveTabId) {
     // Roep vulHulpmiddelenList aan met de nieuwe hulpmiddelen
     vulHulpmiddelenList(hulpmiddelenList, nieuweHulpmiddelen);
     removeExistingModals(); // Sluit de modal
+    // Voeg nieuwe hulpmiddelen toe aan ptaData.tools als ze nog niet bestaan
+    nieuweHulpmiddelen.forEach(hulpmiddel => {
+        if (!ptaData.tools.includes(hulpmiddel)) {
+            ptaData.tools.push(hulpmiddel);
+        }
+    });
 }
 
 function valideerNumberInput(e) {
@@ -1807,7 +1813,7 @@ function weekNaarUniformNummer(week) {
         // Als het een SE week is, gebruik de defaultPeriods voor de week nummer
         weekNum = defaultPeriods[week];
     }
-    
+
     // Pas de weeknummer aan zodat het binnen een lineaire, continue reeks valt
     if (weekNum >= baseWeekNumber) {
         return weekNum - baseWeekNumber;
@@ -1833,7 +1839,7 @@ function sorteerTabs() {
         console.log(`Sorting: ${a.week} (${weekNummerA}) vs ${b.week} (${weekNummerB})`);
         return weekNummerA - weekNummerB;
     });
-    
+
     herindexeerTestIDs();
     ptaData.tests.forEach(test => {
         laadToetsInhoud(test.id, true);
