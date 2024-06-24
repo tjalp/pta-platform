@@ -1111,7 +1111,7 @@ function getPtaData(toetsNummer) {
     let tijd = toets.time;
     let tijdInt = parseInt(tijd);
     if (!isNaN(tijdInt) && tijdInt === 0) {
-        tijd = 'anders';
+        tijd = 'Anders';
     }
 
     return {
@@ -1331,7 +1331,7 @@ function toonTijdAnders(clone, toetsData) {
     }
 
     // Stel de waarde van afnamevormAndersTextarea in indien afnamevorm 'anders' is
-    if (toetsData.tijd === 'anders') {
+    if (toetsData.tijd === 'Anders') {
         tijdAndersTextarea.value = toetsData.tijdAnders || "";
     }
 }
@@ -2025,7 +2025,7 @@ function setDurations() {
                 duration; // Houd 'Anders' of andere strings ongewijzigd
         });
         // Voeg 'Anders' toe, indien niet al aanwezig
-        if (!verwerkteDurations.some(item => item.toLowerCase().includes('anders') || (item.text && item.text.toLowerCase().includes('anders')))) {
+        if (!verwerkteDurations.some(item => item.toString().toLowerCase().includes('anders') || (item.text && item.text.toLowerCase().includes('anders')))) {
             verwerkteDurations.push('Anders');
         }
         setDropdownTemplate(verwerkteDurations, 'tijdSelect');
