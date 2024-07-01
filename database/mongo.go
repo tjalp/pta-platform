@@ -265,37 +265,31 @@ func (s MongoDatabase) GetPeriods() []Period {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	cursor, err := collection.Find(ctx, bson.D{})
-	if err != nil {
-		panic(err)
+	var result struct {
+		Periods []Period `json:"periods" form:"periods"`
 	}
-	defer cursor.Close(ctx)
-	var result = make([]Period, 0)
-	err = cursor.All(ctx, &result)
+	err := collection.FindOne(ctx, bson.M{"_id": "periods"}).Decode(&result)
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
+		return nil
 	}
-	return result
+	var periods = make([]Period, 0)
+	for _, period := range result.Periods {
+		periods = append(periods, period)
+	}
+	return periods
 }
 
 func (s MongoDatabase) SetPeriods(periods []Period) {
 	collection := mongodb.Collection("periods")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	_, err := collection.DeleteMany(ctx, bson.D{})
-	if err != nil {
-		panic(err)
+	var periodStruct = struct {
+		Periods []Period `json:"periods" form:"periods"`
+	}{
+		Periods: periods,
 	}
-
-	if len(periods) == 0 {
-		return
-	}
-
-	var documents []interface{}
-	for _, period := range periods {
-		documents = append(documents, period)
-	}
-	_, err = collection.InsertMany(ctx, documents)
+	_, err := collection.ReplaceOne(ctx, bson.M{"_id": "periods"}, periodStruct, options.Replace().SetUpsert(true))
 	if err != nil {
 		panic(err)
 	}
