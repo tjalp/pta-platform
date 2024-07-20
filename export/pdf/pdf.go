@@ -25,7 +25,8 @@ func (e PdfExporter) Export(ctx *gin.Context, pta database.PtaData) error {
 	//}
 	//defer templateFile.Close()
 	//file, err := excelize.OpenReader(templateFile)
-	file, err := excelize.OpenFile("pta-template.xlsx")
+	level := strings.ReplaceAll(strings.TrimSpace(strings.ToLower(pta.Level)), " ", "")
+	file, err := excelize.OpenFile("pta-template-" + level + ".xlsx")
 	if err != nil {
 		return err
 	}

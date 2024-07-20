@@ -322,7 +322,7 @@ func exportPta(c *gin.Context) {
 
 	err := pdf.PdfExporter{}.Export(c, *pta)
 	if err != nil {
-		c.AbortWithStatus(http.StatusInternalServerError)
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
