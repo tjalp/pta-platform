@@ -31,12 +31,13 @@ func (e PdfExporter) Export(ctx *gin.Context, pta database.PtaData) error {
 	}
 	defer file.Close()
 
+	file.SetSheetName(file.GetSheetName(0), pta.Name)
+
 	// Loop over every cell of every row
-	rows, err := file.GetRows(file.GetSheetName(0))
+	rows, err := file.GetRows(pta.Name)
 	if err != nil {
 		return err
 	}
-	testIndex := 0
 	for rowIndex, row := range rows {
 		for i, cell := range row {
 			replaceCellValue(cell, "{{name}}", pta.Name, rowIndex+1, i+1, file)
@@ -52,17 +53,109 @@ func (e PdfExporter) Export(ctx *gin.Context, pta database.PtaData) error {
 						fmt.Println("error converting coordinates to cell name:", err)
 						return err
 					}
-					file.SetCellInt(file.GetSheetName(0), coords, weight)
+					file.SetCellInt(pta.Name, coords, weight)
 				}
 			}
 
+			if strings.Contains(cell, "{{tools}}") {
+				for toolIndex, tool := range pta.Tools {
+					coords, err := excelize.CoordinatesToCellName(i+1, rowIndex+toolIndex+1)
+					if err != nil {
+						fmt.Println("error converting coordinates to cell name:", err)
+						return err
+					}
+					file.SetCellValue(pta.Name, coords, tool)
+				}
+			}
+
+			if strings.Contains(cell, "{{else.id}}") {
+				for _, test := range pta.Tests {
+					if test.Time == 0 || test.Type == "anders" {
+						coords, err := excelize.CoordinatesToCellName(i+1, rowIndex+1)
+						if err != nil {
+							fmt.Println("error converting coordinates to cell name:", err)
+							return err
+						}
+						file.SetCellValue(pta.Name, coords, test.Id)
+					}
+				}
+			}
+
+			if strings.Contains(cell, "{{else.type}}") {
+				for _, test := range pta.Tests {
+					if test.Time == 0 || test.Type == "anders" {
+						coords, err := excelize.CoordinatesToCellName(i+1, rowIndex+1)
+						if err != nil {
+							fmt.Println("error converting coordinates to cell name:", err)
+							return err
+						}
+						if test.Type == "anders" {
+							file.SetCellValue(pta.Name, coords, test.TypeElse)
+						} else {
+							file.SetCellValue(pta.Name, coords, test.Type)
+						}
+					}
+				}
+			}
+
+			if strings.Contains(cell, "{{else.time}}") {
+				for _, test := range pta.Tests {
+					if test.Time == 0 || test.Type == "anders" {
+						coords, err := excelize.CoordinatesToCellName(i+1, rowIndex+1)
+						if err != nil {
+							fmt.Println("error converting coordinates to cell name:", err)
+							return err
+						}
+						if test.Time == 0 {
+							file.SetCellValue(pta.Name, coords, test.TimeElse)
+						} else {
+							file.SetCellValue(pta.Name, coords, test.Time)
+						}
+					}
+				}
+			}
+		}
+	}
+
+	// Reloop over every cell of every row to replace the test data
+	for rowIndex, row := range rows {
+		for _, cell := range row {
 			if strings.Contains(cell, "{{test.id}}") {
 				// Add the same amount of new rows as there are tests
 				for j := 1; j < len(pta.Tests); j++ {
-					file.DuplicateRow(file.GetSheetName(0), rowIndex+1)
+					file.DuplicateRow(pta.Name, rowIndex+1)
 				}
 			}
+		}
+	}
 
+	// Loop over every cell of every row
+	rows, err = file.GetRows(pta.Name)
+	if err != nil {
+		return err
+	}
+	testIndex := 0
+	for rowIndex, row := range rows {
+		for i, cell := range row {
+			var resitable string
+			if pta.Tests[testIndex].Resitable {
+				resitable = "ja"
+			} else {
+				resitable = "nee"
+			}
+			var time string
+			if pta.Tests[testIndex].Time == 0 {
+				time = "anders"
+			} else {
+				time = strconv.Itoa(pta.Tests[testIndex].Time)
+			}
+			var tools string
+			for i, tool := range pta.Tests[testIndex].Tools {
+				if i != 0 {
+					tools += ", "
+				}
+				tools += strconv.Itoa(tool + 1)
+			}
 			containedTest := replaceCellValue(cell, "{{test.id}}", strconv.Itoa(pta.Tests[testIndex].Id), rowIndex+1, i+1, file)
 			replaceCellValue(cell, "{{test.year_and_period}}", pta.Tests[testIndex].YearAndPeriod, rowIndex+1, i+1, file)
 			replaceCellValue(cell, "{{test.week}}", pta.Tests[testIndex].Week, rowIndex+1, i+1, file)
@@ -71,15 +164,17 @@ func (e PdfExporter) Export(ctx *gin.Context, pta database.PtaData) error {
 			replaceCellValue(cell, "{{test.type}}", pta.Tests[testIndex].Type, rowIndex+1, i+1, file)
 			replaceCellValue(cell, "{{test.type_else}}", pta.Tests[testIndex].TypeElse, rowIndex+1, i+1, file)
 			replaceCellValue(cell, "{{test.result_type}}", pta.Tests[testIndex].ResultType, rowIndex+1, i+1, file)
-			replaceCellValue(cell, "{{test.time}}", strconv.Itoa(pta.Tests[testIndex].Time), rowIndex+1, i+1, file)
+			replaceCellValue(cell, "{{test.time}}", time, rowIndex+1, i+1, file)
 			replaceCellValue(cell, "{{test.time_else}}", pta.Tests[testIndex].TimeElse, rowIndex+1, i+1, file)
-			replaceCellValue(cell, "{{test.resitable}}", strconv.FormatBool(pta.Tests[testIndex].Resitable), rowIndex+1, i+1, file)
+			replaceCellValue(cell, "{{test.resitable}}", resitable, rowIndex+1, i+1, file)
 			replaceCellValue(cell, "{{test.pta_weight}}", strconv.Itoa(pta.Tests[testIndex].PtaWeight), rowIndex+1, i+1, file)
 			replaceCellValue(cell, "{{test.pod_weight}}", strconv.Itoa(pta.Tests[testIndex].PodWeight), rowIndex+1, i+1, file)
-			replaceCellValue(cell, "{{test.tools}}", fmt.Sprintf("%v", pta.Tests[testIndex].Tools), rowIndex+1, i+1, file)
+			replaceCellValue(cell, "{{test.tools}}", tools, rowIndex+1, i+1, file)
 
 			if containedTest {
-				testIndex++
+				if testIndex < len(pta.Tests)-1 {
+					testIndex++
+				}
 			}
 		}
 	}
