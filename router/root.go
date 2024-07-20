@@ -180,6 +180,7 @@ func StartServer() {
 		POST("/create", createPta).
 		PUT("/:id", editPta).
 		GET("/:id/export", exportPta).
+		GET("/export", exportAll).
 		GET("/search", func(c *gin.Context) { searchPta(c, false) }).
 		GET("/all", func(c *gin.Context) { searchPta(c, true) }).
 		POST("/upload", uploadPta)
@@ -320,13 +321,36 @@ func exportPta(c *gin.Context) {
 		return
 	}
 
-	err := pdf.PdfExporter{}.Export(c, *pta)
+	err := pdf.PdfExporter{}.Export(c, []database.PtaData{*pta})
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
 	c.JSON(http.StatusOK, pta)
+}
+
+func exportAll(c *gin.Context) {
+	level := c.Query("level")
+	year := c.Query("year")
+	if level == "" || year == "" {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "level and year must be provided"})
+		return
+	}
+	ptas := data.SearchPta(map[string][]string{"level": {level}, "year": {year}})
+
+	if ptas == nil {
+		c.AbortWithStatus(http.StatusNotFound)
+		return
+	}
+
+	err := pdf.PdfExporter{}.Export(c, ptas)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, ptas)
 }
 
 func searchPta(c *gin.Context, allowNoParams bool) {

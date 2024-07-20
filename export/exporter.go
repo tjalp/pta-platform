@@ -6,5 +6,5 @@ import (
 )
 
 type Exporter interface {
-	Export(ctx *gin.Context, pta database.PtaData) error
+	Export(ctx *gin.Context, pta []database.PtaData) error
 }
