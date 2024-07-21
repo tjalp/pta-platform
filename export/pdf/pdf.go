@@ -211,10 +211,10 @@ func addPtaSheet(file *excelize.File, pta database.PtaData) error {
 	}
 	testIndex := 0
 	for rowIndex, row := range rows {
+		var containedTest bool
 		for i, cell := range row {
 			if len(pta.Tests) == 0 || pta.Tests == nil {
 				if strings.Contains(cell, "{{test.id}}") {
-					fmt.Println("removing row", rowIndex+1)
 					err := file.RemoveRow(pta.Name, rowIndex+1)
 					if err != nil {
 						return err
@@ -224,44 +224,48 @@ func addPtaSheet(file *excelize.File, pta database.PtaData) error {
 				continue
 			}
 
+			test := pta.Tests[testIndex]
+
 			var resitable string
-			if pta.Tests[testIndex].Resitable {
+			if test.Resitable {
 				resitable = "ja"
 			} else {
 				resitable = "nee"
 			}
 			var time string
-			if pta.Tests[testIndex].Time == 0 {
+			if test.Time == 0 {
 				time = "anders"
 			} else {
-				time = strconv.Itoa(pta.Tests[testIndex].Time)
+				time = strconv.Itoa(test.Time)
 			}
 			var tools string
-			for i, tool := range pta.Tests[testIndex].Tools {
+			for i, tool := range test.Tools {
 				if i != 0 {
 					tools += ", "
 				}
 				tools += strconv.Itoa(tool + 1)
 			}
-			containedTest := replaceCellValue(pta.Name, cell, "{{test.id}}", strconv.Itoa(pta.Tests[testIndex].Id), rowIndex+1, i+1, file)
-			replaceCellValue(pta.Name, cell, "{{test.year_and_period}}", pta.Tests[testIndex].YearAndPeriod, rowIndex+1, i+1, file)
-			replaceCellValue(pta.Name, cell, "{{test.week}}", pta.Tests[testIndex].Week, rowIndex+1, i+1, file)
-			replaceCellValue(pta.Name, cell, "{{test.subdomain}}", pta.Tests[testIndex].Subdomain, rowIndex+1, i+1, file)
-			replaceCellValue(pta.Name, cell, "{{test.description}}", pta.Tests[testIndex].Description, rowIndex+1, i+1, file)
-			replaceCellValue(pta.Name, cell, "{{test.type}}", pta.Tests[testIndex].Type, rowIndex+1, i+1, file)
-			replaceCellValue(pta.Name, cell, "{{test.type_else}}", pta.Tests[testIndex].TypeElse, rowIndex+1, i+1, file)
-			replaceCellValue(pta.Name, cell, "{{test.result_type}}", pta.Tests[testIndex].ResultType, rowIndex+1, i+1, file)
+			didContainTest := replaceCellValue(pta.Name, cell, "{{test.id}}", strconv.Itoa(test.Id), rowIndex+1, i+1, file)
+			replaceCellValue(pta.Name, cell, "{{test.year_and_period}}", test.YearAndPeriod, rowIndex+1, i+1, file)
+			replaceCellValue(pta.Name, cell, "{{test.week}}", test.Week, rowIndex+1, i+1, file)
+			replaceCellValue(pta.Name, cell, "{{test.subdomain}}", test.Subdomain, rowIndex+1, i+1, file)
+			replaceCellValue(pta.Name, cell, "{{test.description}}", test.Description, rowIndex+1, i+1, file)
+			replaceCellValue(pta.Name, cell, "{{test.type}}", test.Type, rowIndex+1, i+1, file)
+			replaceCellValue(pta.Name, cell, "{{test.type_else}}", test.TypeElse, rowIndex+1, i+1, file)
+			replaceCellValue(pta.Name, cell, "{{test.result_type}}", test.ResultType, rowIndex+1, i+1, file)
 			replaceCellValue(pta.Name, cell, "{{test.time}}", time, rowIndex+1, i+1, file)
-			replaceCellValue(pta.Name, cell, "{{test.time_else}}", pta.Tests[testIndex].TimeElse, rowIndex+1, i+1, file)
+			replaceCellValue(pta.Name, cell, "{{test.time_else}}", test.TimeElse, rowIndex+1, i+1, file)
 			replaceCellValue(pta.Name, cell, "{{test.resitable}}", resitable, rowIndex+1, i+1, file)
-			replaceCellValue(pta.Name, cell, "{{test.pta_weight}}", strconv.Itoa(pta.Tests[testIndex].PtaWeight), rowIndex+1, i+1, file)
-			replaceCellValue(pta.Name, cell, "{{test.pod_weight}}", strconv.Itoa(pta.Tests[testIndex].PodWeight), rowIndex+1, i+1, file)
+			replaceCellValue(pta.Name, cell, "{{test.pta_weight}}", strconv.Itoa(test.PtaWeight), rowIndex+1, i+1, file)
+			replaceCellValue(pta.Name, cell, "{{test.pod_weight}}", strconv.Itoa(test.PodWeight), rowIndex+1, i+1, file)
 			replaceCellValue(pta.Name, cell, "{{test.tools}}", tools, rowIndex+1, i+1, file)
-
-			if containedTest {
-				if testIndex < len(pta.Tests)-1 {
-					testIndex++
-				}
+			if didContainTest {
+				containedTest = true
+			}
+		}
+		if containedTest {
+			if testIndex < len(pta.Tests)-1 {
+				testIndex++
 			}
 		}
 	}
