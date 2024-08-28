@@ -364,14 +364,15 @@ button {
     margin: 10px;
 }
 
-.pta-vakken-wrapper {
+.pta-vakken-wrapper,
+.pta-export-wrapper {
     display: flex;
     flex-direction: column;
     gap: 20px;
 }
 
 .pta-vakken-toevoegen,
-.pta-vakken-lijst,
+.pta-export-alle .pta-vakken-lijst,
 .pta-docenten-accounts,
 .container {
     background-color: #f9f9f9;
@@ -428,19 +429,22 @@ select {
     /* Groen voor succesmeldingen */
 }
 
-.pta-vakken-toevoegen .form-row {
+.pta-vakken-toevoegen .form-row,
+.pta-export-alle .form-row {
     display: flex;
     align-items: center;
 }
 
-.pta-vakken-toevoegen .form-row label {
+.form-row label {
     flex-shrink: 0;
     width: 150px;
     /* Pas deze breedte aan naar de breedte van het langste label */
 }
 
-.pta-vakken-toevoegen .form-row input,
-.pta-vakken-toevoegen .form-row select {
+.form-row input,
+.form-row select,
+.form-row input,
+.form-row select {
     flex-grow: 1;
     max-width: 200px;
 }
@@ -467,4 +471,65 @@ input::placeholder {
 
 #bewerkJaar {
     width: 70px;
+}
+
+.pta-container {
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #f8f8f8;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.pta-title {
+    margin-bottom: 20px;
+    font-size: 22px;
+    text-align: center;
+    color: #333;
+}
+
+.pta-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.pta-controls label {
+    margin-right: 8px;
+    font-size: 16px;
+    color: #333;
+}
+
+.pta-controls input[type="checkbox"] {
+    margin-right: 20px;
+}
+
+.pta-controls select {
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #fff;
+    margin-right: 20px;
+}
+
+#laadPtasButton {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    background-color: #4caf50;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+#laadPtasButton:hover {
+    background-color: #45a049;
+}
+
+.pta-list {
+    margin-top: 20px;
+    font-size: 16px;
+    color: #666;
 }

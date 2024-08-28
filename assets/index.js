@@ -316,6 +316,7 @@ function createDynamicButtons() {
     // Hetzelfde voor afvinken
     if (heeftBewerkingsRechten) {
         buttons.push({ text: '💾', action: opslaan, name: 'Opslaan' });
+        buttons.push({ text: '📑 PDF', action: toExport, name: 'Exporteren' });
     }
 
     // Creëer en voeg elke knop toe aan de container
@@ -2191,4 +2192,8 @@ function toggleExplanation(selectElement) {
     } else {
         explanationDiv.classList.remove('visible');
     }
+}
+
+function toExport() {
+    alert('TODO: export endpoint hier')
 }

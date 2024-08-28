@@ -700,6 +700,7 @@ hulpmiddelenOphalen()
 toetsSoortenOphalen()
 tijdsMogelijkhedenOphalen()
 periodesophalen()
+exportOphalen()
 
 async function overwriteSubjectsDatabaseHandlingDuplicates() {
     try {
@@ -756,14 +757,14 @@ fetch('/api/config')
     .catch(error => console.error('Fout bij het laden:', error));
 
 function toggleOpSlot() {
-  setOpSlot(!opSlot);
+    setOpSlot(!opSlot);
 }
 
 function setOpSlot(slot, update = true) {
     const knop = document.getElementById('toggleOpSlot');
     opSlot = slot;
     knop.textContent = !opSlot ? '🔓' : '🔒';
-    document.getElementById('slotTekst').textContent = !opSlot? 'PTAs zijn open' : 'PTAs zijn gesloten';
+    document.getElementById('slotTekst').textContent = !opSlot ? 'PTAs zijn open' : 'PTAs zijn gesloten';
 
     if (!update) return
     fetch('/api/config', {
@@ -826,4 +827,94 @@ function setBewerkJaar() {
     volgendJaarSpan.textContent = `/ ${bewerkJaar + 1}`;
 
     // TODO DB updaten voor bewerkjaar 
+}
+
+
+function exportOphalen() {
+    fetch('/api/export/allePtas/instellingen')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Netwerkrespons was niet ok');
+        }
+        return response.json();
+      })
+      .then(data => {
+        exportLaden(data);
+      })
+      .catch(error => {
+        console.error('Fout bij het ophalen van exportinstellingen:', error);
+      });
+  }
+  
+  function exportLaden(data) {
+    const jaarSelect = document.getElementById('jaarSelect');
+    const niveauSelect = document.getElementById('niveauSelect');
+    const jaarlaagSelect = document.getElementById('jaarlaagSelect');
+  
+    // Vul de jaarselectie, niveau en jaarlaag selecties in met data
+    if (data.jaar) {
+      jaarSelect.value = data.jaar;
+    }
+    if (data.niveau) {
+      niveauSelect.value = data.niveau;
+    }
+    if (data.jaarlaag) {
+      jaarlaagSelect.value = data.jaarlaag;
+    }
+  }
+  
+  function exporteerAllePtas(event) {
+    event.preventDefault();
+    const jaarSelectie = document.getElementById('jaarSelect').value;
+    const niveauSelectie = document.getElementById('niveauSelect').value;
+    const jaarlaagSelectie = document.getElementById('jaarlaagSelect').value;
+  
+    // PUT request to save the selected options (niveau, jaar, jaarlaag) before export
+    fetch('/api/export/allePtas', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        jaar: jaarSelectie,
+        niveau: niveauSelectie,
+        jaarlaag: jaarlaagSelectie
+      })
+    })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Serverfout bij het opslaan van de exportinstellingen.');
+        }
+        return response.text();
+      })
+      .then(text => {
+        const data = text ? JSON.parse(text) : {};
+        console.log('Exportinstellingen succesvol opgeslagen:', data);
+  
+        // Hier de GET request voor het exporteren van de PTA's
+        return fetch(`/api/export/allePtas?niveau=${niveauSelectie}&jaar=${jaarSelectie}&jaarlaag=${jaarlaagSelectie}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Serverfout bij het exporteren van PTA\'s.');
+        }
+        return response.blob();
+      })
+      .then(blob => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `PTAs_${niveauSelectie}_${jaarSelectie}_jaarlaag${jaarlaagSelectie}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+      })
+      .catch(error => {
+        console.error('Fout bij het exporteren van PTA\'s:', error);
+      });
   }

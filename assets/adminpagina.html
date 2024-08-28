@@ -117,19 +117,62 @@
         </form>
 
         <div class="container" id="AfrondstatusPTA">
-            <div class="pta-header">
-                <h2>Afrondstatus PTA's</h2>
-                <label for="afrondStatus">Afgerond?</label><input type="checkbox" id="afrondStatus">
-                <label for="sorteerMethode">Sorteren op:</label><select id="sorteerMethode">
-                    <option value="vak">Vak</option>
-                    <option value="niveau">Niveau</option>
-                    <option value="jaarlaag">Jaarlaag</option>
+              <h2>Afrondstatus PTA's</h2>
+              <div>
+                <label for="afrondStatus">Afgerond?</label>
+                <input type="checkbox" id="afrondStatus">
+              </div>
+              <div class="form-row">
+                <label for="sorteerMethode">Sorteren op:</label>
+                <select id="sorteerMethode">
+                  <option value="vak">Vak</option>
+                  <option value="niveau">Niveau</option>
+                  <option value="jaarlaag">Jaarlaag</option>
                 </select>
+              </div>
+              <div>
                 <button type="button" onclick="laadAfrondStatus()">Laad PTA's</button>
-            </div>
+              </div>
             <div id="ptaList"></div>
+          </div>
+          
+        <div class="container">
+            <div class="pta-export-wrapper">
+                <div class="pta-export-alle">
+                  <h2>PTA's exporteren</h2>
+                  <form id="ExportAllePtas" class="pta-form">
+                    <div class="form-row">
+                      <label for="jaarSelect">Kies een jaar:</label>
+                      <select id="jaarSelect" name="jaarSelect">
+                        <option value="2023">2023</option>
+                        <option selected value="2024">2024</option>
+                        <!-- Voeg meer jaren toe indien nodig -->
+                      </select>
+                    </div>
+                    <div class="form-row">
+                      <label for="niveauSelect">Kies een niveau:</label>
+                      <select id="niveauSelect" name="niveauSelect">
+                        <option value="Mavo">Mavo</option>
+                        <option value="Havo">Havo</option>
+                        <option value="Vwo">Vwo</option>
+                      </select>
+                    </div>
+                    <div class="form-row">
+                      <label for="jaarlaagSelect">Kies een jaarlaag:</label>
+                      <select id="jaarlaagSelect" name="jaarlaagSelect">
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                      </select>
+                    </div>
+                    <button type="button" class="pta-button" onclick="exporteerAllePtas(event)">Exporteer PTA's</button>
+                  </form>
+                </div>
+              </div>
+              
         </div>
-
+        
         <div class="pta-vakken-wrapper">
             <div class="pta-vakken-toevoegen">
                 <h2>Vakken toevoegen</h2>
