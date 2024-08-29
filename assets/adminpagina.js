@@ -883,37 +883,39 @@ function exportOphalen() {
     })
       .then(response => {
         if (!response.ok) {
-          throw new Error('Serverfout bij het opslaan van de exportinstellingen.');
+          // throw new Error('Serverfout bij het opslaan van de exportinstellingen.');
         }
         return response.text();
       })
       .then(text => {
         const data = text ? JSON.parse(text) : {};
         console.log('Exportinstellingen succesvol opgeslagen:', data);
+
+        window.open(`/api/pta/export?level=${jaarlaagSelectie} ${niveauSelectie.toUpperCase()}&year=${jaarSelectie}`, '_blank').focus();
   
         // Hier de GET request voor het exporteren van de PTA's
-        return fetch(`/api/export/allePtas?niveau=${niveauSelectie}&jaar=${jaarSelectie}&jaarlaag=${jaarlaagSelectie}`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        });
+        // return fetch(`/api/pta/export?level=${jaarlaagSelectie} ${niveauSelectie.toUpperCase()}&year=${jaarSelectie}`, {
+        //   method: 'GET',
+        //   headers: {
+        //     'Content-Type': 'application/json'
+        //   }
+        // });
       })
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Serverfout bij het exporteren van PTA\'s.');
-        }
-        return response.blob();
-      })
-      .then(blob => {
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `PTAs_${niveauSelectie}_${jaarSelectie}_jaarlaag${jaarlaagSelectie}.pdf`;
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-      })
+      // .then(response => {
+      //   if (!response.ok) {
+      //     throw new Error('Serverfout bij het exporteren van PTA\'s.');
+      //   }
+      //   return response.blob();
+      // })
+      // .then(blob => {
+      //   const url = window.URL.createObjectURL(blob);
+      //   const a = document.createElement('a');
+      //   a.href = url;
+      //   a.download = `PTAs_${niveauSelectie}_${jaarSelectie}_jaarlaag${jaarlaagSelectie}.pdf`;
+      //   document.body.appendChild(a);
+      //   a.click();
+      //   a.remove();
+      // })
       .catch(error => {
         console.error('Fout bij het exporteren van PTA\'s:', error);
       });

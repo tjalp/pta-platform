@@ -315,8 +315,8 @@ function createDynamicButtons() {
     // Voeg de "Opslaan" knop alleen toe als de gebruiker bewerkingsrechten heeft
     // Hetzelfde voor afvinken
     if (heeftBewerkingsRechten) {
-        buttons.push({ text: '💾', action: opslaan, name: 'Opslaan' });
-        buttons.push({ text: '📑 PDF', action: toExport, name: 'Exporteren' });
+        buttons.push({ text: '💾 Opslaan', action: opslaan, name: 'Opslaan' });
+        buttons.push({ text: '📑 EXCEL', action: toExport, name: 'Exporteren' });
     }
 
     // Creëer en voeg elke knop toe aan de container
@@ -2195,5 +2195,5 @@ function toggleExplanation(selectElement) {
 }
 
 function toExport() {
-    alert('TODO: export endpoint hier')
+    window.open(`/api/pta/${ptaData.id}/export`, '_blank').focus();
 }
