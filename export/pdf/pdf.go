@@ -66,7 +66,12 @@ func (e PdfExporter) Export(ctx *gin.Context, pta []database.PtaData) error {
 		return err
 	}
 
-	file.Path = "PTA " + pta[0].Level + " " + pta[0].Cohort + ".xlsx"
+	if len(pta) == 1 {
+		file.Path = pta[0].Name + " PTA " + pta[0].Level + " " + pta[0].Cohort + ".xlsx"
+	} else {
+		file.Path = "PTA " + pta[0].Level + " " + pta[0].Cohort + ".xlsx"
+	}
+
 	err = file.UpdateLinkedValue()
 	if err != nil {
 		return err
