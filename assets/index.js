@@ -169,6 +169,7 @@ function bevestigKeuze(keuzeType, geselecteerdeOpties) {
     } finally {
         if (!isEersteKeer) { // Ook geladen nadat jaar is aangeroepen
             laadPta().then(() => {
+                createDynamicButtons();
                 laadPercentages();
                 removeExistingModals();
             });

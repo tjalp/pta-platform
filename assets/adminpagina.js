@@ -781,7 +781,13 @@ function setOpSlot(slot, update = true) {
 
 function laadAfrondStatus() {
     const afgerond = document.getElementById('afrondStatus').checked;
-    fetch(`/api/pta/search?year=${bewerkJaar}&finished=${afgerond}`)
+    let url;
+    if (!afgerond) {
+        url = `/api/pta/search?year=${bewerkJaar}`
+    } else {
+        url = `/api/pta/search?year=${bewerkJaar}&finished=true`
+    }
+    fetch(url)
         .then(response => {
             if (!response.ok && response.status !== 404) {
                 throw new Error('Netwerkrespons was niet ok');
@@ -808,7 +814,10 @@ function laadAfrondStatus() {
 
             data.forEach(pta => {
                 const afrondLabel = document.createElement('label');
-                afrondLabel.textContent = `${pta.name} (${pta.level} ${pta.year}) --- ${pta.responsible}`;
+                // Find first item in 'vakken' where 'name' is equal to 'pta.name' and 'level' is equal to 'pta.level'
+                const vak = vakken.find(item => item.name === pta.name && item.level === pta.level);
+                let vakReponsible = vak != null ? vak.responsible : 'Onbekend (misschien: \'' + pta.responsible + '\')';
+                afrondLabel.textContent = `${pta.name} (${pta.level} ${pta.year}) --- ${vakReponsible}`;
                 afrondDiv.appendChild(afrondLabel);
                 afrondDiv.append(document.createElement('br'));
             });
