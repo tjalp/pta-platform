@@ -321,7 +321,7 @@ func exportPta(c *gin.Context) {
 		return
 	}
 
-	err := pdf.PdfExporter{}.Export(c, []database.PtaData{*pta})
+	err := pdf.PdfExporter{}.Export(c, []database.PtaData{*pta}, data.GetSubjects())
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -344,7 +344,7 @@ func exportAll(c *gin.Context) {
 		return
 	}
 
-	err := pdf.PdfExporter{}.Export(c, ptas)
+	err := pdf.PdfExporter{}.Export(c, ptas, data.GetSubjects())
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

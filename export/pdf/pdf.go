@@ -17,7 +17,7 @@ type PdfExporter struct {
 // //go:embed resources/pta-template.xlsx
 // var template embed.FS
 
-func (e PdfExporter) Export(ctx *gin.Context, pta []database.PtaData) error {
+func (e PdfExporter) Export(ctx *gin.Context, pta []database.PtaData, subjects []database.Subject) error {
 	//templateFile, err := os.Open("pta-template.xlsx")
 	//// templateFile, err := template.Open("resources/pta-template.xlsx")
 	//if err != nil {
@@ -55,7 +55,18 @@ func (e PdfExporter) Export(ctx *gin.Context, pta []database.PtaData) error {
 		if err != nil {
 			return err
 		}
-		err = addPtaSheet(file, pta)
+		var subjectIndex = -1
+		for i, subject := range subjects {
+			if strings.EqualFold(subject.Name, pta.Name) && strings.EqualFold(subject.Level, pta.Level) {
+				subjectIndex = i
+				break
+			}
+		}
+		if subjectIndex >= len(subjects) || subjectIndex < 0 || strings.ToLower(subjects[subjectIndex].Level) != strings.ToLower(pta.Level) {
+			return fmt.Errorf("subject not found for pta %s, subjectIndex: %d, subjectLength: %d", pta.Name, subjectIndex, len(subjects))
+		}
+		subject := subjects[subjectIndex]
+		err = addPtaSheet(file, pta, subject)
 		if err != nil {
 			return err
 		}
@@ -90,7 +101,7 @@ func (e PdfExporter) Export(ctx *gin.Context, pta []database.PtaData) error {
 	return nil
 }
 
-func addPtaSheet(file *excelize.File, pta database.PtaData) error {
+func addPtaSheet(file *excelize.File, pta database.PtaData, subject database.Subject) error {
 	// Loop over every cell of every row
 	rows, err := file.GetRows(pta.Name)
 	if err != nil {
@@ -101,7 +112,7 @@ func addPtaSheet(file *excelize.File, pta database.PtaData) error {
 			replaceCellValue(pta.Name, cell, "{{name}}", pta.Name, rowIndex+1, i+1, file)
 			replaceCellValue(pta.Name, cell, "{{level}}", pta.Level, rowIndex+1, i+1, file)
 			replaceCellValue(pta.Name, cell, "{{cohort}}", pta.Cohort, rowIndex+1, i+1, file)
-			replaceCellValue(pta.Name, cell, "{{responsible}}", pta.Responsible, rowIndex+1, i+1, file)
+			replaceCellValue(pta.Name, cell, "{{responsible}}", subject.Responsible, rowIndex+1, i+1, file)
 
 			// Special cases
 			if strings.Contains(cell, "{{weights}}") {
