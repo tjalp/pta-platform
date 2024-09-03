@@ -3,6 +3,7 @@ package pdf
 import (
 	"fmt"
 	"net/http"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -107,6 +108,28 @@ func addPtaSheet(file *excelize.File, pta database.PtaData, subject database.Sub
 	if err != nil {
 		return err
 	}
+
+	usedToolsIndexes := make(map[int]bool)
+	for _, test := range pta.Tests {
+		for _, tool := range test.Tools {
+			usedToolsIndexes[tool] = true
+		}
+	}
+	remappedTools := make(map[int]int)
+	toolIndex := 0
+	for i := 0; i < len(pta.Tools); i++ {
+		if usedToolsIndexes[i] {
+			remappedTools[i] = toolIndex
+			toolIndex++
+		}
+	}
+	usedTools := make([]string, 0)
+	for i := 0; i < len(pta.Tools); i++ {
+		if usedToolsIndexes[i] {
+			usedTools = append(usedTools, pta.Tools[i])
+		}
+	}
+
 	for rowIndex, row := range rows {
 		for i, cell := range row {
 			replaceCellValue(pta.Name, cell, "{{name}}", pta.Name, rowIndex+1, i+1, file)
@@ -131,19 +154,7 @@ func addPtaSheet(file *excelize.File, pta database.PtaData, subject database.Sub
 
 			if strings.Contains(cell, "{{tools}}") {
 				replaceCellValue(pta.Name, cell, "{{tools}}", "", rowIndex+1, i+1, file)
-				usedToolsIndexes := make(map[int]bool)
-				for _, test := range pta.Tests {
-					for _, tool := range test.Tools {
-						usedToolsIndexes[tool] = true
-					}
-				}
-				tools := make([]string, 0)
-				for i := 0; i < len(pta.Tools); i++ {
-					if usedToolsIndexes[i] {
-						tools = append(tools, pta.Tools[i])
-					}
-				}
-				for toolIndex, tool := range tools {
+				for toolIndex, tool := range usedTools {
 					coords, err := excelize.CoordinatesToCellName(i+1, rowIndex+toolIndex+1)
 					if err != nil {
 						fmt.Println("error converting coordinates to cell name:", err)
@@ -267,11 +278,13 @@ func addPtaSheet(file *excelize.File, pta database.PtaData, subject database.Sub
 				time = strconv.Itoa(test.Time)
 			}
 			var tools string
-			for i, tool := range test.Tools {
+			testToolIndexes := test.Tools
+			sort.Ints(testToolIndexes)
+			for i, tool := range testToolIndexes {
 				if i != 0 {
 					tools += ", "
 				}
-				tools += strconv.Itoa(tool + 1)
+				tools += strconv.Itoa(remappedTools[tool] + 1)
 			}
 			didContainTest := replaceCellValue(pta.Name, cell, "{{test.id}}", strconv.Itoa(test.Id), rowIndex+1, i+1, file)
 			replaceCellValue(pta.Name, cell, "{{test.year_and_period}}", test.YearAndPeriod, rowIndex+1, i+1, file)
