@@ -813,6 +813,7 @@ function laadAfrondStatus() {
             })
 
             data.forEach(pta => {
+                if (pta.finished !== afgerond) return;
                 const afrondLabel = document.createElement('label');
                 // Find first item in 'vakken' where 'name' is equal to 'pta.name' and 'level' is equal to 'pta.level'
                 const vak = vakken.find(item => item.name === pta.name && item.level === pta.level);
