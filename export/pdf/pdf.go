@@ -169,9 +169,11 @@ func addPtaSheet(file *excelize.File, pta database.PtaData, subject database.Sub
 
 			if strings.Contains(cell, "{{else.id}}") {
 				replaceCellValue(pta.Name, cell, "{{else.id}}", "", rowIndex+1, i+1, file)
+				elseTestIndex := 0
 				for _, test := range pta.Tests {
 					if test.Time == 0 || test.Type == "anders" {
-						coords, err := excelize.CoordinatesToCellName(i+1, rowIndex+1)
+						coords, err := excelize.CoordinatesToCellName(i+1, rowIndex+elseTestIndex+1)
+						elseTestIndex++
 						if err != nil {
 							fmt.Println("error converting coordinates to cell name:", err)
 							return err
@@ -186,9 +188,11 @@ func addPtaSheet(file *excelize.File, pta database.PtaData, subject database.Sub
 
 			if strings.Contains(cell, "{{else.type}}") {
 				replaceCellValue(pta.Name, cell, "{{else.type}}", "", rowIndex+1, i+1, file)
+				elseTestIndex := 0
 				for _, test := range pta.Tests {
 					if test.Time == 0 || test.Type == "anders" {
-						coords, err := excelize.CoordinatesToCellName(i+1, rowIndex+1)
+						coords, err := excelize.CoordinatesToCellName(i+1, rowIndex+elseTestIndex+1)
+						elseTestIndex++
 						if err != nil {
 							fmt.Println("error converting coordinates to cell name:", err)
 							return err
@@ -207,9 +211,11 @@ func addPtaSheet(file *excelize.File, pta database.PtaData, subject database.Sub
 
 			if strings.Contains(cell, "{{else.time}}") {
 				replaceCellValue(pta.Name, cell, "{{else.time}}", "", rowIndex+1, i+1, file)
+				elseTestIndex := 0
 				for _, test := range pta.Tests {
 					if test.Time == 0 || test.Type == "anders" {
-						coords, err := excelize.CoordinatesToCellName(i+1, rowIndex+1)
+						coords, err := excelize.CoordinatesToCellName(i+1, rowIndex+elseTestIndex+1)
+						elseTestIndex++
 						if err != nil {
 							fmt.Println("error converting coordinates to cell name:", err)
 							return err
